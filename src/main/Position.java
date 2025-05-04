@@ -1,3 +1,5 @@
+package main;
+
 public class Position {
     private final String id;
 
@@ -24,5 +26,9 @@ public class Position {
     @Override
     public String toString() {
         return id;
+    }
+
+    public void print() {
+        System.out.println("java.Position: " + id);
     }
 }
