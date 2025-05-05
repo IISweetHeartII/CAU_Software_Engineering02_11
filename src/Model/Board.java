@@ -44,8 +44,10 @@ public class Board {
                     position = nextPositionList.getLast();
                 }
             } else if (nextPositionList.size() > 1 && i == 0) {
+                previousPosition = position;
                 position = nextPositionList.getLast();
             } else {
+                previousPosition = position;
                 position = nextPositionList.getFirst();
             }
 
