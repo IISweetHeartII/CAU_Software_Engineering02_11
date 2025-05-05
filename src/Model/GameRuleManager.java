@@ -45,5 +45,8 @@ public class GameRuleManager {
         return piece.moveBack(); // Piece가 recentPath 갖고 있음
     }
 
+    public boolean checkGameOver(Player player) {
+        return player.hasAllPiecesAtEnd(); // 모든 말이 END에 도착했는지 확인
+    }
 }
 
