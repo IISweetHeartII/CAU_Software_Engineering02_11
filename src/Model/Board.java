@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.*;
+import java.util.ArrayDeque;
 
 public class Board {
     private final Map<Position, List<Position>> pathGraph = new HashMap<>();
@@ -13,29 +14,42 @@ public class Board {
 
     /* find and return n-th next position from specific positon */
     public Position getNNextPosition(Position position, int n) {
-        if (position == null || n <= 0) {
-            return null;
-        }
+        // Field
+        List<Position> nextPositionList = pathGraph.get(position);
+        Position previousPosition = null;
 
-        List<Position> nextPosition = pathGraph.get(position);
-        if (nextPosition == null || nextPosition.isEmpty()) {
+        // Exception Handling
+        if (position == null || n <= 0)
             return null;
-        }
+        if (nextPositionList == null || nextPositionList.isEmpty())
+            return null;
 
+        // Main Logic
         for (int i = 0; i < n; i++) {
-            if (nextPosition.isEmpty()) {
-                // Todo: We need to set up Game End Control
-                return null;
+            // END에 도달하면 END를 반환
+            if (nextPositionList.isEmpty()) {
+                return new Position("END");
             }
 
-            if (nextPosition.size() > 1 && i == 0) {
-                // Todo: If nextPosition == center, we need to choose one based on the previous position
-                position = nextPosition.get(1);
+            // NextPosition 계산
+            if (position.equals(center)) { // center:[E3, E7]
+                if (previousPosition == null) {
+                    previousPosition = position;
+                    position = nextPositionList.getLast();
+                } else if (previousPosition.equals("E2")) {
+                    previousPosition = position;
+                    position = nextPositionList.getFirst();
+                } else if (previousPosition.equals("E6")) {
+                    previousPosition = position;
+                    position = nextPositionList.getLast();
+                }
+            } else if (nextPositionList.size() > 1 && i == 0) {
+                position = nextPositionList.getLast();
             } else {
-                position = nextPosition.get(0);
+                position = nextPositionList.getFirst();
             }
 
-            nextPosition = pathGraph.get(position);
+            nextPositionList = pathGraph.get(position);
         }
 
         return position;
@@ -123,14 +137,5 @@ public class Board {
         pathGraph.put(E8, List.of(P20));
 
         pathGraph.put(C, List.of(E3, E7)); // 교차점
-    }
-
-    public void printGraph() {
-        // Todo: This code should be tested
-        for (Map.Entry<Position, List<Position>> entry : pathGraph.entrySet()) {
-            Position key = entry.getKey();
-            List<Position> value = entry.getValue();
-            System.out.println(key + " -> " + value);
-        }
     }
 }
