@@ -10,6 +10,11 @@ public class Piece {
     private static final int MAX_HISTORY = 5;
     //말의 이전 위치 최대 5개만 기억.
 
+    /// 생성자
+    public Piece(String id) {
+        this(id, new Position("START")); // 기본 위치는 START
+    }
+
     public Piece(String id, Position startPosition) {
         this.id = id;
         this.currentPosition = startPosition;
