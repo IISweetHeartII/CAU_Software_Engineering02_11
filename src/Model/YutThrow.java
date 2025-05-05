@@ -10,22 +10,22 @@ public class YutThrow {
      * 도, 개, 걸, 윷, 모 or 빽도를 무작위 생성
      */
     public YutResult throwRandom() {
-        int backCount = 0;
+        int rand = random.nextInt(100) + 1; // 1 ~ 100
 
-        // 윷 4개 던짐 (1은   앞면, 0은 뒷면)
-        for (int i = 0; i < 4; i++) {
-            int Yut = random.nextBoolean() ? 1 : 0;
-            if (Yut == 0) backCount++;
+        YutResultType result;
+        if (rand <= 4) {
+            result = YutResultType.BACK_DO;      // 1 ~ 4
+        } else if (rand <= 28) {
+            result = YutResultType.DO;           // 5 ~ 28
+        } else if (rand <= 67) {
+            result = YutResultType.GAE;          // 29 ~ 67
+        } else if (rand <= 92) {
+            result = YutResultType.GEOL;         // 68 ~ 92
+        } else if (rand <= 96) {
+            result = YutResultType.YUT;          // 93 ~ 96
+        } else {
+            result = YutResultType.MO;           // 97 ~ 100
         }
-
-        YutResultType result = switch (backCount) {
-            case 0 -> YutResultType.MO;
-            case 1 -> YutResultType.YUT;
-            case 2 -> YutResultType.GEOL;
-            case 3 -> YutResultType.GAE;
-            case 4 -> YutResultType.DO;
-            default -> YutResultType.BACK_DO; // 예외 대비
-        };
 
         return new YutResult(result);
     }
