@@ -24,7 +24,13 @@ public class GameController {
 
     public void handleRandomThrow(){
         YutResult result = gameModel.throwYutRandom(); //랜덤 생성
-        gameView.showYutResult(result); //VIew에 결과 전달
+        gameView.showYutResult(result); //View에 결과 전달
         //이후 말 이동 처리
+    }
+
+    public void changeTurn() {
+        gameModel.nextTurn(); //다음 턴으로 전환
+        String currentPlayerID = gameModel.getCurrentPlayer().getPlayerID();
+        gameView.updateCurrentPlayer(currentPlayerID); // UI 업데이트
     }
 }

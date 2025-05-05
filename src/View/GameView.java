@@ -4,5 +4,7 @@ import Model.YutResult;
 
 public interface GameView {
     void showYutResult(YutResult yutResult);
-    //이후에 다른 요청 메시지들 ㄱ전달 가능.
+    //이후에 다른 요청 메시지들 전달 가능.
+
+    public void updateCurrentPlayer(String playerID);
 }

@@ -1,10 +1,30 @@
 package Model;
 
-import java.util.*;
-
 public class GameModel {
     private final Board board = new Board(); //board
     private final YutThrow yutThrower = new YutThrow(); //YutThrow
+    private final Player[] players; //players
+    private final int numberOfPlayers; //number of players
+    private final int numberOfPieces; //number of pieces
+    private int currentPlayerIndex = 0; //현재 플레이어 인덱스
+
+    // Constructor
+    public GameModel(int numPlayers, int numPieces) {
+        this.numberOfPlayers = numPlayers; // 플레이어 수
+        this.numberOfPieces = numPieces; // 말 개수
+        this.players = new Player[numPlayers];
+        for (int i = 0; i < numPlayers; i++) {
+            players[i] = new Player("Player" + i, numPieces); // 플레이어 생성
+        }
+    }
+
+    public Player getCurrentPlayer() {
+        return players[currentPlayerIndex];
+    }
+
+    public void nextTurn() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers; // 다음 플레이어로 전환
+    }
 
     //랜덤 윷 던지기
     public YutResult throwYutRandom() {
