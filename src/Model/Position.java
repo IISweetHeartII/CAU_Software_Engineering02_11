@@ -18,6 +18,10 @@ public class Position {
         return this.id.equals(other.id);
     }
 
+    public boolean equals(String id) {
+        return this.id.equals(id);
+    }
+
     @Override
     public int hashCode() {
         return id.hashCode();
