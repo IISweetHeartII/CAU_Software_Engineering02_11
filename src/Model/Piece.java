@@ -4,19 +4,21 @@ import java.util.Deque;
 import java.util.ArrayDeque;
 
 public class Piece {
-    private final String id;
+    private final String playerID; // 플레이어 ID
+    private final String pieceID;
     private Position currentPosition; //자신의 현재 위치 기억
     private final Deque<Position> recentPath;
     private static final int MAX_HISTORY = 5;
     //말의 이전 위치 최대 5개만 기억.
 
     /// 생성자
-    public Piece(String id) {
-        this(id, new Position("START")); // 기본 위치는 START
+    public Piece(String playerID, String pieceID) {
+        this(playerID, pieceID, new Position("START")); // 기본 위치는 START
     }
 
-    public Piece(String id, Position startPosition) {
-        this.id = id;
+    public Piece(String playerID, String pieceID, Position startPosition) {
+        this.playerID = playerID;
+        this.pieceID = pieceID;
         this.currentPosition = startPosition;
         this.recentPath = new ArrayDeque<>();
         recentPath.addLast(startPosition); // 초기 위치 저장
@@ -45,12 +47,16 @@ public class Piece {
         return currentPosition;
     }
 
-    public String getId() {
-        return id;
+    public String getPieceID() {
+        return pieceID;
     }
 
     @Override
     public String toString() {
-        return id + "@" + currentPosition;
+        return pieceID + "@" + currentPosition;
+    }
+
+    public String getPlayerID() {
+        return playerID;
     }
 }
