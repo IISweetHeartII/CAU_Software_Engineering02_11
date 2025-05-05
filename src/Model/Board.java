@@ -6,8 +6,39 @@ public class Board {
     private final Map<Position, List<Position>> pathGraph = new HashMap<>();
     private final Position center = new Position("C");
 
+    // Constructor
     public Board() {
         initGraph();
+    }
+
+    /* find and return n-th next position from specific positon */
+    public Position getNNextPosition(Position position, int n) {
+        if (position == null || n <= 0) {
+            return null;
+        }
+
+        List<Position> nextPosition = pathGraph.get(position);
+        if (nextPosition == null || nextPosition.isEmpty()) {
+            return null;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (nextPosition.isEmpty()) {
+                // Todo: We need to set up Game End Control
+                return null;
+            }
+
+            if (nextPosition.size() > 1 && i == 0) {
+                // Todo: If nextPosition == center, we need to choose one based on the previous position
+                position = nextPosition.get(1);
+            } else {
+                position = nextPosition.get(0);
+            }
+
+            nextPosition = pathGraph.get(position);
+        }
+
+        return position;
     }
 
     private void initGraph() {
@@ -34,7 +65,9 @@ public class Board {
         Position P17 = new Position("P17");
         Position P18 = new Position("P18");
         Position P19 = new Position("P19");
-        Position P20 = new Position("P20"); // 종료점
+        Position P20 = new Position("P20");
+
+        Position END = new Position("END"); // 종료점
 
         // 중심점 및 교차 경로
         Position C = center;
@@ -75,7 +108,8 @@ public class Board {
         pathGraph.put(P17, List.of(P18));
         pathGraph.put(P18, List.of(P19));
         pathGraph.put(P19, List.of(P20));
-        pathGraph.put(P20, List.of()); // 종료점
+        pathGraph.put(P20, List.of(END));
+        pathGraph.put(END, List.of()); // 종료점
 
         // 중심 경로 설정
         pathGraph.put(E1, List.of(E2)); // P5 -> E1 -> E2 -> C -> E3 -> E4 -> P15
@@ -89,5 +123,14 @@ public class Board {
         pathGraph.put(E8, List.of(P20));
 
         pathGraph.put(C, List.of(E3, E7)); // 교차점
+    }
+
+    public void printGraph() {
+        // Todo: This code should be tested
+        for (Map.Entry<Position, List<Position>> entry : pathGraph.entrySet()) {
+            Position key = entry.getKey();
+            List<Position> value = entry.getValue();
+            System.out.println(key + " -> " + value);
+        }
     }
 }
