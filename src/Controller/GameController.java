@@ -18,13 +18,13 @@ public class GameController {
 
     public void handleManualThrow(YutResultType type) {
         YutResult result = new YutResult(type);  // 직접 생성
-        gameView.showYutResult(result); //View에 결과 전달
+        gameView.showYutResult(result); //View에 결과 전달, UI 업데이트
         // 이후 말 이동 처리
     }
 
     public void handleRandomThrow(){
         YutResult result = gameModel.throwYutRandom(); //랜덤 생성
-        gameView.showYutResult(result); //View에 결과 전달
+        gameView.showYutResult(result); //View에 결과 전달, UI 업데이트
         //이후 말 이동 처리
     }
 
