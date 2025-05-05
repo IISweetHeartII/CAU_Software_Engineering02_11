@@ -59,4 +59,9 @@ public class Piece {
     public String getPlayerID() {
         return playerID;
     }
+
+    // getter recentPath
+    public Deque<Position> getRecentPath() {
+        return recentPath;
+    }
 }
