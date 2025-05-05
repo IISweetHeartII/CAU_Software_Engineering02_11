@@ -27,4 +27,8 @@ public class Position {
     public String toString() {
         return id;
     }
+
+    public void print() {
+        System.out.println("java.Position: " + id);
+    }
 }
