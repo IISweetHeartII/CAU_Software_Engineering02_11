@@ -9,6 +9,10 @@ public class Player {
         this.playerID = playerID;
         this.pieces = new Piece[numPieces]; // Assuming 4 pieces per player
         this.score = 0;
+
+        for (int i = 0; i < numPieces; i++) {
+            pieces[i] = new Piece(playerID, "Piece" + (i + 1)); // 각 플레이어의 말 생성
+        }
     }
 
     public String getPlayerID() {

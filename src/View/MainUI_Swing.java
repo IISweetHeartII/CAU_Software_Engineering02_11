@@ -13,7 +13,7 @@ import java.awt.*;
 import java.util.EnumMap;
 
 //JFrame을 상속받아서 윈도우 창 만듦.
-public class MainUI_Swing extends JFrame {
+public class MainUI_Swing extends JFrame implements GameView {
     private final GameController controller;
 
     //Controller 받아서 Event 연결
@@ -21,7 +21,6 @@ public class MainUI_Swing extends JFrame {
         this.controller = controller;
         initUI(); //----------> 화면 구성 시작
     }
-
 
     //화면 구성 (UI 초기화)
     private void initUI() {
@@ -60,5 +59,15 @@ public class MainUI_Swing extends JFrame {
         add(randomPanel, BorderLayout.CENTER);
 
         setVisible(true);
+    }
+
+    @Override
+    public void showYutResult(YutResult yutResult) {
+        // Todo: 결과 출력 UI 구현
+    }
+
+    @Override
+    public void updateCurrentPlayer(String playerID) {
+        // Todo: 현재 플레이어 ID 업데이트 UI 구현
     }
 }
