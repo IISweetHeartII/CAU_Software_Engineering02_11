@@ -43,6 +43,7 @@ public class Board {
 
     private void initGraph() {
         // 일반 외곽 경로
+        Position START = new Position("START");
         Position P1 = new Position("P1"); // 시작점
         Position P2 = new Position("P2");
         Position P3 = new Position("P3");
@@ -86,6 +87,7 @@ public class Board {
 
 
         // 외곽 경로 설정
+        pathGraph.put(START, List.of(P1)); // 시작점
         pathGraph.put(P1, List.of(P2));
         pathGraph.put(P2, List.of(P3));
         pathGraph.put(P3, List.of(P4));
