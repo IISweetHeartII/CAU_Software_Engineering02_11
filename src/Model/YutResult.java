@@ -9,12 +9,12 @@ public class YutResult {
         this.resultType = resultType;
     }
 
-    public YutResultType getResultType() {
+    public YutResultType getYutResultType() {
         return resultType;
     }
 
     //-----실제 이동 칸 수 제공-----//
-    public int getSteps() {
+    public int getValue() {
         return resultType.getSteps();
     }
 

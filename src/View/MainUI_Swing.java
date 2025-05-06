@@ -10,10 +10,11 @@ import Model.YutResult;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.EnumMap;
 
 //JFrame을 상속받아서 윈도우 창 만듦.
-public class MainUI_Swing extends JFrame {
+public class MainUI_Swing extends JFrame implements GameView {
     private final GameController controller;
 
     //Controller 받아서 Event 연결
@@ -21,7 +22,6 @@ public class MainUI_Swing extends JFrame {
         this.controller = controller;
         initUI(); //----------> 화면 구성 시작
     }
-
 
     //화면 구성 (UI 초기화)
     private void initUI() {
@@ -60,5 +60,24 @@ public class MainUI_Swing extends JFrame {
         add(randomPanel, BorderLayout.CENTER);
 
         setVisible(true);
+    }
+
+    @Override
+    public void showYutResult(YutResult yutResult) {
+        // Todo: 결과 출력 UI 구현
+    }
+
+    @Override
+    public void updateCurrentPlayer(String playerID) {
+        // Todo: 현재 플레이어 ID 업데이트 UI 구현
+    }
+
+    public void showPosableMoves(ArrayDeque<Model.Position> posableMoves) {
+        // Todo: Board에 이동 가능한 위치 표시 UI 구현
+    }
+
+    public Model.Position getUserSelectedPosition(ArrayDeque<Model.Position> posableMoves) {
+        // Todo: 사용자로부터 선택된 위치를 가져오는 UI 구현
+        return null; // 임시로 null 반환
     }
 }
