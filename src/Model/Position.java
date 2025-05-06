@@ -13,8 +13,7 @@ public class Position {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Position)) return false;
-        Position other = (Position) obj;
+        if (!(obj instanceof Position other)) return false;
         return this.id.equals(other.id);
     }
 

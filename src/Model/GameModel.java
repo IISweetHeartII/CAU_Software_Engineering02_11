@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.ArrayDeque;
+
 public class GameModel {
     private final Board board = new Board(); //board
     private final YutThrow yutThrower = new YutThrow(); //YutThrow
@@ -48,6 +50,34 @@ public class GameModel {
         }
     }
 
+    // currentPlayer의 말 중에서 isArrived가 false인 말들 중에서 모든 말들에 대한 도착 가능한 Position을 반환
+    public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
+        ArrayDeque<Position> posableMoves = new ArrayDeque<>();
+        Player currentPlayer = getCurrentPlayer();
+        Piece[] pieces = currentPlayer.getPieces();
 
+        // Todo: How about the case of Grouping?
+        for (Piece piece : pieces) {
+            if (!piece.getCurrentPosition().equals("END")) { // 도착하지 않은 말만
+                for (YutResult yutResult : YutResultArrayDeque) {
+                    Position nextPosition = board.getNNextPosition(piece.getCurrentPosition(), yutResult.getValue());
+                    if (nextPosition != null) {
+                        posableMoves.add(nextPosition);
+                    }
+                }
+            }
+        }
+        return posableMoves;
+    }
 
+    public Piece getPieceAtPosition(Position position) {
+        for (Player player : players) {
+            for (Piece piece : player.getPieces()) {
+                if (piece.getCurrentPosition().equals(position)) {
+                    return piece; // 해당 위치에 있는 말을 반환
+                }
+            }
+        }
+        return null; // 해당 위치에 말이 없음
+    }
 }
