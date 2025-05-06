@@ -20,7 +20,8 @@ public class GameController {
     }
 
     public void handleManualThrow(YutResultType type) {
-        ArrayDeque<YutResult> yutResultArrayDeque = new ArrayDeque<>();
+        currentTurnResult.clear(); //한 턴 결과 초기화
+
         YutResult result;
         do {
             result = new YutResult(type);  // 직접 생성
@@ -42,7 +43,6 @@ public class GameController {
                 // Todo: 이동처리
             }
         }
-        changeTurn(); // 턴 변경
     }
 
     public void handleRandomThrow(){

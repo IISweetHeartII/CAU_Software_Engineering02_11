@@ -9,7 +9,7 @@ public class Main {
         int numPlayers = 2; // Number of players
         int numPieces = 4; // Number of pieces per player
         // Initialize the game model and view
-        GameModel gameModel = new GameModel(numPlayers, numPieces);
+        /// GameModel gameModel = new GameModel(numPlayers, numPieces);
         /// GameView gameView = new MainUI_Swing(); // interface GameView를 구현한 MainUI_Swing 사용
 
         // Initialize the game controller

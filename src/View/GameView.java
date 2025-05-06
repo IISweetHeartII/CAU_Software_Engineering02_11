@@ -13,4 +13,6 @@ public interface GameView {
     void showPosableMoves(ArrayDeque<Model.Position> posableMoves);
 
     Model.Position getUserSelectedPosition(ArrayDeque<Model.Position> posableMoves);
+
+    void BoardRendering();
 }

@@ -4,12 +4,12 @@ import java.util.Deque;
 import java.util.ArrayDeque;
 
 public class Piece {
+    private final Board board = new Board();
     private final String playerID; // 플레이어 ID
     private final String pieceID;
     private Position currentPosition; //자신의 현재 위치 기억
     private final Deque<Position> recentPath;
-    private static final int MAX_HISTORY = 5;
-    //말의 이전 위치 최대 5개만 기억.
+    // private static final int MAX_HISTORY = 5; //말의 이전 위치 최대 5개만 기억.
 
     /// 생성자
     public Piece(String playerID, String pieceID) {
@@ -26,10 +26,16 @@ public class Piece {
 
     // 앞으로 이동할 때 호출됨
     public void moveTo(Position nextPosition) {
-        if (recentPath.size() >= MAX_HISTORY) {
-            recentPath.removeFirst(); // 가장 오래된 경로 제거
+        // 현재 위치부터 다음 위치까지의 경로를 모두 저장
+        // Example: E2 -> E4 => recentPath: E2 -> E3 -> E4
+        Position currentPosition = this.currentPosition;
+        if (currentPosition.equals(nextPosition)) {
+            return; // 이미 같은 위치에 있음
         }
-        recentPath.addLast(nextPosition);
+        currentPosition = board.getNNextPosition(currentPosition, 1);
+        recentPath.addLast(currentPosition);
+        if (currentPosition.equals(nextPosition)) {}
+        recentPath.addLast(nextPosition); // E2 -(E3)-> E4
         currentPosition = nextPosition;
     }
 

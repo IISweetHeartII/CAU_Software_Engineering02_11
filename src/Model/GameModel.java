@@ -1,8 +1,12 @@
 package Model;
 
+import View.GameView;
+import Controller.GameController;
+
 import java.util.ArrayDeque;
 
 public class GameModel {
+
     private final Board board = new Board(); //board
     private final YutThrow yutThrower = new YutThrow(); //YutThrow
     private final Player[] players; //players
@@ -20,12 +24,14 @@ public class GameModel {
         }
     }
 
+    // 현재 턴의 플레이어 반환
     public Player getCurrentPlayer() {
         return players[currentPlayerIndex];
     }
 
+    // 다음 플레이어로 턴 전환
     public void nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers; // 다음 플레이어로 전환
+        currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
     }
 
     //랜덤 윷 던지기
@@ -54,7 +60,7 @@ public class GameModel {
     public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
         ArrayDeque<Position> posableMoves = new ArrayDeque<>();
         Player currentPlayer = getCurrentPlayer();
-        Piece[] pieces = currentPlayer.getPieces();
+        Piece[] pieces = currentPlayer.getAllPieces();
 
         // Todo: How about the case of Grouping?
         for (Piece piece : pieces) {
@@ -70,9 +76,10 @@ public class GameModel {
         return posableMoves;
     }
 
+    // 특정 Position에 위치하는 Piece를 반환
     public Piece getPieceAtPosition(Position position) {
         for (Player player : players) {
-            for (Piece piece : player.getPieces()) {
+            for (Piece piece : player.getAllPieces()) {
                 if (piece.getCurrentPosition().equals(position)) {
                     return piece; // 해당 위치에 있는 말을 반환
                 }

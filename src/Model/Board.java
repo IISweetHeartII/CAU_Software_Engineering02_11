@@ -35,20 +35,20 @@ public class Board {
             if (position.equals(center)) { // center:[E3, E7]
                 if (previousPosition == null) {
                     previousPosition = position;
-                    position = nextPositionList.getLast();
+                    position = nextPositionList.get(1);
                 } else if (previousPosition.equals("E2")) {
                     previousPosition = position;
-                    position = nextPositionList.getFirst();
+                    position = nextPositionList.get(0);
                 } else if (previousPosition.equals("E6")) {
                     previousPosition = position;
-                    position = nextPositionList.getLast();
+                    position = nextPositionList.get(1);
                 }
             } else if (nextPositionList.size() > 1 && i == 0) {
                 previousPosition = position;
-                position = nextPositionList.getLast();
+                position = nextPositionList.get(1);
             } else {
                 previousPosition = position;
-                position = nextPositionList.getFirst();
+                position = nextPositionList.get(0);
             }
 
             nextPositionList = pathGraph.get(position);
