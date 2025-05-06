@@ -39,23 +39,6 @@ public class GameModel {
         return yutThrower.throwRandom();
     }
 
-    //지정 윷 던지기
-    public YutResult throwYutManual(String input) {
-        return yutThrower.throwManual(input);
-    }
-
-    //말 앞으로 이동
-    public void movePieceForward(Piece piece, int steps) {
-        Position current = piece.getCurrentPosition();
-        Position next = board.getNNextPosition(current, steps);
-
-        if (next != null) {
-            piece.moveTo(next); // 다음 위치로 이동
-        } else {
-            System.out.println("이동할 수 없는 위치입니다.");
-        }
-    }
-
     // currentPlayer의 말 중에서 isArrived가 false인 말들 중에서 모든 말들에 대한 도착 가능한 Position을 반환
     public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
         ArrayDeque<Position> posableMoves = new ArrayDeque<>();

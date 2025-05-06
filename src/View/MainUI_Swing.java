@@ -4,22 +4,23 @@
 package View;
 
 import Controller.GameController;
-import Model.YutResultType;
+import Model.Position;
 import Model.YutResult;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayDeque;
+import java.awt.event.ActionEvent;
 import java.util.EnumMap;
 
 //JFrame을 상속받아서 윈도우 창 만듦.
 public class MainUI_Swing extends JFrame implements GameView {
-    private final GameController controller;
+    //Model 받아서 UI에 전달하는 역할
+    private GameController controller;
 
-    //Controller 받아서 Event 연결
     public MainUI_Swing(GameController controller) {
         this.controller = controller;
-        initUI(); //----------> 화면 구성 시작
+        initUI(); //----------> 화면 구성시작
     }
 
     //화면 구성 (UI 초기화)

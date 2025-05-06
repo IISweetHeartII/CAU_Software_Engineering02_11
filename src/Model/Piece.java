@@ -3,6 +3,7 @@ package Model;
 import java.util.Deque;
 import java.util.ArrayDeque;
 
+
 public class Piece {
     private final Board board = new Board();
     private final String playerID; // 플레이어 ID

@@ -1,10 +1,13 @@
 package Model;
 
+import java.util.ArrayDeque;
+
 public class Player {
     private final String playerID;
     private final Piece[] allPieces; // 모든 말
     private Piece[] movablePieces; /// 더 좋은 변수명 찾기
     private int score;
+
 
     public Player(String playerID, int numPieces) {
         this.playerID = playerID;
