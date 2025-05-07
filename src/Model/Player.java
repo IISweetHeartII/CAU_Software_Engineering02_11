@@ -1,55 +1,56 @@
 package Model;
 
-public class Player {
-    /// fields ///
-    private final String playerID;
-    private final Piece[] allPieces; // 모든 말
-    private MovablePiece[] movablePieces;
+    import java.util.ArrayDeque;
 
-    /// Constructor ///
-    public Player(String playerID, int numPieces) {
-        // setting //
-        this.playerID = playerID;
-        this.allPieces = new Piece[numPieces];
-        this.movablePieces = new MovablePiece[numPieces];
-        // initializing //
-        for (int i = 0; i < numPieces; i++) {
-            movablePieces[i] = new MovablePiece(allPieces[i]); // 단일 그룹화로 movablePieces 초기화
-        }
-        for (int i = 0; i < numPieces; i++) {
-            allPieces[i] = new Piece(playerID, playerID + "@Piece" + (i + 1)); // allPieces 초기화
-        }
-    }
+    public class Player {
+        /// fields ///
+        protected final String playerID;
+        protected final ArrayDeque<Piece> allPieces; // ArrayDeque로 변경
+        protected final ArrayDeque<MovablePiece> movablePieces; // ArrayDeque로 변경
 
-    /// getters ///
-    public String getPlayerID() {
-        return playerID;
-    }
+        /// Constructor ///
+        public Player(String playerID, int numPieces) {
+            this.playerID = playerID;
+            this.allPieces = new ArrayDeque<>(); // ArrayDeque 초기화
+            this.movablePieces = new ArrayDeque<>(); // ArrayDeque 초기화
 
-    public Piece[] getAllPieces() {
-        return allPieces;
-    }
-
-    public MovablePiece[] getMovablePieces() {
-        return movablePieces;
-    }
-
-    /// methods ///
-    public boolean hasAllPiecesAtEnd() {
-        for (Piece piece : allPieces) {
-            if (!piece.getCurrentPosition().equals("END")) {
-                return false; // 하나라도 END가 아니면 false
+            // initializing //
+            for (int i = 0; i < numPieces; i++) {
+                Piece piece = new Piece(playerID, playerID + "@Piece" + (i + 1));
+                allPieces.add(piece); // ArrayDeque에 추가
+                movablePieces.add(new MovablePiece(piece)); // MovablePiece 추가
             }
         }
-        return true; // 모든 말이 END에 도착했음
-    }
 
-    public MovablePiece getCurrentPlayerPieceAtPosition(Position position) {
-        for (MovablePiece piece : movablePieces) {
-            if (piece.getCurrentPosition().equals(position)) {
-                return piece; // 해당 위치에 있는 말 반환
-            }
+        /// getters ///
+        public String getPlayerID() {
+            return playerID;
         }
-        return null; // 해당 위치에 말이 없음
+
+        public ArrayDeque<Piece> getAllPieces() {
+            return allPieces;
+        }
+
+        public ArrayDeque<MovablePiece> getMovablePieces() {
+            return movablePieces;
+        }
+
+        /// methods ///
+        public boolean hasAllPiecesAtEnd() {
+            for (Piece piece : allPieces) {
+                if (!piece.getCurrentPosition().equals("END")) {
+                    return false; // 하나라도 END가 아니면 false
+                }
+            }
+            return true; // 모든 말이 END에 도착했음
+        }
+
+        public MovablePiece getMovablePieceAt(Position position) {
+            for (MovablePiece piece : movablePieces) {
+                if (piece.getCurrentPosition().equals(position)) {
+                    return piece; // 해당 위치에 있는 말 반환
+                }
+            }
+            return null; // 해당 위치에 말이 없음
+        }
     }
-}

@@ -1,26 +1,25 @@
 package Model;
 
+import java.util.ArrayDeque;
+import java.util.Collections;
+
 public class MovablePiece {
     /// field ///
-    private Piece[] pieces;
+    private ArrayDeque<Piece> pieceArrayDeque; // ArrayDeque로 변경
     private Position currentPosition;
-    private boolean isArrived;
 
     /// Constructor ///
     public MovablePiece(Piece... pieces) { // 가변 인자를 사용해 여러 개의 말을 그룹화
-        this.pieces = pieces;
+        this.pieceArrayDeque = new ArrayDeque<>(); // ArrayDeque 초기화
+        Collections.addAll(this.pieceArrayDeque, pieces);
         this.currentPosition = pieces[0].getCurrentPosition();
-        this.isArrived = false;
     }
 
     /// setters ///
-    public void setArrived(boolean isArrived) {
-        this.isArrived = isArrived;
-    }
 
     /// getters ///
-    public Piece[] getPieces() {
-        return pieces;
+    public ArrayDeque<Piece> getPieceArrayDeque() {
+        return pieceArrayDeque;
     }
 
     public Position getCurrentPosition() {
@@ -29,9 +28,20 @@ public class MovablePiece {
 
     /// methods ///
     public void moveTo(int n) {
-        for (Piece piece : pieces) {
+        for (Piece piece : pieceArrayDeque) {
             piece.moveTo(n);
         }
-        currentPosition = pieces[0].getCurrentPosition(); // 그룹의 첫 번째 말의 위치로 업데이트
+        if (pieceArrayDeque.peekFirst() != null) {
+            currentPosition = pieceArrayDeque.peekFirst().getCurrentPosition(); // 그룹의 첫 번째 말의 위치로 업데이트
+        }
+    }
+
+    public boolean isArrived() {
+        return currentPosition.equals(new Position("END")); // 그룹의 첫 번째 말이 END에 도착했음
+    }
+
+    public boolean equals(MovablePiece other) {
+        // 다른 MovablePiece
+        return this.pieceArrayDeque.equals(other.getPieceArrayDeque()); // 두 MovablePiece가 같은 말을 포함하고 있음
     }
 }
