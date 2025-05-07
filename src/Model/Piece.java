@@ -32,8 +32,10 @@ public class Piece {
     }
 
     public void moveForward(int n) {
-        Position nextPosition = board.getNNextPosition(currentPosition, n);
-        moveForward(nextPosition);
+        if (n > 0) {
+            Position nextPosition = board.getNNextPosition(currentPosition, n);
+            moveForward(nextPosition);
+        }
     }
 
     // 앞으로 이동할 때 호출됨
