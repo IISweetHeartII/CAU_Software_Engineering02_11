@@ -73,12 +73,12 @@ public class GameModel {
 
     // grouping //
     // 특정 위치에 있는 말을 그룹화
-    public void groupPiecesAtPosition(MovablePiece movedPiece, Position position) {
+    public boolean groupPiecesAtPosition(MovablePiece movedPiece, Position position) {
         // movedPiece의 ID와 현재 플레이어의 ID를 비교
         Player currentPlayer = getCurrentPlayer();
         String currentPlayerID = currentPlayer.getPlayerID();
         String movedPieceID = movedPiece.getPieceArrayDeque().peekFirst() != null ? movedPiece.getPieceArrayDeque().peekFirst().getPlayerID() : null;
-        if (movedPieceID != null && !movedPieceID.equals(currentPlayerID)) return;
+        if (movedPieceID != null && !movedPieceID.equals(currentPlayerID)) return false;
 
         MovablePiece targetPiece = currentPlayer.getMovablePieceAt(position);
 
@@ -87,11 +87,14 @@ public class GameModel {
             targetPiece.getPieceArrayDeque().addAll(movedPiece.getPieceArrayDeque());
             targetPiece.size += movedPiece.size; // 그룹화된 크기 업데이트
             currentPlayer.movablePieces.removeFirstOccurrence(movedPiece);
+            return true; // 그룹화 성공
         }
+
+        return false;
     }
 
     // Capture opponent's piece //
-    public void captureOpponentPiece(MovablePiece movedPiece, Position position, YutResult yutResult) {
+    public boolean captureOpponentPiece(MovablePiece movedPiece, Position position, YutResult yutResult) {
         // 현재 플레이어 정보 가져오기
         Player currentPlayer = getCurrentPlayer();
         String currentPlayerID = currentPlayer.getPlayerID();
@@ -103,7 +106,7 @@ public class GameModel {
 
         // 이동한 말이 현재 플레이어의 말이 아니면 종료
         if (movedPieceID == null || !movedPieceID.equals(currentPlayerID)) {
-            return;
+            return false;
         }
 
         // 해당 위치에 있는 MovablePiece 가져오기
@@ -111,23 +114,23 @@ public class GameModel {
 
         // 상대편 말이 존재하고, 현재 플레이어의 말이 아닌 경우
         if (targetPiece != null && !targetPiece.getPlayerID().equals(currentPlayerID)) {
-            // 상대편 말 초기화 (그룹 해제 및 위치 초기화)
-            for (Piece piece : targetPiece.getPieceArrayDeque()) {
-                piece.moveTo(0); // 초기 위치로 이동
-            }
 
-            // 상대편 말 그룹 제거
             Player opponentPlayer = getPlayerByID(targetPiece.getPlayerID());
             if (opponentPlayer != null) {
                 initializeGrouping(targetPiece);
             }
 
             // 자신의 말을 해당 위치로 이동
+            /// 나중에 책임이 바뀔 수 있음
             movedPiece.moveTo(yutResult.getValue());
 
             // 추가 턴 증가
             extraTurnCount++;
+
+            return true; // 상대편 말을 잡은 경우
         }
+
+        return false; // 상대편 말을 잡지 못한 경우
     }
 
     public void initializeGrouping(MovablePiece movablePiece) {
