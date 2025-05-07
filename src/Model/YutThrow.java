@@ -2,6 +2,7 @@ package Model;
 
 import java.util.Random;
 
+
 public class YutThrow {
     private final Random random = new Random();
 
