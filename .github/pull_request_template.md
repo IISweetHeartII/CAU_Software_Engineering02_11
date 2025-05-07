@@ -8,7 +8,7 @@
     - `feat` commit list
     - ...
 - [ ] fix:
-    - - `fix` commit list
+    - `fix` commit list
     - ...
 - [ ] refactor:
     - `refactor` commit list
