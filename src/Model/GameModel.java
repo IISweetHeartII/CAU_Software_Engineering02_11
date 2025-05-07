@@ -70,4 +70,15 @@ public class GameModel {
         }
         return null; // 해당 위치에 말이 없음
     }
+
+    public Player getPlayerByID(String playerID) {
+        for (Player player : players) {
+            if (player.getPlayerID().equals(playerID)) {
+                return player; // 해당 플레이어 반환
+            }
+        }
+        return null; // 해당 플레이어 없음
+    }
+
+
 }

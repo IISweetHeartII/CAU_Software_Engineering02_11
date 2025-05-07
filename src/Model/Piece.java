@@ -6,13 +6,11 @@ import java.util.ArrayDeque;
 
 public class Piece {
     private final Board board = new Board();
-    private final String playerID; // 플레이어 ID
+    private final String playerID;
     private final String pieceID;
     private Position currentPosition; //자신의 현재 위치 기억
-    private final Deque<Position> recentPath;
-    // private static final int MAX_HISTORY = 5; //말의 이전 위치 최대 5개만 기억.
+    private ArrayDeque<Position> recentPath;
 
-    /// 생성자
     public Piece(String playerID, String pieceID) {
         this(playerID, pieceID, new Position("START")); // 기본 위치는 START
     }
@@ -25,29 +23,35 @@ public class Piece {
         recentPath.addLast(startPosition); // 초기 위치 저장
     }
 
-    // 앞으로 이동할 때 호출됨
-    public void moveTo(Position nextPosition) {
-        // 현재 위치부터 다음 위치까지의 경로를 모두 저장
-        // Example: E2 -> E4 => recentPath: E2 -> E3 -> E4
-        Position currentPosition = this.currentPosition;
-        if (currentPosition.equals(nextPosition)) {
-            return; // 이미 같은 위치에 있음
+    public void moveTo(int n) {
+        if (n < 0) {
+            moveBackward(); // 음수일 경우 뒤로 이동
+        } else {
+            moveForward(n);
         }
-        currentPosition = board.getNNextPosition(currentPosition, 1);
-        recentPath.addLast(currentPosition);
-        if (currentPosition.equals(nextPosition)) {}
-        recentPath.addLast(nextPosition); // E2 -(E3)-> E4
-        currentPosition = nextPosition;
+    }
+
+    public void moveForward(int n) {
+        Position nextPosition = board.getNNextPosition(currentPosition, n);
+        moveForward(nextPosition);
+    }
+
+    // 앞으로 이동할 때 호출됨
+    public void moveForward(Position nextPosition) {
+        // 현재 위치부터 다음 위치까지의 경로를 모두 저장
+        while (!currentPosition.equals(nextPosition)) {
+            currentPosition = board.getNNextPosition(currentPosition, 1); // 한 칸씩 이동
+            recentPath.addLast(currentPosition); // 이동한 위치를 경로에 추가
+        }
+        this.currentPosition = nextPosition; // 최종 위치 업데이트
     }
 
     // 빽도: 한 칸 뒤로 이동 (이동 성공 시 true 반환)
-    public boolean moveBack() {
-        if (recentPath.size() >= 2) {
+    public void moveBackward() {
+        if (recentPath.size() > 1) { // 시작 위치를 제외한 경로가 있는 경우
             recentPath.removeLast(); // 현재 위치 제거
-            currentPosition = recentPath.peekLast(); // 바로 이전 위치로
-            return true;
+            currentPosition = recentPath.peekLast(); // 이전 위치로 이동
         }
-        return false; // 되돌아갈 위치가 없음
     }
 
     public Position getCurrentPosition() {
@@ -56,6 +60,10 @@ public class Piece {
 
     public String getPieceID() {
         return pieceID;
+    }
+
+    public ArrayDeque<Position> getPath() {
+        return recentPath;
     }
 
     @Override

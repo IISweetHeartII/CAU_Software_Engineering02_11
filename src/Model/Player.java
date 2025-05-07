@@ -16,7 +16,7 @@ public class Player {
         this.score = 0;
 
         for (int i = 0; i < numPieces; i++) {
-            allPieces[i] = new Piece(playerID, playerID + " Piece" + (i + 1)); // 각 플레이어의 말 생성
+            allPieces[i] = new Piece(playerID, playerID + "@Piece" + (i + 1)); // 각 플레이어의 말 생성
         }
     }
 
