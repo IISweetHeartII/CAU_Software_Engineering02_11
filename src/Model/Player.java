@@ -1,25 +1,27 @@
 package Model;
 
-import java.util.ArrayDeque;
-
 public class Player {
+    /// fields ///
     private final String playerID;
     private final Piece[] allPieces; // 모든 말
-    private Piece[] movablePieces; /// 더 좋은 변수명 찾기
-    private int score;
+    private MovablePiece[] movablePieces;
 
-
+    /// Constructor ///
     public Player(String playerID, int numPieces) {
+        // setting //
         this.playerID = playerID;
         this.allPieces = new Piece[numPieces];
-        this.movablePieces = new Piece[numPieces];
-        this.score = 0;
-
+        this.movablePieces = new MovablePiece[numPieces];
+        // initializing //
         for (int i = 0; i < numPieces; i++) {
-            allPieces[i] = new Piece(playerID, playerID + "@Piece" + (i + 1)); // 각 플레이어의 말 생성
+            movablePieces[i] = new MovablePiece(allPieces[i]); // 단일 그룹화로 movablePieces 초기화
+        }
+        for (int i = 0; i < numPieces; i++) {
+            allPieces[i] = new Piece(playerID, playerID + "@Piece" + (i + 1)); // allPieces 초기화
         }
     }
 
+    /// getters ///
     public String getPlayerID() {
         return playerID;
     }
@@ -28,18 +30,11 @@ public class Player {
         return allPieces;
     }
 
-    public Piece[] getMovablePieces() {
+    public MovablePiece[] getMovablePieces() {
         return movablePieces;
     }
 
-    public int getScore() {
-        return score;
-    }
-
-    public void addScore(int points) {
-        this.score += points;
-    }
-
+    /// methods ///
     public boolean hasAllPiecesAtEnd() {
         for (Piece piece : allPieces) {
             if (!piece.getCurrentPosition().equals("END")) {
@@ -49,8 +44,8 @@ public class Player {
         return true; // 모든 말이 END에 도착했음
     }
 
-    public Piece getCurrentPlayerPieceAtPosition(Position position) {
-        for (Piece piece : movablePieces) {
+    public MovablePiece getCurrentPlayerPieceAtPosition(Position position) {
+        for (MovablePiece piece : movablePieces) {
             if (piece.getCurrentPosition().equals(position)) {
                 return piece; // 해당 위치에 있는 말 반환
             }
