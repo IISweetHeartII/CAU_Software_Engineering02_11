@@ -5,11 +5,11 @@ import java.util.ArrayDeque;
 
 
 public class Piece {
-    private final Board board = new Board();
-    private final String playerID;
-    private final String pieceID;
-    private Position currentPosition; //자신의 현재 위치 기억
-    private ArrayDeque<Position> recentPath;
+    protected final Board board = new Board();
+    protected final String playerID;
+    protected final String pieceID;
+    protected Position currentPosition; //자신의 현재 위치 기억
+    protected ArrayDeque<Position> recentPath;
 
     public Piece(String playerID, String pieceID) {
         this(playerID, pieceID, new Position("START")); // 기본 위치는 START
@@ -23,9 +23,10 @@ public class Piece {
         recentPath.addLast(startPosition); // 초기 위치 저장
     }
 
+    /// n이 음수일 경우 뒤로 한 칸 이동하고, n이 양수일경우 앞으로 n칸 이동
     public void moveTo(int n) {
         if (n < 0) {
-            moveBackward(); // 음수일 경우 뒤로 이동
+            moveBackward(); // 음수일 경우 뒤로 한 칸 이동
         } else {
             moveForward(n);
         }
