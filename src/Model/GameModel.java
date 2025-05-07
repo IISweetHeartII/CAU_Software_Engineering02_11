@@ -11,6 +11,7 @@ public class GameModel {
     protected final int numberOfPieces;
     protected int currentPlayerIndex = 0;
     protected int[] gameScores;
+    protected int extraTurnCount = 0; // 추가 턴 수
 
     /// Constructor ///
     public GameModel(int numPlayers, int numPieces) {
@@ -64,9 +65,13 @@ public class GameModel {
 
     /// methods ///
     public void nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
+        if (extraTurnCount > 0) {
+            extraTurnCount--;
+            return; // 추가 턴이 남아있으면 턴을 넘기지 않음
+        } else if (extraTurnCount == 0) currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
     }
 
+    // grouping //
     // 특정 위치에 있는 말을 그룹화
     public void groupPiecesAtPosition(MovablePiece movedPiece, Position position) {
         // movedPiece의 ID와 현재 플레이어의 ID를 비교
@@ -80,7 +85,66 @@ public class GameModel {
         if (targetPiece != null) {
             // 그룹화
             targetPiece.getPieceArrayDeque().addAll(movedPiece.getPieceArrayDeque());
+            targetPiece.size += movedPiece.size; // 그룹화된 크기 업데이트
             currentPlayer.movablePieces.removeFirstOccurrence(movedPiece);
+        }
+    }
+
+    // Capture opponent's piece //
+    public void captureOpponentPiece(MovablePiece movedPiece, Position position, YutResult yutResult) {
+        // 현재 플레이어 정보 가져오기
+        Player currentPlayer = getCurrentPlayer();
+        String currentPlayerID = currentPlayer.getPlayerID();
+
+        // 이동한 말의 플레이어 ID 확인
+        String movedPieceID = movedPiece.getPieceArrayDeque().peekFirst() != null
+                ? movedPiece.getPieceArrayDeque().peekFirst().getPlayerID()
+                : null;
+
+        // 이동한 말이 현재 플레이어의 말이 아니면 종료
+        if (movedPieceID == null || !movedPieceID.equals(currentPlayerID)) {
+            return;
+        }
+
+        // 해당 위치에 있는 MovablePiece 가져오기
+        MovablePiece targetPiece = getMovablePieceAt(position);
+
+        // 상대편 말이 존재하고, 현재 플레이어의 말이 아닌 경우
+        if (targetPiece != null && !targetPiece.getPlayerID().equals(currentPlayerID)) {
+            // 상대편 말 초기화 (그룹 해제 및 위치 초기화)
+            for (Piece piece : targetPiece.getPieceArrayDeque()) {
+                piece.moveTo(0); // 초기 위치로 이동
+            }
+
+            // 상대편 말 그룹 제거
+            Player opponentPlayer = getPlayerByID(targetPiece.getPlayerID());
+            if (opponentPlayer != null) {
+                initializeGrouping(targetPiece);
+            }
+
+            // 자신의 말을 해당 위치로 이동
+            movedPiece.moveTo(yutResult.getValue());
+
+            // 추가 턴 증가
+            extraTurnCount++;
+        }
+    }
+
+    public void initializeGrouping(MovablePiece movablePiece) {
+        // 그룹화 초기화
+        for (Piece piece : movablePiece.getPieceArrayDeque()) {
+            piece.moveTo(0); // 초기 위치로 이동
+        }
+        // 그룹 해제
+        Player owner = getPlayerByID(movablePiece.getPlayerID());
+        if (owner != null) {
+            owner.getMovablePieces().remove(movablePiece);
+            // 그룹 해제된 MovablePiece를 다시 추가
+            for (int i = 0; i < movablePiece.size; i++) {
+                Piece piece = new Piece(owner.getPlayerID(), movablePiece.getPieceArrayDeque().pop().pieceID);
+                MovablePiece newMovablePiece = new MovablePiece(piece);
+                owner.getMovablePieces().add(newMovablePiece);
+            }
         }
     }
 
@@ -93,31 +157,19 @@ public class GameModel {
     }
 
     public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
-        ArrayDeque<Position> posableMoves = new ArrayDeque<>();
-        Player currentPlayer = getCurrentPlayer();
-
-        for (MovablePiece movablePiece : currentPlayer.getMovablePieces()) {
-            if (!movablePiece.isArrived()) {
-                for (YutResult yutResult : YutResultArrayDeque) {
-                    Position nextPosition = board.getNNextPosition(movablePiece.getCurrentPosition(), yutResult.getValue());
-                    if (nextPosition != null) {
-                        posableMoves.add(nextPosition);
-                    }
-                }
-            }
-        }
-        return posableMoves;
+        // Todo:
+        return null;
     }
 
-    public Piece getPieceAtPosition(Position position) {
+    public MovablePiece getMovablePieceAt(Position position) {
         for (Player player : players) {
-            for (Piece piece : player.getAllPieces()) {
-                if (piece.getCurrentPosition().equals(position)) {
-                    return piece;
+            for (MovablePiece movablePiece : player.getMovablePieces()) {
+                if (movablePiece.getCurrentPosition().equals(position)) {
+                    return movablePiece; // 해당 위치에 있는 MovablePiece 반환
                 }
             }
         }
-        return null;
+        return null; // 해당 위치에 MovablePiece가 없음
     }
 
     public Player getPlayerByID(String playerID) {
