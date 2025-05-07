@@ -15,11 +15,15 @@ import java.util.EnumMap;
 
 //JFrame을 상속받아서 윈도우 창 만듦.
 public class MainUI_Swing extends JFrame implements GameView {
-    //Model 받아서 UI에 전달하는 역할
-    private GameController controller;
+    /// responsibilities ///
+    /// 1. get game state from controller by parameter
+    /// 2. show game state to user
+    /// 3. UI update
+    ///
+    /// This class MUST NOT use Controller class !!!
+    /// It should only use Model class and GameView interface.
 
     public MainUI_Swing(GameController controller) {
-        this.controller = controller;
         initUI(); //----------> 화면 구성시작
     }
 
@@ -50,5 +54,10 @@ public class MainUI_Swing extends JFrame implements GameView {
     @Override
     public void BoardRendering() {
         // Todo: 보드 렌더링 UI 구현
+    }
+
+    @Override
+    public void showGameEnd(String playerID) {
+        // Todo: 게임 종료 메시지 표시 UI 구현
     }
 }
