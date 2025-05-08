@@ -3,6 +3,24 @@ package Model;
 import java.util.ArrayDeque;
 
 public class GameModel {
+    /// Responsibilities
+    /// 1. GameModel은 게임의 상태와 플레이어를 관리합니다.
+    /// 2. GameModel은 플레이어의 턴을 관리합니다.
+    /// 3. GameModel은 플레이어의 점수를 관리합니다.
+    /// 4. GameModel은 게임의 규칙을 적용해 게임의 상태를 변경합니다.
+    ///
+    /// Sequence
+    /// 0. 게임 초기화 및 게임 상태 반환하기
+    /// 1<-6. 윷 던지고 결과 얻기
+    /// 2. 결과를 이용해 이동할 수 있는 위치 계산하기
+    /// 3. 이동할 수 있는 위치를 플레이어에게 보여주기
+    /// 4. 플레이어가 선택한 위치로 말 이동하기
+    /// 5. 이동한 말의 위치 처리하기
+    /// 5-1. 이동한 말의 위치에 따라 그룹화 및 상대편 말 잡기
+    /// 5-2. 이동한 말이 END에 도착했을 때 점수 추가하기
+    /// 6->1. 추가 턴이 있을 때 1번으로 돌아가기
+    /// 7. 추가 턴이 없을 때 다음 플레이어로 턴 넘기기
+
     /// fields ///
     protected final Board board = new Board();
     protected final Yut yut = new Yut();
