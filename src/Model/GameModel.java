@@ -30,6 +30,8 @@ public class GameModel {
     protected int currentPlayerIndex = 0;
     protected int[] gameScores;
     protected int extraTurnCount = 0; // 추가 턴 수
+    protected ArrayDeque<YutResult> yutResultArrayDeque = new ArrayDeque<>();
+    protected ArrayDeque<Piece> positionPieceArrayDeque = new ArrayDeque<>();
 
     /// Constructor ///
     public GameModel(int numPlayers, int numPieces) {
@@ -82,6 +84,91 @@ public class GameModel {
     }
 
     /// methods ///
+
+    /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
+    public void movePiece(MovablePiece selectedPiece, Position selectedPosition) {
+        Piece targetPositionPiece = findPositionPieceAt(selectedPosition);
+
+        if (groupPiecesAtPosition(selectedPiece, selectedPosition)) return; // 경로를 target이 이미 저장하고 있으므로
+        if (captureOpponentPiece(selectedPiece, selectedPosition)) extraTurnCount++;
+
+        int targetSize;
+        // 빽도라면 실제 말의 위치를 저장하지 않고 있음
+        if (!targetPositionPiece.recentPath.contains(selectedPiece.currentPosition)) {
+            selectedPiece.moveTo(-1);
+            targetSize = -1;
+        } else {
+            // target의 최근 위치 변화를 통해 윷 결과를 역추적
+            targetSize = targetPositionPiece.recentPath.size() - 2; // DO라면, [-1(빽도위치) 0(이동전위치) 1(이동할위치)] -> 3개
+            selectedPiece.moveTo(targetSize);
+        }
+
+        // PositionPieceArrayDeque 초기화
+        positionPieceArrayDeque.clear();
+        // 사용한 윷 제거
+        YutResult yutResult = yut.throwYut(targetSize);
+        yutResultArrayDeque.removeFirstOccurrence(yutResult);
+    }
+
+    public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
+        ArrayDeque<MovablePiece> movablePieces = getCurrentPlayer().getMovablePieces();
+        // 현재 플레이어에 대한 시작 위치를 각 movablePiece의 위치로 하는 PositionPiece 생성
+        int caseSize = YutResultArrayDeque.size();
+        for (MovablePiece movablePiece : movablePieces) {
+            if (movablePiece.isArrived()) continue; // 이미 도착한 말은 제외
+            movablePiece.moveTo(-1);
+            Position startPosition = movablePiece.getCurrentPosition();
+            for (YutResult yutResult : YutResultArrayDeque) {
+                Piece positionPiece = new Piece(movablePiece.getPlayerID(), movablePiece.getPieceArrayDeque().peekFirst().pieceID, startPosition);
+                positionPiece.moveTo(1); // 빽도 반영하려고... 뒤 한칸을 시작 위치로 갔다가 앞으로 한 칸...
+                positionPiece.moveTo(yutResult.getValue());
+                positionPieceArrayDeque.add(positionPiece);
+            }
+        }
+
+        ArrayDeque<Position> posableMoves = new ArrayDeque<>();
+        for (Piece piece : positionPieceArrayDeque) {
+            posableMoves.add(piece.getCurrentPosition());
+        }
+
+        return posableMoves;
+    }
+
+    // 윷 던지기 //
+    public void throwAndSaveYut() {
+        YutResult yutResult = yut.throwYut();
+        yutResultArrayDeque.add(yutResult);
+        if (yutResult.isExtraTurn()) {
+            extraTurnCount++;
+        }
+    }
+
+    public void throwAndSaveYut(int n) {
+        YutResult yutResult = yut.throwYut(n);
+        yutResultArrayDeque.add(yutResult);
+        if (yutResult.isExtraTurn()) {
+            extraTurnCount++;
+        }
+    }
+
+    public void throwAndSaveYut(String input) {
+        YutResult yutResult = yut.throwYut(input);
+        yutResultArrayDeque.add(yutResult);
+        if (yutResult.isExtraTurn()) {
+            extraTurnCount++;
+        }
+    }
+
+    /// 내부에서 사용할 메서드 ///
+    public Piece findPositionPieceAt(Position position) {
+        for (Piece piece : positionPieceArrayDeque) {
+            if (piece.getCurrentPosition().equals(position)) {
+                return piece; // 해당 위치에 있는 Piece 반환
+            }
+        }
+        return null; // 해당 위치에 Piece가 없음
+    }
+
     public void nextTurn() {
         if (extraTurnCount > 0) {
             extraTurnCount--;
@@ -112,7 +199,7 @@ public class GameModel {
     }
 
     // Capture opponent's piece //
-    public boolean captureOpponentPiece(MovablePiece movedPiece, Position position, YutResult yutResult) {
+    public boolean captureOpponentPiece(MovablePiece movedPiece, Position position) {
         // 현재 플레이어 정보 가져오기
         Player currentPlayer = getCurrentPlayer();
         String currentPlayerID = currentPlayer.getPlayerID();
@@ -137,14 +224,6 @@ public class GameModel {
             if (opponentPlayer != null) {
                 initializeGrouping(targetPiece);
             }
-
-            // 자신의 말을 해당 위치로 이동
-            /// 나중에 책임이 바뀔 수 있음
-            movedPiece.moveTo(yutResult.getValue());
-
-            // 추가 턴 증가
-            extraTurnCount++;
-
             return true; // 상대편 말을 잡은 경우
         }
 
@@ -169,18 +248,8 @@ public class GameModel {
         }
     }
 
-    public YutResult throwYutRandom() {
-        return yut.throwYut();
-    }
 
-    public YutResult throwYutManual(String input) {
-        return yut.throwYut(input);
-    }
 
-    public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
-        // Todo:
-        return null;
-    }
 
     public MovablePiece getMovablePieceAt(Position position) {
         for (Player player : players) {

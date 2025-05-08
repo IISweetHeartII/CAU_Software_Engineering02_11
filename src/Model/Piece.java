@@ -82,4 +82,12 @@ public class Piece {
     public Deque<Position> getRecentPath() {
         return recentPath;
     }
+
+    public boolean isEnd() {
+        return currentPosition.equals("END"); // 현재 위치가 END인지 확인
+    }
+
+    public boolean isStart() {
+        return currentPosition.equals("START"); // 현재 위치가 START인지 확인
+    }
 }

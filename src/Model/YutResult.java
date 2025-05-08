@@ -22,5 +22,11 @@ public class YutResult {
     public boolean isExtraTurn() {
         return resultType.hasExtraTurn();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof YutResult other)) return false;
+        return this.resultType == other.resultType;
+    }
 }
 

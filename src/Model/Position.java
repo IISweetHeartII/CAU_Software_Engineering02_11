@@ -34,4 +34,12 @@ public class Position {
     public void print() {
         System.out.println("java.Position: " + id);
     }
+
+    public boolean isStart() {
+        return id.equals("START");
+    }
+
+    public boolean isEnd() {
+        return id.equals("END");
+    }
 }
