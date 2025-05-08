@@ -97,6 +97,7 @@ public class GameModel {
         // 현재 플레이어에 대한 시작 위치를 각 movablePiece의 위치로 하는 PositionPiece 생성
         int caseSize = YutResultArrayDeque.size();
         for (MovablePiece movablePiece : movablePieces) {
+            if (movablePiece.isArrived()) continue; // 이미 도착한 말은 제외
             movablePiece.moveTo(-1);
             Position startPosition = movablePiece.getCurrentPosition();
             for (YutResult yutResult : YutResultArrayDeque) {
