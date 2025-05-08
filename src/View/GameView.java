@@ -1,6 +1,5 @@
 package View;
 
-import Model.Position;
 import Model.YutResult;
 import java.util.ArrayDeque;
 
@@ -15,4 +14,6 @@ public interface GameView {
     Model.Position getUserSelectedPosition(ArrayDeque<Model.Position> posableMoves);
 
     void BoardRendering();
+
+    void showGameEnd(String PlayerID); // 게임 종료 메시지 표시
 }

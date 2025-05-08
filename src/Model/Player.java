@@ -3,43 +3,39 @@ package Model;
 import java.util.ArrayDeque;
 
 public class Player {
-    private final String playerID;
-    private final Piece[] allPieces; // 모든 말
-    private Piece[] movablePieces; /// 더 좋은 변수명 찾기
-    private int score;
+    /// fields ///
+    protected final String playerID;
+    protected final ArrayDeque<Piece> allPieces; // ArrayDeque로 변경
+    protected final ArrayDeque<MovablePiece> movablePieces; // ArrayDeque로 변경
 
-
+    /// Constructor ///
     public Player(String playerID, int numPieces) {
         this.playerID = playerID;
-        this.allPieces = new Piece[numPieces];
-        this.movablePieces = new Piece[numPieces];
-        this.score = 0;
+        this.allPieces = new ArrayDeque<>(); // ArrayDeque 초기화
+        this.movablePieces = new ArrayDeque<>(); // ArrayDeque 초기화
 
+        // initializing //
         for (int i = 0; i < numPieces; i++) {
-            allPieces[i] = new Piece(playerID, playerID + "@Piece" + (i + 1)); // 각 플레이어의 말 생성
+            Piece piece = new Piece(playerID, playerID + "@Piece" + (i + 1));
+            allPieces.add(piece); // ArrayDeque에 추가
+            movablePieces.add(new MovablePiece(piece)); // MovablePiece 추가
         }
     }
 
+    /// getters ///
     public String getPlayerID() {
         return playerID;
     }
 
-    public Piece[] getAllPieces() {
+    public ArrayDeque<Piece> getAllPieces() {
         return allPieces;
     }
 
-    public Piece[] getMovablePieces() {
+    public ArrayDeque<MovablePiece> getMovablePieces() {
         return movablePieces;
     }
 
-    public int getScore() {
-        return score;
-    }
-
-    public void addScore(int points) {
-        this.score += points;
-    }
-
+    /// methods ///
     public boolean hasAllPiecesAtEnd() {
         for (Piece piece : allPieces) {
             if (!piece.getCurrentPosition().equals("END")) {
@@ -49,8 +45,8 @@ public class Player {
         return true; // 모든 말이 END에 도착했음
     }
 
-    public Piece getCurrentPlayerPieceAtPosition(Position position) {
-        for (Piece piece : movablePieces) {
+    public MovablePiece getMovablePieceAt(Position position) {
+        for (MovablePiece piece : movablePieces) {
             if (piece.getCurrentPosition().equals(position)) {
                 return piece; // 해당 위치에 있는 말 반환
             }

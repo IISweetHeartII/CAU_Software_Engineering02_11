@@ -1,55 +1,105 @@
 package Model;
 
-import View.GameView;
-import Controller.GameController;
-
 import java.util.ArrayDeque;
 
 public class GameModel {
+    /// fields ///
+    protected final Board board = new Board();
+    protected final Yut yut = new Yut();
+    protected final Player[] players;
+    protected final int numberOfPlayers;
+    protected final int numberOfPieces;
+    protected int currentPlayerIndex = 0;
+    protected int[] gameScores;
 
-    private final Board board = new Board(); //board
-    private final YutThrow yutThrower = new YutThrow(); //YutThrow
-    private final Player[] players; //players
-    private final int numberOfPlayers; //number of players
-    private final int numberOfPieces; //number of pieces
-    private int currentPlayerIndex = 0; //현재 플레이어 인덱스
-
-    // Constructor
+    /// Constructor ///
     public GameModel(int numPlayers, int numPieces) {
-        this.numberOfPlayers = numPlayers; // 플레이어 수
-        this.numberOfPieces = numPieces; // 말 개수
+        this.numberOfPlayers = numPlayers;
+        this.numberOfPieces = numPieces;
         this.players = new Player[numPlayers];
+        this.gameScores = new int[numPlayers];
         for (int i = 0; i < numPlayers; i++) {
-            players[i] = new Player("Player" + i, numPieces); // 플레이어 생성
+            players[i] = new Player("Player" + i, numPieces);
+        }
+        for (int i = 0; i < numPlayers; i++) {
+            gameScores[i] = 0;
         }
     }
 
-    // 현재 턴의 플레이어 반환
+    /// setters ///
+    public void addScore(int playerIndex) {
+        this.gameScores[playerIndex] += 1;
+    }
+
+    public void addScore(Player currentPlayer) {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i].equals(currentPlayer)) {
+                addScore(i);
+                break;
+            }
+        }
+    }
+
+
+    /// getters ///
     public Player getCurrentPlayer() {
         return players[currentPlayerIndex];
     }
 
-    // 다음 플레이어로 턴 전환
+    public Player[] getPlayers() {
+        return players;
+    }
+
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
+    public Player whoseTurn() {
+        return getCurrentPlayer();
+    }
+
+    public int[] getGameScores() {
+        return gameScores;
+    }
+
+    /// methods ///
     public void nextTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
     }
 
-    //랜덤 윷 던지기
-    public YutResult throwYutRandom() {
-        return yutThrower.throwRandom();
+    // 특정 위치에 있는 말을 그룹화
+    public void groupPiecesAtPosition(MovablePiece movedPiece, Position position) {
+        // movedPiece의 ID와 현재 플레이어의 ID를 비교
+        Player currentPlayer = getCurrentPlayer();
+        String currentPlayerID = currentPlayer.getPlayerID();
+        String movedPieceID = movedPiece.getPieceArrayDeque().peekFirst() != null ? movedPiece.getPieceArrayDeque().peekFirst().getPlayerID() : null;
+        if (movedPieceID != null && !movedPieceID.equals(currentPlayerID)) return;
+
+        MovablePiece targetPiece = currentPlayer.getMovablePieceAt(position);
+
+        if (targetPiece != null) {
+            // 그룹화
+            targetPiece.getPieceArrayDeque().addAll(movedPiece.getPieceArrayDeque());
+            currentPlayer.movablePieces.removeFirstOccurrence(movedPiece);
+        }
     }
 
-    // currentPlayer의 말 중에서 isArrived가 false인 말들 중에서 모든 말들에 대한 도착 가능한 Position을 반환
+    public YutResult throwYutRandom() {
+        return yut.throwYut();
+    }
+
+    public YutResult throwYutManual(String input) {
+        return yut.throwYut(input);
+    }
+
     public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
         ArrayDeque<Position> posableMoves = new ArrayDeque<>();
         Player currentPlayer = getCurrentPlayer();
-        Piece[] pieces = currentPlayer.getAllPieces();
 
-        // Todo: How about the case of Grouping?
-        for (Piece piece : pieces) {
-            if (!piece.getCurrentPosition().equals("END")) { // 도착하지 않은 말만
+        for (MovablePiece movablePiece : currentPlayer.getMovablePieces()) {
+            if (!movablePiece.isArrived()) {
                 for (YutResult yutResult : YutResultArrayDeque) {
-                    Position nextPosition = board.getNNextPosition(piece.getCurrentPosition(), yutResult.getValue());
+                    Position nextPosition = board.getNNextPosition(movablePiece.getCurrentPosition(), yutResult.getValue());
                     if (nextPosition != null) {
                         posableMoves.add(nextPosition);
                     }
@@ -59,26 +109,23 @@ public class GameModel {
         return posableMoves;
     }
 
-    // 특정 Position에 위치하는 Piece를 반환
     public Piece getPieceAtPosition(Position position) {
         for (Player player : players) {
             for (Piece piece : player.getAllPieces()) {
                 if (piece.getCurrentPosition().equals(position)) {
-                    return piece; // 해당 위치에 있는 말을 반환
+                    return piece;
                 }
             }
         }
-        return null; // 해당 위치에 말이 없음
+        return null;
     }
 
     public Player getPlayerByID(String playerID) {
         for (Player player : players) {
             if (player.getPlayerID().equals(playerID)) {
-                return player; // 해당 플레이어 반환
+                return player;
             }
         }
-        return null; // 해당 플레이어 없음
+        return null;
     }
-
-
 }

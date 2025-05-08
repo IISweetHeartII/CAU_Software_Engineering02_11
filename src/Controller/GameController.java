@@ -5,7 +5,6 @@ package Controller;
 import Model.*;
 import View.GameView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 
 public class GameController {
@@ -45,7 +44,7 @@ public class GameController {
         // 사용자 입력을 받아 이동 처리
         Position selectedPosition = gameView.getUserSelectedPosition(posableMoves); // 사용자로부터 선택된 위치를 가져옴
         if (selectedPosition != null) {
-            Piece selectedPiece = gameModel.getCurrentPlayer().getCurrentPlayerPieceAtPosition(selectedPosition); // 선택된 위치의 말을 가져옴
+            MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition); // 선택된 위치의 말을 가져옴
             if (selectedPiece != null) {
                 /// gameModel.movePieceForward(selectedPiece, selectedPosition.getStepsFrom(selectedPiece.getCurrentPosition())); // 말 이동
                 //  gameView.BoardRendering(); // 보드 렌더링
@@ -77,5 +76,11 @@ public class GameController {
         gameModel.nextTurn(); //다음 턴으로 전환
         String currentPlayerID = gameModel.getCurrentPlayer().getPlayerID();
         gameView.updateCurrentPlayer(currentPlayerID); // UI 업데이트
+    }
+
+    public void checkGameEnd() {
+        if (gameModel.getCurrentPlayer().hasAllPiecesAtEnd()) {
+            gameView.showGameEnd(gameModel.getCurrentPlayer().getPlayerID());
+        }
     }
 }
