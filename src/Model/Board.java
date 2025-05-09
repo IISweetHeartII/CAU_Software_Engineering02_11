@@ -32,6 +32,10 @@ public class Board {
         }
     }
 
+    public int getBoardFigure() {
+        return boardFigure;
+    }
+
     /* find and return n-th next position from specific positon */
     public Position getNNextPosition(Position position, int n) {
         // Field
