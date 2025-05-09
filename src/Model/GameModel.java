@@ -2,7 +2,7 @@ package Model;
 
 import java.util.ArrayDeque;
 
-public class GameModel {
+public class GameModel implements Model {
     /// Responsibilities
     /// 1. GameModel은 게임의 상태와 플레이어를 관리합니다.
     /// 2. GameModel은 플레이어의 턴을 관리합니다.
@@ -63,6 +63,7 @@ public class GameModel {
 
 
     /// getters ///
+    @Override
     public Player getCurrentPlayer() {
         return players[currentPlayerIndex];
     }
@@ -79,6 +80,7 @@ public class GameModel {
         return getCurrentPlayer();
     }
 
+    @Override
     public int[] getGameScores() {
         return gameScores;
     }
@@ -86,6 +88,7 @@ public class GameModel {
     /// methods ///
 
     // 게임 상태 초기화 //
+    @Override
     public boolean initializeGame() { // try catch로 예외 처리를 해야하지만 생략, 항상 true를 반환
         for (int i = 0; i < numberOfPlayers; i++) {
             players[i] = new Player("Player" + (i+1), numberOfPieces);
@@ -101,6 +104,7 @@ public class GameModel {
     }
 
     /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
+    @Override
     public boolean movePiece(MovablePiece selectedPiece, Position selectedPosition) {
         Piece targetPositionPiece = findPositionPieceAt(selectedPosition);
         if (selectedPiece.isArrived()) return false; // 이미 도착한 말은 이동할 수 없음
@@ -141,7 +145,8 @@ public class GameModel {
         return true;
     }
 
-    public boolean checkGameEnd() {
+    @Override
+    public boolean isGameEnd() {
         for (int score : gameScores) {
             if (score >= numberOfPieces) {
                 return true; // 게임 종료
@@ -150,15 +155,16 @@ public class GameModel {
         return false;
     }
 
-    public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
+    @Override
+    public ArrayDeque<Position> getPosableMoves() {
         ArrayDeque<MovablePiece> movablePieces = getCurrentPlayer().getMovablePieces();
         // 현재 플레이어에 대한 시작 위치를 각 movablePiece의 위치로 하는 PositionPiece 생성
-        int caseSize = YutResultArrayDeque.size();
+        int caseSize = yutResultArrayDeque.size();
         for (MovablePiece movablePiece : movablePieces) {
             if (movablePiece.isArrived()) continue; // 이미 도착한 말은 제외
             movablePiece.moveTo(-1);
             Position startPosition = movablePiece.getCurrentPosition();
-            for (YutResult yutResult : YutResultArrayDeque) {
+            for (YutResult yutResult : yutResultArrayDeque) {
                 Piece positionPiece = new Piece(movablePiece.getPlayerID(), movablePiece.getPieceArrayDeque().peekFirst().pieceID, startPosition);
                 positionPiece.moveTo(1); // 빽도 반영하려고... 뒤 한칸을 시작 위치로 갔다가 앞으로 한 칸...
                 positionPiece.moveTo(yutResult.getValue());
@@ -175,28 +181,45 @@ public class GameModel {
     }
 
     // 윷 던지기 //
-    public void throwAndSaveYut() {
+    @Override
+    public boolean throwAndSaveYut() {
+        if (extraTurnCount > 0) extraTurnCount--;
         YutResult yutResult = yut.throwYut();
         yutResultArrayDeque.add(yutResult);
         if (yutResult.isExtraTurn()) {
             extraTurnCount++;
+            return true;
         }
+        return false;
     }
 
-    public void throwAndSaveYut(int n) {
+    @Override
+    public boolean throwAndSaveYut(int n) {
+        if (extraTurnCount > 0) extraTurnCount--;
         YutResult yutResult = yut.throwYut(n);
         yutResultArrayDeque.add(yutResult);
         if (yutResult.isExtraTurn()) {
             extraTurnCount++;
+            return true;
         }
+        return false;
     }
 
-    public void throwAndSaveYut(String input) {
+    @Override
+    public boolean throwAndSaveYut(String input) {
+        if (extraTurnCount > 0) extraTurnCount--;
         YutResult yutResult = yut.throwYut(input);
         yutResultArrayDeque.add(yutResult);
         if (yutResult.isExtraTurn()) {
             extraTurnCount++;
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean isExtraTurn() {
+        return extraTurnCount > 0;
     }
 
     /// 내부에서 사용할 메서드 ///
@@ -209,11 +232,12 @@ public class GameModel {
         return null; // 해당 위치에 Piece가 없음
     }
 
-    public void nextTurn() {
-        if (extraTurnCount > 0) {
-            extraTurnCount--;
-            return; // 추가 턴이 남아있으면 턴을 넘기지 않음
-        } else if (extraTurnCount == 0) currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
+    @Override
+    public boolean changeTurn() {
+        boolean state = true;
+        currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
+        if (extraTurnCount != 0) state = false;
+        return state;
     }
 
     // grouping //
