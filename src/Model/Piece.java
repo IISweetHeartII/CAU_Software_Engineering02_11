@@ -27,6 +27,10 @@ public class Piece {
     public void moveTo(int n) {
         if (n < 0) {
             moveBackward(); // 음수일 경우 뒤로 한 칸 이동
+        } else if (n == 0) {
+            currentPosition = new Position("START"); // 현재 위치를 START로 초기화
+            recentPath.clear();
+            recentPath.add(currentPosition); // START 위치 추가
         } else {
             moveForward(n);
         }

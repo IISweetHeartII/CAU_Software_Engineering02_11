@@ -40,7 +40,7 @@ public class GameModel {
         this.players = new Player[numPlayers];
         this.gameScores = new int[numPlayers];
         for (int i = 0; i < numPlayers; i++) {
-            players[i] = new Player("Player" + i, numPieces);
+            players[i] = new Player("Player" + (i+1), numPieces);
         }
         for (int i = 0; i < numPlayers; i++) {
             gameScores[i] = 0;
@@ -85,11 +85,28 @@ public class GameModel {
 
     /// methods ///
 
-    /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
-    public void movePiece(MovablePiece selectedPiece, Position selectedPosition) {
-        Piece targetPositionPiece = findPositionPieceAt(selectedPosition);
+    // 게임 상태 초기화 //
+    public boolean initializeGame() { // try catch로 예외 처리를 해야하지만 생략, 항상 true를 반환
+        for (int i = 0; i < numberOfPlayers; i++) {
+            players[i] = new Player("Player" + (i+1), numberOfPieces);
+        }
+        for (int i = 0; i < players.length; i++) {
+            gameScores[i] = 0;
+        }
+        yutResultArrayDeque.clear(); // 윷 결과 초기화
+        positionPieceArrayDeque.clear(); // 위치 조각 초기화
+        currentPlayerIndex = 0; // 현재 플레이어 인덱스 초기화
+        extraTurnCount = 0; // 추가 턴 수 초기화
+        return true; // 게임 초기화 성공
+    }
 
-        if (groupPiecesAtPosition(selectedPiece, selectedPosition)) return; // 경로를 target이 이미 저장하고 있으므로
+    /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
+    public boolean movePiece(MovablePiece selectedPiece, Position selectedPosition) {
+        Piece targetPositionPiece = findPositionPieceAt(selectedPosition);
+        if (selectedPiece.isArrived()) return false; // 이미 도착한 말은 이동할 수 없음
+        if (targetPositionPiece == null) return false; // 해당 위치로 이동할 수 없음
+
+        if (groupPiecesAtPosition(selectedPiece, selectedPosition)) return true; // 경로를 target이 이미 저장하고 있으므로
         if (captureOpponentPiece(selectedPiece, selectedPosition)) extraTurnCount++;
 
         int targetSize;
@@ -108,6 +125,8 @@ public class GameModel {
         // 사용한 윷 제거
         YutResult yutResult = yut.throwYut(targetSize);
         yutResultArrayDeque.removeFirstOccurrence(yutResult);
+
+        return true;
     }
 
     public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
