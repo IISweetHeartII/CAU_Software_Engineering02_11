@@ -10,7 +10,7 @@ import java.util.ArrayDeque;
 public class GameController {
     private final GameModel gameModel;
     private final GameView gameView;
-    private final ArrayDeque<YutResult> currentTurnResult = new ArrayDeque<>();
+   //private final ArrayDeque<YutResult> currentTurnResult = new ArrayDeque<>();
     //현재 턴에 던진 윷 결과 저장 --> 함수 내부에서 전역으로 꺼냄 --> 모은 이벤트 핸들러에서 접근 가능
 
 
@@ -21,91 +21,83 @@ public class GameController {
     }
 
 
-    //지정 윷 던지기
+    // 지정 윷 던지기
     public void handleManualThrow(YutResultType type) {
-        currentTurnResult.clear(); //한 턴 결과 초기화
-
-        YutResult result;
         do {
-            result = new YutResult(type);  // 직접 생성
-            currentTurnResult.add(result); // 결과를 큐에 추가
-            gameView.showYutResult(result); //View에 결과 전달, UI 업데이트
-        } while (result.isExtraTurn()); // 추가 턴이 있는 경우 반복
+            YutResult result = new YutResult(type);
+            gameModel.getYutResultDeque().add(result);
+            gameView.showYutResult(result);
 
-        // Todo: 이후 말 이동 처리
-        ArrayDeque<Position> posableMoves = gameModel.getPosableMoves(currentTurnResult);
-        gameView.showPosableMoves(posableMoves);
+            ArrayDeque<Position> posableMoves = gameModel.getPosableMoves();
+            gameView.showPosableMoves(posableMoves);
 
-        // 이후 사용자의 입력을 받아 이동 처리
-        // 사용자 입력을 받아 이동 처리
-        Position selectedPosition = gameView.getUserSelectedPosition(posableMoves); // 사용자로부터 선택된 위치를 가져옴
-        if (selectedPosition != null) {
-            MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition); // 선택된 위치의 말을 가져옴
-            if (selectedPiece != null) {
-                /// gameModel.movePieceForward(selectedPiece, selectedPosition.getStepsFrom(selectedPiece.getCurrentPosition())); // 말 이동
-                //  gameView.BoardRendering(); // 보드 렌더링
-                //Todo: 이동처리
+            Position selectedPosition = gameView.getUserSelectedPosition(posableMoves);
+            if (selectedPosition != null) {
+                MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
+                if (selectedPiece != null && gameModel.movePiece(selectedPiece, selectedPosition)) {
+                    gameView.BoardRendering();
+                    checkGameEnd();
+                }
             }
+        } while (gameModel.isExtraTurn());
+
+        if (!gameModel.isExtraTurn()) {
+            gameModel.changeTurn();
+            gameView.updateCurrentPlayer(gameModel.getCurrentPlayer().getPlayerID());
         }
     }
 
-    //랜덤 윷 던지기
-    public void handleRandomThrow(){
-        currentTurnResult.clear(); //한 턴 결과 초기화
-
-
-        YutResult result;
+    // 랜덤 윷 던지기
+    public void handleRandomThrow() {
         do {
-            result = gameModel.throwYutRandom();
-            currentTurnResult.add(result);
-            gameView.showYutResult(result);
-        } while (result.isExtraTurn());
-        // Todo: 이후 말 이동 처리*/
-        ArrayDeque<Position> posableMoves = gameModel.getPosableMoves(currentTurnResult);
-        gameView.showPosableMoves(posableMoves);
+            boolean extra = gameModel.throwAndSaveYut();
+            gameView.showYutResult(gameModel.getYutResultDeque().peekLast());
+
+            ArrayDeque<Position> posableMoves = gameModel.getPosableMoves();
+            gameView.showPosableMoves(posableMoves);
+
+            Position selectedPosition = gameView.getUserSelectedPosition(posableMoves);
+            if (selectedPosition != null) {
+                MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
+                if (selectedPiece != null && gameModel.movePiece(selectedPiece, selectedPosition)) {
+                    gameView.BoardRendering();
+                    checkGameEnd();
+                }
+            }
+        } while (gameModel.isExtraTurn());
+
+        if (!gameModel.isExtraTurn()) {
+            gameModel.changeTurn();
+            gameView.updateCurrentPlayer(gameModel.getCurrentPlayer().getPlayerID());
+        }
     }
 
-
-    //사용자 클릭 위치 받아 처리
+    // 사용자 클릭 위치 받아 처리
     public void handleMoveRequest(Position selectedPosition) {
         MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
-        if (selectedPiece == null)
-            return;
+        if (selectedPiece == null) return;
 
-        //현재 플레이어이의 말인지 재차 검증
         String currentPlayerID = gameModel.getCurrentPlayer().getPlayerID();
-        if (!selectedPiece.getPlayerID().equals(currentPlayerID))
-            return;
+        if (!selectedPiece.getPlayerID().equals(currentPlayerID)) return;
 
-        // 말 이동 시도
         boolean moved = gameModel.movePiece(selectedPiece, selectedPosition);
         if (!moved) return;
 
-        // 도착한 말이면 점수 추가
         if (selectedPiece.isArrived()) {
             gameModel.addScore(gameModel.getCurrentPlayer());
         }
 
-        // 보드 다시 렌더링
         gameView.BoardRendering();
-
-        // 게임 종료 확인
         checkGameEnd();
 
-        // 턴 넘기기 (추가 턴이 있는 경우 GameModel에서 자동 처리)
-        changeTurn();
-    }
-
-
-
-    public void changeTurn() {
-        gameModel.nextTurn(); //다음 턴으로 전환
-        String currentPlayerID = gameModel.getCurrentPlayer().getPlayerID();
-        gameView.updateCurrentPlayer(currentPlayerID); // UI 업데이트
+        if (!gameModel.isExtraTurn()) {
+            gameModel.changeTurn();
+            gameView.updateCurrentPlayer(gameModel.getCurrentPlayer().getPlayerID());
+        }
     }
 
     public void checkGameEnd() {
-        if (gameModel.getCurrentPlayer().hasAllPiecesAtEnd()) {
+        if (gameModel.isGameEnd()) {
             gameView.showGameEnd(gameModel.getCurrentPlayer().getPlayerID());
         }
     }
