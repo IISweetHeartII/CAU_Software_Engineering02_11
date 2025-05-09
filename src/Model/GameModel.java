@@ -120,6 +120,18 @@ public class GameModel {
             selectedPiece.moveTo(targetSize);
         }
 
+        // 이동한 말이 END에 도착했을 때 점수를 추가하고 그룹화된 말들을 Player -> MovablePieces에서 제거
+        Player currentPlayer = getCurrentPlayer();
+        if (selectedPiece.isArrived()) {
+            for (MovablePiece movablePiece : currentPlayer.getMovablePieces()) {
+                if (movablePiece.isArrived()) {
+                    int groupSize = movablePiece.size;
+                    currentPlayer.getMovablePieces().remove(movablePiece);
+                    gameScores[currentPlayerIndex] += groupSize; // 그룹화된 말의 개수만큼 점수 추가
+                }
+            }
+        }
+
         // PositionPieceArrayDeque 초기화
         positionPieceArrayDeque.clear();
         // 사용한 윷 제거
@@ -127,6 +139,15 @@ public class GameModel {
         yutResultArrayDeque.removeFirstOccurrence(yutResult);
 
         return true;
+    }
+
+    public boolean checkGameEnd() {
+        for (int score : gameScores) {
+            if (score >= numberOfPieces) {
+                return true; // 게임 종료
+            }
+        }
+        return false;
     }
 
     public ArrayDeque<Position> getPosableMoves(ArrayDeque<YutResult> YutResultArrayDeque) {
@@ -266,8 +287,6 @@ public class GameModel {
             }
         }
     }
-
-
 
 
     public MovablePiece getMovablePieceAt(Position position) {
