@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
@@ -14,6 +15,8 @@ public class BoardPanel extends JPanel {
     private Map<String, JButton> nodeButtons; // 노드 ID와 버튼을 저장하는 맵
     private Map<String, JButton> pieceButtons; // 말 ID와 버튼을 저장하는 맵
     private NodeClickListener nodeClickListener; // 노드 클릭 리스너
+    private JButton restartButton; // 재시작 버튼
+    private GameRestartListener gameRestartListener; // 게임 재시작 리스너
 
     public BoardPanel(String boardImageName) {
         setPreferredSize(new Dimension(700, 700));
@@ -22,6 +25,7 @@ public class BoardPanel extends JPanel {
         loadBackgroundImage(boardImageName);
         initializeNodePositions();
         createNodeButtons();
+        createRestartButton();
         
         // 테스트용 말 추가 (실제로는 외부에서 addPiece 메서드로 추가함)
         pieceButtons = new HashMap<>();
@@ -30,9 +34,9 @@ public class BoardPanel extends JPanel {
     // 배경 이미지 로드 및 리사이징
     private void loadBackgroundImage(String boardImageName) {
         try {
-            // 절대 경로 사용
+            // src/data 폴더에서 이미지 로드 (경로 수정)
             String currentDir = System.getProperty("user.dir");
-            File imageFile = new File(currentDir + "/res/" + boardImageName);
+            File imageFile = new File(currentDir + "/src/data/" + boardImageName);
             if (imageFile.exists()) {
                 BufferedImage rawImage = ImageIO.read(imageFile);
                 backgroundImage = resizeImage(rawImage, 700, 700);
@@ -249,9 +253,9 @@ public class BoardPanel extends JPanel {
                 playerColor = new Color(255, 255, 60); // 노랑
             }
             
-            // 이미지 파일 존재 확인 (절대 경로 사용)
+            // src/data 폴더에서 이미지 로드 (경로 수정)
             String currentDir = System.getProperty("user.dir");
-            File imageFile = new File(currentDir + "/" + imagePath);
+            File imageFile = new File(currentDir + "/src/data/" + imagePath);
             
             if (imageFile.exists()) {
                 // 이미지가 있으면 이미지로 버튼 생성
@@ -334,6 +338,7 @@ public class BoardPanel extends JPanel {
                 remove(component);
             }
         }
+        repaint();
     }
 
     // 노드 위치 반환 메서드
@@ -399,9 +404,9 @@ public class BoardPanel extends JPanel {
                     playerColor = Color.GRAY;
             }
             
-            // 이미지 파일 존재 확인 (절대 경로 사용)
+            // src/data 폴더에서 이미지 로드 (경로 수정)
             String currentDir = System.getProperty("user.dir");
-            File imageFile = new File(currentDir + "/" + imagePath);
+            File imageFile = new File(currentDir + "/src/data/" + imagePath);
             
             if (imageFile.exists()) {
                 // 이미지가 있으면 이미지로 버튼 생성
@@ -437,6 +442,135 @@ public class BoardPanel extends JPanel {
             System.err.println("말 생성 실패: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    // 재시작 버튼 생성
+    private void createRestartButton() {
+        restartButton = new JButton("게임 초기화");
+        restartButton.setBounds(473 - 60, 643 - 15, 120, 30); // 지정된 좌표에 배치 (중앙에 오도록 조정)
+        restartButton.setFocusPainted(false);
+        restartButton.setBackground(new Color(220, 220, 220));
+        restartButton.setForeground(Color.BLACK);
+        restartButton.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+        
+        // 버튼 스타일 설정
+        restartButton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(100, 100, 100), 1),
+            BorderFactory.createEmptyBorder(4, 8, 4, 8)
+        ));
+        
+        // 버튼 클릭 이벤트 처리
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restartGame();
+            }
+        });
+        
+        add(restartButton);
+    }
+    
+    // 게임 재시작 메서드
+    public void restartGame() {
+        // 모든 말 제거
+        for (JButton pieceButton : pieceButtons.values()) {
+            remove(pieceButton);
+        }
+        pieceButtons.clear();
+        
+        // 모든 노드 하이라이트 제거
+        resetHighlights();
+        
+        // 노드 버튼 숨기기
+        setNodeButtonsVisible(false);
+        
+        // 패널 다시 그리기
+        repaint();
+        
+        // 게임 재시작 리스너가 설정되어 있으면 콜백 호출
+        if (gameRestartListener != null) {
+            gameRestartListener.onGameRestart();
+        }
+        
+        System.out.println("게임이 초기화되었습니다.");
+    }
+    
+    // 게임 재시작 리스너 인터페이스
+    public interface GameRestartListener {
+        void onGameRestart();
+    }
+    
+    // 게임 재시작 리스너 설정
+    public void setGameRestartListener(GameRestartListener listener) {
+        this.gameRestartListener = listener;
+    }
+
+    // Model 데이터를 받아 게임판 업데이트
+    public void updateFromModel(Map<String, List<String>> playerPieces, Map<String, String> piecePositions) {
+        // 기존 말들 모두 제거
+        for (JButton pieceButton : pieceButtons.values()) {
+            remove(pieceButton);
+        }
+        pieceButtons.clear();
+        
+        // Model 데이터로부터 말 생성 및 배치
+        for (Map.Entry<String, List<String>> entry : playerPieces.entrySet()) {
+            String playerId = entry.getKey();
+            List<String> pieces = entry.getValue();
+            int playerNum = Integer.parseInt(playerId.replace("player", ""));
+            
+            for (String pieceId : pieces) {
+                String nodeId = piecePositions.get(pieceId);
+                if (nodeId != null) {
+                    addPiece(pieceId, "horse.png", nodeId);
+                }
+            }
+        }
+        
+        repaint();
+    }
+    
+    // 이동 가능한 노드 목록 업데이트
+    public void updateMovableNodes(List<String> movableNodeIds) {
+        if (movableNodeIds == null || movableNodeIds.isEmpty()) {
+            setNodeButtonsVisible(false);
+            return;
+        }
+        
+        // 모든 노드 버튼 원래 색상으로 초기화
+        for (JButton button : nodeButtons.values()) {
+            button.setBackground(new Color(255, 255, 255, 70)); // 반투명 흰색
+            button.setVisible(false);
+        }
+        
+        // 이동 가능한 노드만 하이라이트하고 보이게 설정
+        for (String nodeId : movableNodeIds) {
+            JButton nodeButton = nodeButtons.get(nodeId);
+            if (nodeButton != null) {
+                nodeButton.setBackground(new Color(255, 255, 0, 150)); // 반투명 노란색
+                nodeButton.setVisible(true);
+            }
+        }
+        
+        repaint();
+    }
+    
+    // 게임 상태 완전 초기화 (Model로부터 새로운 게임 시작)
+    public void resetGameState() {
+        // 모든 말 제거
+        for (JButton pieceButton : pieceButtons.values()) {
+            remove(pieceButton);
+        }
+        pieceButtons.clear();
+        
+        // 모든 노드 하이라이트 제거
+        resetHighlights();
+        
+        // 노드 버튼 숨기기
+        setNodeButtonsVisible(false);
+        
+        // 패널 다시 그리기
+        repaint();
     }
 
     @Override
