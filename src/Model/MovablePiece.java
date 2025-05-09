@@ -9,6 +9,7 @@ public class MovablePiece {
     protected Position currentPosition;
     protected String playerID;
     protected int size;
+    protected boolean isArrived;
 
     /// Constructor ///
     public MovablePiece(Piece... pieces) { // 가변 인자를 사용해 여러 개의 말을 그룹화
@@ -42,7 +43,7 @@ public class MovablePiece {
         if (pieceArrayDeque.peekFirst() != null) {
             currentPosition = pieceArrayDeque.peekFirst().getCurrentPosition(); // 그룹의 첫 번째 말의 위치로 업데이트
         }
-        isArrived();
+        this.isArrived = isArrived();
     }
 
     public boolean isArrived() {
