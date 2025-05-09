@@ -148,6 +148,9 @@ public class BoardPanel extends JPanel {
                 protected void paintComponent(Graphics g) {
                     if (getModel().isArmed()) {
                         g.setColor(getBackground().darker());
+                    } else if (getModel().isRollover()) {
+                        // 호버 상태일 때 밝은 색상으로 변경
+                        g.setColor(getBackground().brighter());
                     } else {
                         g.setColor(getBackground());
                     }
@@ -161,7 +164,15 @@ public class BoardPanel extends JPanel {
                 protected void paintBorder(Graphics g) {
                     Graphics2D g2d = (Graphics2D) g;
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2d.setColor(Color.GRAY);
+                    
+                    if (getModel().isRollover()) {
+                        // 호버 상태일 때 테두리 색상 변경
+                        g2d.setColor(Color.WHITE);
+                        g2d.setStroke(new BasicStroke(2));
+                    } else {
+                        g2d.setColor(Color.GRAY);
+                    }
+                    
                     g2d.drawOval(0, 0, getSize().width - 1, getSize().height - 1);
                 }
                 
@@ -182,6 +193,9 @@ public class BoardPanel extends JPanel {
             nodeButton.setContentAreaFilled(false);
             nodeButton.setBorderPainted(false);
             nodeButton.setBackground(new Color(255, 255, 255, 70)); // 반투명 흰색
+            
+            // 롤오버(호버) 활성화
+            nodeButton.setRolloverEnabled(true);
             
             // 버튼에 노드 ID 저장 (나중에 식별용)
             nodeButton.setName(nodeId);
@@ -307,6 +321,24 @@ public class BoardPanel extends JPanel {
             pieceButton.setBorderPainted(false);
             pieceButton.setContentAreaFilled(true);
             pieceButton.setFocusPainted(false);
+            
+            // 호버 효과 추가
+            final Color finalPlayerColor = playerColor;
+            pieceButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    JButton button = (JButton) e.getSource();
+                    button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+                    setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    JButton button = (JButton) e.getSource();
+                    button.setBorder(null);
+                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
+            });
             
             // 노드 위치에 말 배치
             if (nodePositions.containsKey(initialNodeId)) {
@@ -462,6 +494,25 @@ public class BoardPanel extends JPanel {
             pieceButton.setContentAreaFilled(true);
             pieceButton.setFocusPainted(false);
             
+            // 호버 효과 추가
+            final Color finalPlayerColor = playerColor;
+            pieceButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    JButton button = (JButton) e.getSource();
+                    // 테두리 추가하고 약간 밝게 변경
+                    button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+                    setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    JButton button = (JButton) e.getSource();
+                    button.setBorder(null);
+                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
+            });
+            
             // 지정된 위치에 말 배치
             pieceButton.setBounds(x - 20, y - 20, 40, 40); // 중앙에 위치하도록 조정
             add(pieceButton);
@@ -478,11 +529,34 @@ public class BoardPanel extends JPanel {
     // 재시작 버튼 생성
     private void createRestartButton() {
         restartButton = new JButton("게임 초기화");
-        restartButton.setBounds(473, 643, 120, 30); // 지정된 좌표에 배치 
+        restartButton.setBounds(473, 643, 120, 30); // 지정된 좌표에 배치
         restartButton.setFocusPainted(false);
         restartButton.setBackground(new Color(220, 220, 220));
         restartButton.setForeground(Color.BLACK);
         restartButton.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+        
+        // 호버 효과 추가
+        restartButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                restartButton.setBackground(new Color(200, 200, 220));
+                restartButton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(100, 100, 180), 2),
+                    BorderFactory.createEmptyBorder(3, 7, 3, 7)
+                ));
+                setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                restartButton.setBackground(new Color(220, 220, 220));
+                restartButton.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(100, 100, 100), 1),
+                    BorderFactory.createEmptyBorder(4, 8, 4, 8)
+                ));
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            }
+        });
         
         // 버튼 스타일 설정
         restartButton.setBorder(BorderFactory.createCompoundBorder(
