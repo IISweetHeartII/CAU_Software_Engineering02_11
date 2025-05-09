@@ -12,12 +12,12 @@ public class TestMain {
             // MainFrame UI 실행
             MainFrame mainFrame = new MainFrame();
             
-            // 보드판 중앙 Score 영역(480, 100)에 4행 4열로 말 배치
+            // 보드판 Score 영역 아래에 말 배치 (350, 500에서 4행 4열로 배치)
             BoardPanel boardPanel = mainFrame.getBoardPanel();
             if (boardPanel != null) {
-                // 시작 좌표 (480, 100)에서 4행 4열로 말 배치
-                int startX = 480;
-                int startY = 100;
+                // 시작 좌표 (500, 200)에서 4행 4열로 말 배치
+                int startX = 500;
+                int startY = 200;
                 int pieceSize = 45; // 말 사이의 간격
                 
                 int pieceCount = 1;
@@ -33,7 +33,7 @@ public class TestMain {
                         
                         // 말 추가 (노드는 사용하지 않고 직접 위치 지정)
                         String pieceId = "player" + player + "_" + piece;
-                        addPieceAt(boardPanel, pieceId, "res/horse.png", x, y, player);
+                        addPieceAt(boardPanel, pieceId, "horse.png", x, y, player);
                         
                         // 말에 클릭 이벤트 설정
                         mainFrame.addPieceClickEvent(pieceId);
@@ -47,6 +47,7 @@ public class TestMain {
             System.out.println("============= 윷놀이 게임 UI 테스트 =============");
             System.out.println("1. 말을 클릭한 후, 이동할 노드를 클릭하면 말이 이동합니다.");
             System.out.println("2. 노드를 클릭하면 콘솔에 노드 ID가 출력됩니다.");
+            System.out.println("3. '게임 초기화' 버튼을 클릭하면 모든 말이 원래 위치로 돌아갑니다.");
             System.out.println("==============================================");
         });
     }
