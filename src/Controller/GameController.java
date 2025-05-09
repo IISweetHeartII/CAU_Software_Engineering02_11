@@ -18,10 +18,6 @@ public class GameController {
     public GameController(GameModel model, GameView gameView) {
         this.gameModel = model;
         this.gameView = gameView;
-
-        //이벤트 공유(View와 연결(UI제작 이후 연결용) - UI에서 이벤트 발생 시 호출)
-       /* this.gameView.setThrowYutListener(this::handleRandomThrow);
-        this.gameView.setManualThrowListener(this::handleManualThrow);*/
     }
 
 
@@ -69,6 +65,36 @@ public class GameController {
         gameView.showPosableMoves(posableMoves);
     }
 
+
+    //사용자 클릭 위치 받아 처리
+    public void handleMoveRequest(Position selectedPosition) {
+        MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
+        if (selectedPiece == null)
+            return;
+
+        //현재 플레이어이의 말인지 재차 검증
+        String currentPlayerID = gameModel.getCurrentPlayer().getPlayerID();
+        if (!selectedPiece.getPlayerID().equals(currentPlayerID))
+            return;
+
+        // 말 이동 시도
+        boolean moved = gameModel.movePiece(selectedPiece, selectedPosition);
+        if (!moved) return;
+
+        // 도착한 말이면 점수 추가
+        if (selectedPiece.isArrived()) {
+            gameModel.addScore(gameModel.getCurrentPlayer());
+        }
+
+        // 보드 다시 렌더링
+        gameView.BoardRendering();
+
+        // 게임 종료 확인
+        checkGameEnd();
+
+        // 턴 넘기기 (추가 턴이 있는 경우 GameModel에서 자동 처리)
+        changeTurn();
+    }
 
 
 

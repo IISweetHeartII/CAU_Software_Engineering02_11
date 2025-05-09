@@ -11,6 +11,7 @@ public class Board {
     private final Position END = new Position("END");
     protected int boardFigure = loadBoardFigure();
 
+
     private int loadBoardFigure() {
         try (Scanner scanner = new Scanner(new File("src/data/figure.txt"))) {
             if (scanner.hasNextInt()) {
