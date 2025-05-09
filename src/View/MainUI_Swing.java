@@ -67,6 +67,7 @@ public class MainUI_Swing extends JFrame implements GameView {
         boardPanel = new BoardPanel(currentBoardType);
         add(boardPanel, BorderLayout.CENTER);
 
+        // 보드 패널에 노드 클릭 리스너 설정
         boardPanel.setNodeClickListener(nodeId -> {
             Position clickedPosition = convertNodeIdToPosition(nodeId);
             if (clickedPosition != null && currentPosableMoves != null && currentPosableMoves.contains(clickedPosition)) {
@@ -194,7 +195,7 @@ public class MainUI_Swing extends JFrame implements GameView {
 
 
     //테스트용 코드//
-    @Override
+    /*@Override
     public Position getUserSelectedPosition(ArrayDeque<Position> posableMoves) {
         // 실제 구현에서는 보드 패널의 노드 클릭 이벤트를 처리하여 선택된 위치 반환
         // 여기서는 간단히 첫 번째 이동 가능한 위치를 반환 (테스트용)
@@ -202,7 +203,7 @@ public class MainUI_Swing extends JFrame implements GameView {
             return posableMoves.getFirst();
         }
         return null;
-    }
+    }*/
 
     @Override
     public void BoardRendering() {

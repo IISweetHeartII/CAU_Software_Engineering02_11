@@ -30,15 +30,8 @@ public class GameController {
 
             ArrayDeque<Position> posableMoves = gameModel.getPosableMoves();
             gameView.showPosableMoves(posableMoves);
+            // 클릭 기반 처리로 이동 선택은 UI에서 직접 처리함
 
-            Position selectedPosition = gameView.getUserSelectedPosition(posableMoves);
-            if (selectedPosition != null) {
-                MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
-                if (selectedPiece != null && gameModel.movePiece(selectedPiece, selectedPosition)) {
-                    gameView.BoardRendering();
-                    checkGameEnd();
-                }
-            }
         } while (gameModel.isExtraTurn());
 
         if (!gameModel.isExtraTurn()) {
@@ -55,15 +48,8 @@ public class GameController {
 
             ArrayDeque<Position> posableMoves = gameModel.getPosableMoves();
             gameView.showPosableMoves(posableMoves);
+            // 클릭 기반 처리로 이동 선택은 UI에서 직접 처리함
 
-            Position selectedPosition = gameView.getUserSelectedPosition(posableMoves);
-            if (selectedPosition != null) {
-                MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
-                if (selectedPiece != null && gameModel.movePiece(selectedPiece, selectedPosition)) {
-                    gameView.BoardRendering();
-                    checkGameEnd();
-                }
-            }
         } while (gameModel.isExtraTurn());
 
         if (!gameModel.isExtraTurn()) {
