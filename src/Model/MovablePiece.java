@@ -42,6 +42,7 @@ public class MovablePiece {
         if (pieceArrayDeque.peekFirst() != null) {
             currentPosition = pieceArrayDeque.peekFirst().getCurrentPosition(); // 그룹의 첫 번째 말의 위치로 업데이트
         }
+        isArrived();
     }
 
     public boolean isArrived() {
