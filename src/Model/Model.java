@@ -7,6 +7,13 @@ public interface Model {
     Player getCurrentPlayer();
     /// 현재 턴의 플레이어를 반환
 
+    Player[] getAllPlayers();
+    /// 모든 플레이어를 반환
+    ///
+    /// 필요시 이걸 사용해 MovablePiece를 가져오고 View 에서 보드에 그릴 말을 그리면 됨
+
+    ArrayDeque<MovablePiece> getAllMovablePieces();
+
     int[] getGameScores();
     /// 각 플레이어 점수 배열을 반환
     ///

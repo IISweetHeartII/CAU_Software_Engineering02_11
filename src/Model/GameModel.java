@@ -146,6 +146,20 @@ public class GameModel implements Model {
     }
 
     @Override
+    public ArrayDeque<MovablePiece> getAllMovablePieces() {
+        ArrayDeque<MovablePiece> allMovablePieces = new ArrayDeque<>();
+        for (Player player : players) {
+            allMovablePieces.addAll(player.getMovablePieces());
+        }
+        return allMovablePieces;
+    }
+
+    @Override
+    public Player[] getAllPlayers() {
+        return players;
+    }
+
+    @Override
     public boolean isGameEnd() {
         for (int score : gameScores) {
             if (score >= numberOfPieces) {
