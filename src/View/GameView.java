@@ -2,6 +2,7 @@ package View;
 
 import Model.YutResult;
 import java.util.ArrayDeque;
+import Model.Position;
 
 public interface GameView {
     void showYutResult(YutResult yutResult);
@@ -9,9 +10,9 @@ public interface GameView {
 
     void updateCurrentPlayer(String playerID);
 
-    void showPosableMoves(ArrayDeque<Model.Position> posableMoves);
+    void showPosableMoves(ArrayDeque<Position> posableMoves);
 
-    Model.Position getUserSelectedPosition(ArrayDeque<Model.Position> posableMoves);
+    Position getUserSelectedPosition(ArrayDeque<Position> posableMoves);
 
     void BoardRendering();
 

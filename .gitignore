@@ -32,3 +32,5 @@ bin/
 
 ### cursor ###
 .cursor/
+
+.class
