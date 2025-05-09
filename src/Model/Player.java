@@ -37,7 +37,7 @@ public class Player {
 
     /// methods ///
     public boolean hasAllPiecesAtEnd() {
-        for (Piece piece : allPieces) {
+        for (MovablePiece piece : movablePieces) {
             if (!piece.getCurrentPosition().equals("END")) {
                 return false; // 하나라도 END가 아니면 false
             }
