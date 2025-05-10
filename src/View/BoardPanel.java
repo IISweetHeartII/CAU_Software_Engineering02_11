@@ -47,7 +47,7 @@ public class BoardPanel extends JPanel {
         setLayout(null); // 좌표 기반 배치
 
         loadBackgroundImage(boardImageName);
-        initializeNodePositions();
+        initializeNodePositions_4();
         createNodeButtons();
         createGameButtons(); // 게임 버튼들(Custom Choice, Restart, Quit) 생성
         createTurnImage(); // 턴 이미지 생성
@@ -482,46 +482,165 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    // 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
-    private void initializeNodePositions() {
+    // public Board() {
+    //     switch (boardFigure) {
+    //         case 4 -> init4Graph();
+    //         case 5 -> init5Graph();
+    //         case 6 -> init6Graph();
+    //         default -> throw new IllegalArgumentException("Invalid board figure: " + boardFigure);
+    //     }
+    // }
+
+    // board_four.png 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
+    private void initializeNodePositions_4() {
         nodePositions = new HashMap<>();
         
         // 가장자리 노드들 (시계 방향)
-        nodePositions.put("n1", new Point(432, 354)); 
-        nodePositions.put("n2", new Point(432, 276)); 
-        nodePositions.put("n3", new Point(432, 198)); 
-        nodePositions.put("n4", new Point(432, 120));
-        nodePositions.put("n5", new Point(432, 42));
+        nodePositions.put("p1", new Point(432, 354)); 
+        nodePositions.put("p2", new Point(432, 276)); 
+        nodePositions.put("p3", new Point(432, 198)); 
+        nodePositions.put("p4", new Point(432, 120));
+        nodePositions.put("p5", new Point(432, 42));
         
-        nodePositions.put("n6", new Point(354, 42));   
-        nodePositions.put("n7", new Point(276, 42));  
-        nodePositions.put("n8", new Point(198, 42));    
-        nodePositions.put("n9", new Point(120, 42));
-        nodePositions.put("n10", new Point(42, 42));   
+        nodePositions.put("p6", new Point(354, 42));   
+        nodePositions.put("p7", new Point(276, 42));  
+        nodePositions.put("p8", new Point(198, 42));    
+        nodePositions.put("p9", new Point(120, 42));
+        nodePositions.put("p10", new Point(42, 42));   
 
-        nodePositions.put("n11", new Point(42, 120)); 
-        nodePositions.put("n12", new Point(42, 198));    
-        nodePositions.put("n13", new Point(42, 276));    
-        nodePositions.put("n14", new Point(42, 354));      
-        nodePositions.put("n15", new Point(42, 432));   
+        nodePositions.put("p11", new Point(42, 120)); 
+        nodePositions.put("p12", new Point(42, 198));    
+        nodePositions.put("p13", new Point(42, 276));    
+        nodePositions.put("p14", new Point(42, 354));      
+        nodePositions.put("p15", new Point(42, 432));   
         
-        nodePositions.put("n16", new Point(120, 432));   
-        nodePositions.put("n17", new Point(198, 432));  
-        nodePositions.put("n18", new Point(276, 432)); 
-        nodePositions.put("n19", new Point(354, 432));
-        nodePositions.put("n20", new Point(432, 432));
+        nodePositions.put("p16", new Point(120, 432));   
+        nodePositions.put("p17", new Point(198, 432));  
+        nodePositions.put("p18", new Point(276, 432)); 
+        nodePositions.put("p19", new Point(354, 432));
+        nodePositions.put("p20", new Point(432, 432));
          
-        nodePositions.put("n21", new Point(365, 109));  
-        nodePositions.put("n22", new Point(303, 171));   
-        nodePositions.put("n23", new Point(171, 303));  
-        nodePositions.put("n24", new Point(108, 366));   
+        nodePositions.put("e1", new Point(365, 109));  
+        nodePositions.put("e2", new Point(303, 171));   
+        nodePositions.put("e3", new Point(171, 303));  
+        nodePositions.put("e4", new Point(108, 366));   
 
-        nodePositions.put("n25", new Point(237, 237));
+        nodePositions.put("c", new Point(237, 237));
 
-        nodePositions.put("n26", new Point(109, 108));  
-        nodePositions.put("n27", new Point(170, 171));
-        nodePositions.put("n28", new Point(303, 303));  
-        nodePositions.put("n29", new Point(365, 365));
+        nodePositions.put("e5", new Point(109, 108));  
+        nodePositions.put("e6", new Point(170, 171));
+        nodePositions.put("e7", new Point(303, 303));  
+        nodePositions.put("e8", new Point(365, 365));
+    }
+
+    // board_five.png 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
+    private void initializeNodePositions_5() {
+        nodePositions = new HashMap<>();
+        
+        // 가장자리 노드들 (시계 방향)
+        nodePositions.put("p1", new Point(372, 375)); 
+        nodePositions.put("p2", new Point(388, 375)); 
+        nodePositions.put("p3", new Point(402, 284)); 
+        nodePositions.put("p4", new Point(417, 238));
+        nodePositions.put("p5", new Point(432, 192));
+        
+        nodePositions.put("p6", new Point(393, 164));   
+        nodePositions.put("p7", new Point(354, 135));  
+        nodePositions.put("p8", new Point(315, 107));    
+        nodePositions.put("p9", new Point(276, 78));
+        nodePositions.put("p10", new Point(236, 50));   
+
+        nodePositions.put("p11", new Point(197, 78)); 
+        nodePositions.put("p12", new Point(158, 107));    
+        nodePositions.put("p13", new Point(119, 135));    
+        nodePositions.put("p14", new Point(80, 164));      
+        nodePositions.put("p15", new Point(41, 192));   
+        
+        nodePositions.put("p16", new Point(56, 238));   
+        nodePositions.put("p17", new Point(71, 284));  
+        nodePositions.put("p18", new Point(87, 330)); 
+        nodePositions.put("p19", new Point(101, 375));
+        nodePositions.put("p20", new Point(115, 422));
+         
+        nodePositions.put("p21", new Point(164, 422));  
+        nodePositions.put("p22", new Point(212, 422));   
+        nodePositions.put("p23", new Point(261, 422));  
+        nodePositions.put("p24", new Point(309, 422));   
+        nodePositions.put("p25", new Point(358, 422));   
+
+        nodePositions.put("e1", new Point(354, 217));  
+        nodePositions.put("e2", new Point(295, 236));   
+        nodePositions.put("e3", new Point(200, 305));  
+        nodePositions.put("e4", new Point(164, 355));  
+
+        nodePositions.put("c", new Point(236, 255));
+
+        nodePositions.put("e5", new Point(236, 132));  
+        nodePositions.put("e6", new Point(236, 195));
+        nodePositions.put("e7", new Point(274, 305));  
+        nodePositions.put("e8", new Point(309, 305));
+
+        nodePositions.put("e9", new Point(119, 217));
+        nodePositions.put("e10", new Point(178, 236));
+    }
+
+    // board_six.png 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
+    private void initializeNodePositions_6() {
+        nodePositions = new HashMap<>();
+        
+        // 가장자리 노드들 (시계 방향)
+        nodePositions.put("p1", new Point(354, 370)); 
+        nodePositions.put("p2", new Point(373, 337)); 
+        nodePositions.put("p3", new Point(393, 303)); 
+        nodePositions.put("p4", new Point(409, 269));
+        nodePositions.put("p5", new Point(431, 236));
+        
+        nodePositions.put("p6", new Point(409, 203));   
+        nodePositions.put("p7", new Point(393, 169));  
+        nodePositions.put("p8", new Point(373, 133));    
+        nodePositions.put("p9", new Point(354, 101));
+        nodePositions.put("p10", new Point(335, 67));   
+
+        nodePositions.put("p11", new Point(295, 67)); 
+        nodePositions.put("p12", new Point(255, 67));    
+        nodePositions.put("p13", new Point(217, 67));    
+        nodePositions.put("p14", new Point(178, 67));      
+        nodePositions.put("p15", new Point(139, 67));   
+        
+        nodePositions.put("p16", new Point(118, 99));   
+        nodePositions.put("p17", new Point(98, 134));  
+        nodePositions.put("p18", new Point(80, 168)); 
+        nodePositions.put("p19", new Point(60, 202));
+        nodePositions.put("p20", new Point(41, 236));
+         
+        nodePositions.put("p21", new Point(60, 269));  
+        nodePositions.put("p22", new Point(80, 303));   
+        nodePositions.put("p23", new Point(98, 337));  
+        nodePositions.put("p24", new Point(118, 370));   
+        nodePositions.put("p25", new Point(139, 404));   
+
+        nodePositions.put("p26", new Point(178, 404));  
+        nodePositions.put("p27", new Point(217, 404));   
+        nodePositions.put("p28", new Point(256, 404));  
+        nodePositions.put("p29", new Point(295, 404));   
+        nodePositions.put("p30", new Point(335, 404));   
+
+        nodePositions.put("e1", new Point(366, 236));  
+        nodePositions.put("e2", new Point(301, 236));   
+        nodePositions.put("e3", new Point(168, 236));  
+        nodePositions.put("e4", new Point(105, 236));  
+
+        nodePositions.put("c", new Point(235, 236));
+
+        nodePositions.put("e5", new Point(170, 123));  
+        nodePositions.put("e6", new Point(203, 180));
+        nodePositions.put("e7", new Point(268, 292));  
+        nodePositions.put("e8", new Point(298, 348));
+
+        nodePositions.put("e9", new Point(203, 292));
+        nodePositions.put("e10", new Point(170, 348));
+        nodePositions.put("e11", new Point(298, 123));
+        nodePositions.put("e12", new Point(268, 292));
     }
     
     // 노드 버튼 생성
