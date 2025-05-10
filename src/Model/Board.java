@@ -5,10 +5,10 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Board {
-    private final Map<Position, List<Position>> pathGraph = new HashMap<>();
-    private final Position center = new Position("C");
-    private final Position START = new Position("START");
-    private final Position END = new Position("END");
+    protected final Map<Position, List<Position>> pathGraph = new HashMap<>();
+    protected final Position center = new Position("C");
+    protected final Position START = new Position("START");
+    protected final Position END = new Position("END");
     protected int boardFigure = loadBoardFigure();
 
 
