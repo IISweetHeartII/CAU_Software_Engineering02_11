@@ -118,6 +118,7 @@ public class MainUI_Swing extends JFrame {
                         "게임 종료", 
                         JOptionPane.YES_NO_OPTION);
                 if (option == JOptionPane.YES_OPTION) {
+                    controller.endGame();
                     System.exit(0);
                 }
             }
@@ -294,11 +295,11 @@ public class MainUI_Swing extends JFrame {
             if (nodeId != null) {
                 nodeIds[i++] = nodeId;
             }
-        }
+        }*/
         
-        boardPanel.highlightNodes(nodeIds);
+ /*       boardPanel.highlightNodes(nodeIds);
     }
-
+*/
     // Position을 노드 ID로 변환하는 메서드
     private String convertPositionToNodeId(Position position) {
         return nodeIdMapping.get(position.toString());
@@ -328,9 +329,9 @@ public class MainUI_Swing extends JFrame {
 
     @Override
     public void showGameEnd(String playerID) {
-        JOptionPane.showMessageDialog(this, 
-                playerID + "님이 게임에서 승리했습니다!", 
-                "게임 종료", 
+        JOptionPane.showMessageDialog(this,
+                playerID + "님이 게임에서 승리했습니다!",
+                "게임 종료",
                 JOptionPane.INFORMATION_MESSAGE);
     }
     
