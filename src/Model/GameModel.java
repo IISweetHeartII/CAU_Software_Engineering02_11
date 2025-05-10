@@ -37,7 +37,7 @@ public class GameModel implements Model {
     protected ArrayDeque<Piece> positionPieceArrayDeque = new ArrayDeque<>();
 
     /// Constructor ///
-    public GameModel(int dummy1, int dummy2) {
+    public GameModel() {
         this.numberOfPlayers = loadPlayer();
         this.numberOfPieces = loadNumpiece();
         this.players = new Player[numberOfPlayers];
@@ -133,8 +133,7 @@ public class GameModel implements Model {
     }
 
     /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
-    @Override
-    public boolean movePiece(MovablePiece DUMMYselectedPiece, Position selectedPosition) {
+    public boolean movePiece(Position selectedPosition) {
         Piece selectedPositionPiece = findPositionPieceAt(selectedPosition);
 
         Piece copyOfSelectedPositionPiece = new Piece(selectedPositionPiece);
@@ -252,39 +251,36 @@ public class GameModel implements Model {
 
     // 윷 던지기 //
     @Override
-    public boolean throwAndSaveYut() {
+    public YutResult throwAndSaveYut() {
         if (extraTurnCount > 0) extraTurnCount--;
         YutResult yutResult = yut.throwYut();
         yutResultArrayDeque.add(yutResult);
         if (yutResult.isExtraTurn()) {
             extraTurnCount++;
-            return true;
         }
-        return false;
+        return yutResult;
     }
 
     @Override
-    public boolean throwAndSaveYut(int n) {
+    public YutResult throwAndSaveYut(int n) {
         if (extraTurnCount > 0) extraTurnCount--;
         YutResult yutResult = yut.throwYut(n);
         yutResultArrayDeque.add(yutResult);
         if (yutResult.isExtraTurn()) {
             extraTurnCount++;
-            return true;
         }
-        return false;
+        return yutResult;
     }
 
     @Override
-    public boolean throwAndSaveYut(String input) {
+    public YutResult throwAndSaveYut(String input) {
         if (extraTurnCount > 0) extraTurnCount--;
         YutResult yutResult = yut.throwYut(input);
         yutResultArrayDeque.add(yutResult);
         if (yutResult.isExtraTurn()) {
             extraTurnCount++;
-            return true;
         }
-        return false;
+        return yutResult;
     }
 
     @Override

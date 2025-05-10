@@ -1,34 +1,9 @@
 package View;
 
 import java.util.ArrayDeque;
-
-// View 패키지에서 사용할 임시 Position 클래스
-class Position {
-    private String name;
-    
-    public Position(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public String toString() {
-        return name;
-    }
-}
-
-// View 패키지에서 사용할 임시 YutResult 클래스
-class YutResult {
-    private String name;
-    
-    public YutResult(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public String toString() {
-        return name;
-    }
-}
+import Model.Position;
+import Model.YutResult;
+import Model.YutResultType;
 
 public interface GameView {
     void showYutResult(YutResult yutResult);

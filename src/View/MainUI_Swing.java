@@ -1,9 +1,9 @@
 //[메인 프레임, 윷 던지기 버튼 처리]윷 던지기 버튼 UI 초안 + 이벤트 처리 기능 넣음
-//GameView 구현중.
 
 package View;
 
 import Controller.GameController;
+import Model.GameModel;
 import Model.Position;
 import Model.YutResult;
 import View.BoardPanel;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 //JFrame을 상속받아서 윈도우 창 만듦.
-public class MainUI_Swing extends JFrame implements GameView {
+public class MainUI_Swing extends JFrame {
     /// responsibilities ///
     /// 1. get game state from controller by parameter
     /// 2. show game state to user
@@ -28,6 +28,7 @@ public class MainUI_Swing extends JFrame implements GameView {
     /// It should only use Model class and GameView interface.
 
     private GameController controller;
+    private GameModel gameModel;
     private BoardPanel boardPanel;
     private JPanel controlPanel;
     private JPanel statusPanel;
@@ -37,19 +38,43 @@ public class MainUI_Swing extends JFrame implements GameView {
     private ArrayDeque<Position> currentPosableMoves;
     private Map<String, String> nodeIdMapping; // 모델의 Position을 BoardPanel의 노드 ID로 매핑
     
-    public MainUI_Swing(GameController controller) {
+    public MainUI_Swing(GameController controller, GameModel gameModel) {
         this.controller = controller;
+        this.gameModel = gameModel;
         initUI();
-        initNodeMapping();
+        //this.nodeIdMapping = initNodeMapping(controller.getBoardFigure());
+
     }
 
-    // 모델의 Position과 보드 패널의 노드 ID 간 매핑 초기화
-    private void initNodeMapping() {
-        nodeIdMapping = new HashMap<>();
-        // 예시 매핑 (실제 모델의 Position enum 값에 따라 조정 필요)
-        // nodeIdMapping.put("MODEL_START", "start");
-        // nodeIdMapping.put("MODEL_NODE1", "n1");
-        // 등등...
+    // 노드 매핑 초기화
+    public static Map<String, String> initNodeMapping(int boardFigure) {
+        Map<String, String> mapping = new HashMap<>();
+
+        switch (boardFigure) {
+            case 4 -> {
+                for (int i = 1; i <= 20; i++) mapping.put("P" + i, "p" + i);
+                for (int i = 1; i <= 8; i++) mapping.put("E" + i, "e" + i);
+                mapping.put("START", "start");
+                mapping.put("END", "end");
+                mapping.put("C", "c");
+            }
+            case 5 -> {
+                for (int i = 1; i <= 25; i++) mapping.put("P" + i, "p" + i);
+                for (int i = 1; i <= 10; i++) mapping.put("E" + i, "e" + i);
+                mapping.put("START", "start");
+                mapping.put("END", "end");
+                mapping.put("C", "c");
+            }
+            case 6 -> {
+                for (int i = 1; i <= 30; i++) mapping.put("P" + i, "p" + i);
+                for (int i = 1; i <= 12; i++) mapping.put("E" + i, "e" + i);
+                mapping.put("START", "start");
+                mapping.put("END", "end");
+                mapping.put("C", "c");
+            }
+        }
+
+        return mapping;
     }
 
     //화면 구성 (UI 초기화)
@@ -70,7 +95,7 @@ public class MainUI_Swing extends JFrame implements GameView {
         // 보드 패널에 노드 클릭 리스너 설정
         boardPanel.setNodeClickListener(nodeId -> {
             Position clickedPosition = convertNodeIdToPosition(nodeId);
-            if (clickedPosition != null && currentPosableMoves != null && currentPosableMoves.contains(clickedPosition)) {
+            if (clickedPosition != null) {
                 controller.handleMoveRequest(clickedPosition);
             } else {
                 JOptionPane.showMessageDialog(this, "이동할 수 없는 위치입니다.", "오류", JOptionPane.WARNING_MESSAGE);
@@ -240,7 +265,7 @@ public class MainUI_Swing extends JFrame implements GameView {
 
     @Override
     public void showYutResult(YutResult yutResult) {
-        resultInfoLabel.setText("윷 결과: " + yutResult.toString());
+
     }
 
     @Override
@@ -258,8 +283,7 @@ public class MainUI_Swing extends JFrame implements GameView {
         }
     }
 
-    @Override
-    public void showPosableMoves(ArrayDeque<Position> posableMoves) {
+/*    public void showPosableMoves(ArrayDeque<Position> posableMoves) {
         this.currentPosableMoves = posableMoves;
         
         // 이동 가능한 위치를 노드 ID로 변환하여 하이라이트
@@ -292,7 +316,7 @@ public class MainUI_Swing extends JFrame implements GameView {
         return null;
     }*/
 
-    @Override
+
     public void BoardRendering() {
         // 모든 말의 위치를 업데이트
         // 실제 구현에서는 모델에서 각 말의 정보를 가져와서 boardPanel.movePiece() 호출
@@ -344,29 +368,24 @@ public class MainUI_Swing extends JFrame implements GameView {
             // 선택된 옵션에 따른 처리 로직
         }
     }
-    
-    // 테스트용 메인 메서드
+
     public static void main(String[] args) {
+        // ★ 컨트롤러에서 넘어오는 설정값(예시) ★
+        YutnoriMain.BoardType boardType   = YutnoriMain.BoardType.FOUR; // FOUR / FIVE / SIX
+        int playerCount       = 2;              // 1 ~4
+        int piecePerPlayer    = 3;              // 2~5
+
         SwingUtilities.invokeLater(() -> {
-            // 임시 컨트롤러 생성 (테스트용)
-            GameController dummyController = null;
-            try {
-                // GameModel과 테스트용 컨트롤러 생성 (필요한 경우)
-                // GameModel gameModel = new GameModel(4, 4);
-                // dummyController = new GameController(gameModel, null);
-            } catch (Exception e) {
-                System.out.println("컨트롤러 생성 중 오류 발생: " + e.getMessage());
-            }
-            
-            // UI 생성 및 표시
-            MainUI_Swing ui = new MainUI_Swing(dummyController);
-            
-            // 테스트 메시지 출력
-            System.out.println("======= MainUI_Swing 테스트 시작 =======");
-            System.out.println("1. Custom Choice, Restart, Quit 버튼이 잘 보이는지 확인합니다.");
-            System.out.println("2. 버튼에 마우스를 올리면 hover 효과가 적용되는지 확인합니다.");
-            System.out.println("3. 버튼을 클릭하면 적절한 동작이 수행되는지 확인합니다.");
-            System.out.println("=======================================");
+            JFrame frame = new JFrame("Yutnori Game");
+            frame.setSize(700, 700);
+            frame.setLocationRelativeTo(null);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            /* STEP 4 : 배경 + 플레이어 이미지가 포함된 보드 패널 */
+            YutnoriMain.BoardPanel boardPanel = new YutnoriMain.BoardPanel(boardType, playerCount, piecePerPlayer);
+            frame.setContentPane(boardPanel);
+
+            frame.setVisible(true);
         });
     }
 }
