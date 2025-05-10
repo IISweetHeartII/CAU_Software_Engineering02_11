@@ -55,9 +55,36 @@ public class Piece {
 
     // 빽도: 한 칸 뒤로 이동 (이동 성공 시 true 반환)
     public void moveBackward() {
-        if (recentPath.size() > 1) { // 시작 위치를 제외한 경로가 있는 경우
+        /*if (recentPath.size() > 1) { // 시작 위치를 제외한 경로가 있는 경우
             recentPath.removeLast(); // 현재 위치 제거
             currentPosition = recentPath.peekLast(); // 이전 위치로 이동
+        }*/
+        // P1 빽도일때 예외 상황 추가
+        if (recentPath.peekLast() != null) {
+            if (recentPath.peekLast().equals("P1")) {
+                switch (board.boardFigure) {
+                    case 4 -> {
+                        currentPosition = new Position("P20");
+                        recentPath.addLast(currentPosition); // [P1 P20]
+                    }
+                    case 5 -> {
+                        currentPosition = new Position("P25");
+                        recentPath.addLast(currentPosition); // [P1 P25]
+                    }
+                    case 6 -> {
+                        currentPosition = new Position("P30");
+                        recentPath.addLast(currentPosition); // [P1 P30]
+                    }
+                }
+            }
+        }
+        currentPosition = recentPath.peekLast(); // [P1 P2]
+        recentPath.pop(); // [P1]
+        Position previousPosition = recentPath.peekLast(); // [P1]
+        if (previousPosition != null) {
+            recentPath.addLast(currentPosition); // [P1 P2]
+            recentPath.addLast(previousPosition); // [P1 P2 P1]
+            currentPosition = recentPath.peekLast();
         }
     }
 
