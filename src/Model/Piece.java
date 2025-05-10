@@ -23,6 +23,13 @@ public class Piece {
         recentPath.addLast(startPosition); // 초기 위치 저장
     }
 
+    public Piece(Piece other) {
+        this.playerID = other.playerID;
+        this.pieceID = other.pieceID;
+        this.currentPosition = other.currentPosition;
+        this.recentPath = new ArrayDeque<>(other.recentPath); // 깊은 복사
+    }
+
     /// n이 음수일 경우 뒤로 한 칸 이동하고, n이 양수일경우 앞으로 n칸 이동
     public void moveTo(int n) {
         if (n < 0) {

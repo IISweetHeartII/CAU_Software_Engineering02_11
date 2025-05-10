@@ -134,28 +134,34 @@ public class GameModel implements Model {
 
     /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
     @Override
-    public boolean movePiece(MovablePiece selectedPiece, Position selectedPosition) {
-        Piece targetPositionPiece = findPositionPieceAt(selectedPosition);
-        if (selectedPiece.isArrived()) return false; // 이미 도착한 말은 이동할 수 없음
-        if (targetPositionPiece == null) return false; // 해당 위치로 이동할 수 없음
+    public boolean movePiece(MovablePiece DUMMYselectedPiece, Position selectedPosition) {
+        Piece selectedPositionPiece = findPositionPieceAt(selectedPosition);
 
-        if (groupPiecesAtPosition(selectedPiece, selectedPosition)) return true; // 경로를 target이 이미 저장하고 있으므로
-        if (captureOpponentPiece(selectedPiece, selectedPosition)) extraTurnCount++;
+        Piece copyOfSelectedPositionPiece = new Piece(selectedPositionPiece);
+        copyOfSelectedPositionPiece.recentPath.removeFirst(); // 초기 빽도 값 제거 -> 원래 위치
 
-        int targetSize;
-        // 빽도라면 실제 말의 위치를 저장하지 않고 있음
-        if (!targetPositionPiece.recentPath.contains(selectedPiece.currentPosition)) {
-            selectedPiece.moveTo(-1);
-            targetSize = -1;
+        MovablePiece selectedMovablePiece = findMovablePieceAt(selectedPosition);
+
+        if (selectedMovablePiece.isArrived()) return false; // 이미 도착한 말은 이동할 수 없음
+        if (selectedPositionPiece == null) return false; // 해당 위치로 이동할 수 없음
+
+        if (groupPiecesAtPosition(selectedMovablePiece, selectedPosition)) return true; // 경로를 target이 이미 저장하고 있으므로
+        if (captureOpponentPiece(selectedMovablePiece, selectedPosition)) extraTurnCount++;
+
+        int yutSize;
+        selectedMovablePiece.moveTo(-1); // 빽도인데 이동할 위치와 같다면 결과도 빽도
+        if (selectedPositionPiece.currentPosition.equals(selectedMovablePiece.currentPosition)) {
+            yutSize = -1; // 빽도
         } else {
             // target의 최근 위치 변화를 통해 윷 결과를 역추적
-            targetSize = targetPositionPiece.recentPath.size() - 2; // DO라면, [-1(빽도위치) 0(이동전위치) 1(이동할위치)] -> 3개
-            selectedPiece.moveTo(targetSize);
+            selectedMovablePiece.moveTo(-1);
+            yutSize = selectedPositionPiece.recentPath.size() - 3; // DO라면, [0 -1 0 1] -> 3개
+            selectedMovablePiece.moveTo(yutSize);
         }
 
         // 이동한 말이 END에 도착했을 때 점수를 추가하고 그룹화된 말들을 Player -> MovablePieces에서 제거
         Player currentPlayer = getCurrentPlayer();
-        if (selectedPiece.isArrived()) {
+        if (selectedMovablePiece.isArrived()) {
             for (MovablePiece movablePiece : currentPlayer.getMovablePieces()) {
                 if (movablePiece.isArrived()) {
                     int groupSize = movablePiece.size;
@@ -169,10 +175,21 @@ public class GameModel implements Model {
         // PositionPieceArrayDeque 초기화
         positionPieceArrayDeque.clear();
         // 사용한 윷 제거
-        YutResult yutResult = yut.throwYut(targetSize);
+        YutResult yutResult = yut.throwYut(yutSize);
         yutResultArrayDeque.removeFirstOccurrence(yutResult);
 
         return true;
+    }
+
+    public MovablePiece findMovablePieceAt(Position position) {
+        for (Player player : players) {
+            for (MovablePiece movablePiece : player.getMovablePieces()) {
+                if (movablePiece.getCurrentPosition().equals(position)) {
+                    return movablePiece; // 해당 위치에 있는 MovablePiece 반환
+                }
+            }
+        }
+        return null; // 해당 위치에 MovablePiece가 없음
     }
 
     @Override
@@ -219,7 +236,7 @@ public class GameModel implements Model {
             Position startPosition = movablePiece.getCurrentPosition();
             for (YutResult yutResult : yutResultArrayDeque) {
                 Piece positionPiece = new Piece(movablePiece.getPlayerID(), movablePiece.getPieceArrayDeque().peekFirst().pieceID, startPosition);
-                positionPiece.moveTo(1); // 빽도 반영하려고... 뒤 한칸을 시작 위치로 갔다가 앞으로 한 칸...
+                positionPiece.moveTo(-1); // 빽도 반영하려고... 뒤 한칸을 시작 위치로 갔다가 앞으로 한 칸...
                 positionPiece.moveTo(yutResult.getValue());
                 positionPieceArrayDeque.add(positionPiece);
             }

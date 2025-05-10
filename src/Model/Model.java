@@ -26,7 +26,7 @@ public interface Model {
     /// 게임 초기화
 
     // selectedPiece는 이동할 말, selectedPosition은 이동할 위치
-    boolean movePiece(MovablePiece selectedPiece, Position selectedPosition);
+    boolean movePiece(MovablePiece movablePiece, Position selectedPosition);
     /// selectedPiece가 selectedPosition으로 이동할 수 있는지 확인하고, 이동 가능하면 이동
     ///
     /// Grouping과 Catpure 처리
