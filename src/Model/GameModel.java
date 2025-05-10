@@ -1,6 +1,9 @@
 package Model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayDeque;
+import java.util.Scanner;
 
 public class GameModel implements Model {
     /// Responsibilities
@@ -34,17 +37,39 @@ public class GameModel implements Model {
     protected ArrayDeque<Piece> positionPieceArrayDeque = new ArrayDeque<>();
 
     /// Constructor ///
-    public GameModel(int numPlayers, int numPieces) {
-        this.numberOfPlayers = numPlayers;
-        this.numberOfPieces = numPieces;
-        this.players = new Player[numPlayers];
-        this.gameScores = new int[numPlayers];
-        for (int i = 0; i < numPlayers; i++) {
-            players[i] = new Player("Player" + (i+1), numPieces);
+    public GameModel(int dummy1, int dummy2) {
+        this.numberOfPlayers = loadPlayer();
+        this.numberOfPieces = loadNumpiece();
+        this.players = new Player[numberOfPlayers];
+        this.gameScores = new int[numberOfPlayers];
+        for (int i = 0; i < numberOfPlayers; i++) {
+            players[i] = new Player("Player" + (i+1), numberOfPieces);
         }
-        for (int i = 0; i < numPlayers; i++) {
+        for (int i = 0; i < numberOfPlayers; i++) {
             gameScores[i] = 0;
         }
+    }
+
+    private int loadPlayer() {
+        try (Scanner scanner = new Scanner(new File("src/data/player.txt"))) {
+            if (scanner.hasNextInt()) {
+                return scanner.nextInt();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 4; // 기본값
+    }
+
+    private int loadNumpiece() {
+        try (Scanner scanner = new Scanner(new File("src/data/numpiece.txt"))) {
+            if (scanner.hasNextInt()) {
+                return scanner.nextInt();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return 5; // 기본값
     }
 
     /// setters ///
