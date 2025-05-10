@@ -11,7 +11,7 @@ public class Board {
     private final Position END = new Position("END");
     protected int boardFigure = loadBoardFigure();
 
-
+    // board 클래스에서 figure.txt를 읽어옴
     private int loadBoardFigure() {
         try (Scanner scanner = new Scanner(new File("src/data/figure.txt"))) {
             if (scanner.hasNextInt()) {
@@ -34,6 +34,7 @@ public class Board {
     }
 
     public int getBoardFigure() {
+
         return boardFigure;
     }
 

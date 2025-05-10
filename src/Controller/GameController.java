@@ -6,6 +6,8 @@ import Model.*;
 import View.GameView;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameController {
     private final GameModel gameModel;
@@ -20,6 +22,9 @@ public class GameController {
         this.gameView = gameView;
     }
 
+    public int getBoardFigure() {
+        return gameModel.getBoardFigure(); // GameModel → Board로 위임
+    }
 
     // 지정 윷 던지기
     public void handleManualThrow(YutResultType type) {
@@ -58,6 +63,7 @@ public class GameController {
         }
     }
 
+
     // 사용자 클릭 위치 받아 처리
     public void handleMoveRequest(Position selectedPosition) {
         MovablePiece selectedPiece = gameModel.getCurrentPlayer().getMovablePieceAt(selectedPosition);
@@ -87,4 +93,7 @@ public class GameController {
             gameView.showGameEnd(gameModel.getCurrentPlayer().getPlayerID());
         }
     }
+
+
+
 }

@@ -1,5 +1,4 @@
 //[메인 프레임, 윷 던지기 버튼 처리]윷 던지기 버튼 UI 초안 + 이벤트 처리 기능 넣음
-//GameView 구현중.
 
 package View;
 
@@ -27,7 +26,7 @@ public class MainUI_Swing extends JFrame implements GameView {
     /// This class MUST NOT use Controller class !!!
     /// It should only use Model class and GameView interface.
 
-    private GameController controller;
+    private final GameController controller;
     private BoardPanel boardPanel;
     private JPanel controlPanel;
     private JPanel statusPanel;
@@ -40,16 +39,39 @@ public class MainUI_Swing extends JFrame implements GameView {
     public MainUI_Swing(GameController controller) {
         this.controller = controller;
         initUI();
-        initNodeMapping();
+        this.nodeIdMapping = initNodeMapping(controller.getBoardFigure());
+
     }
 
-    // 모델의 Position과 보드 패널의 노드 ID 간 매핑 초기화
-    private void initNodeMapping() {
-        nodeIdMapping = new HashMap<>();
-        // 예시 매핑 (실제 모델의 Position enum 값에 따라 조정 필요)
-        // nodeIdMapping.put("MODEL_START", "start");
-        // nodeIdMapping.put("MODEL_NODE1", "n1");
-        // 등등...
+    // 노드 매핑 초기화
+    public static Map<String, String> initNodeMapping(int boardFigure) {
+        Map<String, String> mapping = new HashMap<>();
+
+        switch (boardFigure) {
+            case 4 -> {
+                for (int i = 1; i <= 20; i++) mapping.put("P" + i, "p" + i);
+                for (int i = 1; i <= 8; i++) mapping.put("E" + i, "e" + i);
+                mapping.put("START", "start");
+                mapping.put("END", "end");
+                mapping.put("C", "c");
+            }
+            case 5 -> {
+                for (int i = 1; i <= 25; i++) mapping.put("P" + i, "p" + i);
+                for (int i = 1; i <= 10; i++) mapping.put("E" + i, "e" + i);
+                mapping.put("START", "start");
+                mapping.put("END", "end");
+                mapping.put("C", "c");
+            }
+            case 6 -> {
+                for (int i = 1; i <= 30; i++) mapping.put("P" + i, "p" + i);
+                for (int i = 1; i <= 12; i++) mapping.put("E" + i, "e" + i);
+                mapping.put("START", "start");
+                mapping.put("END", "end");
+                mapping.put("C", "c");
+            }
+        }
+
+        return mapping;
     }
 
     //화면 구성 (UI 초기화)

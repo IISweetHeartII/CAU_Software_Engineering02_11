@@ -2,8 +2,11 @@ package View;
 
 import java.util.ArrayDeque;
 
+import Model.Position;
+import Model.YutResult;
+
 // View 패키지에서 사용할 임시 Position 클래스
-class Position {
+/*class Position {
     private String name;
     
     public Position(String name) {
@@ -28,7 +31,7 @@ class YutResult {
     public String toString() {
         return name;
     }
-}
+}*/
 
 public interface GameView {
     void showYutResult(YutResult yutResult);

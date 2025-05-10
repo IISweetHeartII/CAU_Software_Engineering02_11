@@ -250,6 +250,12 @@ public class GameModel implements Model {
         return null; // 해당 위치에 Piece가 없음
     }
 
+
+    public int getBoardFigure() {
+        return board.getBoardFigure(); // Board에서 실제 보드 도형을 가져옴
+    }
+
+
     @Override
     public boolean changeTurn() {
         boolean state = true;
