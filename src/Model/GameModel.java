@@ -176,8 +176,12 @@ public class GameModel implements Model {
     }
 
     @Override
-    public int getNotArrivedCount() {
-        return getCurrentPlayer().getNotArrivedCount();
+    public int[] getNotArrivedCount() {
+        int[] notArrivedCount = new int[players.length];
+        for (int i = 0; i < players.length; i++) {
+            notArrivedCount[i] = players[i].getNotArrivedCount();
+        }
+        return notArrivedCount;
     }
 
     @Override

@@ -52,6 +52,8 @@ public interface Model {
 
     boolean isGameEnd();
 
+    int[] getNotArrivedCount();
+
     boolean changeTurn();
     /// ExtraTurnCount를 확인하지않고 강제로 턴을 넘김
     ///
