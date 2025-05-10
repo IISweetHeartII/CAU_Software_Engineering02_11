@@ -84,6 +84,45 @@ public class MainUI_Swing extends JFrame implements GameView {
         createStatusPanel();
         add(statusPanel, BorderLayout.SOUTH);
         
+        // 게임 종료 리스너 설정
+        boardPanel.setGameQuitListener(new BoardPanel.GameQuitListener() {
+            @Override
+            public void onGameQuit() {
+                int option = JOptionPane.showConfirmDialog(MainUI_Swing.this, 
+                        "정말 게임을 종료하시겠습니까?", 
+                        "게임 종료", 
+                        JOptionPane.YES_NO_OPTION);
+                if (option == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                }
+            }
+        });
+        
+        // 게임 재시작 리스너 설정
+        boardPanel.setGameRestartListener(new BoardPanel.GameRestartListener() {
+            @Override
+            public void onGameRestart() {
+                // 컨트롤러를 통해 게임 재시작 로직 실행
+                // 여기서는 컨트롤러가 이미 설정되어 있다고 가정
+                if (controller != null) {
+                    try {
+                        // restart 메서드가 존재하면 호출
+                        controller.getClass().getMethod("restart").invoke(controller);
+                    } catch (Exception ex) {
+                        System.err.println("재시작 기능을 사용할 수 없습니다: " + ex.getMessage());
+                    }
+                }
+            }
+        });
+        
+        // 커스텀 선택 리스너 설정
+        boardPanel.setCustomChoiceListener(new BoardPanel.CustomChoiceListener() {
+            @Override
+            public void onCustomChoice() {
+                showCustomChoiceDialog();
+            }
+        });
+        
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -156,6 +195,44 @@ public class MainUI_Swing extends JFrame implements GameView {
         boardPanel = new BoardPanel(currentBoardType);
         add(boardPanel, BorderLayout.CENTER);
         
+        // 게임 종료 리스너 설정
+        boardPanel.setGameQuitListener(new BoardPanel.GameQuitListener() {
+            @Override
+            public void onGameQuit() {
+                int option = JOptionPane.showConfirmDialog(MainUI_Swing.this, 
+                        "정말 게임을 종료하시겠습니까?", 
+                        "게임 종료", 
+                        JOptionPane.YES_NO_OPTION);
+                if (option == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                }
+            }
+        });
+        
+        // 게임 재시작 리스너 설정
+        boardPanel.setGameRestartListener(new BoardPanel.GameRestartListener() {
+            @Override
+            public void onGameRestart() {
+                // 컨트롤러를 통해 게임 재시작 로직 실행
+                if (controller != null) {
+                    try {
+                        // restart 메서드가 존재하면 호출
+                        controller.getClass().getMethod("restart").invoke(controller);
+                    } catch (Exception ex) {
+                        System.err.println("재시작 기능을 사용할 수 없습니다: " + ex.getMessage());
+                    }
+                }
+            }
+        });
+        
+        // 커스텀 선택 리스너 설정
+        boardPanel.setCustomChoiceListener(new BoardPanel.CustomChoiceListener() {
+            @Override
+            public void onCustomChoice() {
+                showCustomChoiceDialog();
+            }
+        });
+        
         // 화면 갱신
         revalidate();
         repaint();
@@ -169,6 +246,16 @@ public class MainUI_Swing extends JFrame implements GameView {
     @Override
     public void updateCurrentPlayer(String playerID) {
         playerInfoLabel.setText("현재 차례: " + playerID);
+        
+        // BoardPanel의 턴 이미지도 함께 업데이트
+        if (playerID != null && playerID.startsWith("player")) {
+            try {
+                int playerNum = Integer.parseInt(playerID.substring(6));
+                boardPanel.updateTurnImage(playerNum);
+            } catch (NumberFormatException e) {
+                System.err.println("잘못된 플레이어 ID 형식: " + playerID);
+            }
+        }
     }
 
     @Override
@@ -237,5 +324,49 @@ public class MainUI_Swing extends JFrame implements GameView {
         if (nodeId != null) {
             boardPanel.movePiece(pieceId, nodeId);
         }
+    }
+
+    // 커스텀 선택 대화상자 표시
+    private void showCustomChoiceDialog() {
+        // 여기에 커스텀 선택 대화상자 구현
+        String[] options = {"옵션 1", "옵션 2", "옵션 3", "옵션 4"};
+        String selected = (String) JOptionPane.showInputDialog(
+                this,
+                "원하는 옵션을 선택하세요:",
+                "커스텀 선택",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        
+        if (selected != null) {
+            System.out.println("선택된 옵션: " + selected);
+            // 선택된 옵션에 따른 처리 로직
+        }
+    }
+    
+    // 테스트용 메인 메서드
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            // 임시 컨트롤러 생성 (테스트용)
+            GameController dummyController = null;
+            try {
+                // GameModel과 테스트용 컨트롤러 생성 (필요한 경우)
+                // GameModel gameModel = new GameModel(4, 4);
+                // dummyController = new GameController(gameModel, null);
+            } catch (Exception e) {
+                System.out.println("컨트롤러 생성 중 오류 발생: " + e.getMessage());
+            }
+            
+            // UI 생성 및 표시
+            MainUI_Swing ui = new MainUI_Swing(dummyController);
+            
+            // 테스트 메시지 출력
+            System.out.println("======= MainUI_Swing 테스트 시작 =======");
+            System.out.println("1. Custom Choice, Restart, Quit 버튼이 잘 보이는지 확인합니다.");
+            System.out.println("2. 버튼에 마우스를 올리면 hover 효과가 적용되는지 확인합니다.");
+            System.out.println("3. 버튼을 클릭하면 적절한 동작이 수행되는지 확인합니다.");
+            System.out.println("=======================================");
+        });
     }
 }

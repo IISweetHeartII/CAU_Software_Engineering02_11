@@ -16,8 +16,29 @@ public class BoardPanel extends JPanel {
     private Map<String, JButton> pieceButtons; // 말 ID와 버튼을 저장하는 맵
     private NodeClickListener nodeClickListener; // 노드 클릭 리스너
     private JButton restartButton; // 재시작 버튼
+    private JButton quitButton; // 종료 버튼
+    private JButton customChoiceButton; // 커스텀 선택 버튼
+    private JButton yutThrowButton; // 윷던지기 버튼
     private GameRestartListener gameRestartListener; // 게임 재시작 리스너
-    
+    private GameQuitListener gameQuitListener; // 게임 종료 리스너
+    private CustomChoiceListener customChoiceListener; // 커스텀 선택 리스너
+    private YutThrowListener yutThrowListener; // 윷던지기 리스너
+    private JLabel turnImageLabel; // 턴 이미지 라벨
+    private int currentPlayerTurn = 1; // 현재 플레이어 턴 (기본 값: 1)
+    private JLabel player1ScoreLabel; // 플레이어 1 점수 라벨
+    private JLabel player2ScoreLabel; // 플레이어 2 점수 라벨
+    private JLabel player3ScoreLabel; // 플레이어 3 점수 라벨
+    private JLabel player4ScoreLabel; // 플레이어 4 점수 라벨
+    private int player1RemainingPieces = 5; // 플레이어 1 남은 말 개수 (기본값: 5)
+    private int player2RemainingPieces = 5; // 플레이어 2 남은 말 개수 (기본값: 5)
+    private int player3RemainingPieces = 5; // 플레이어 3 남은 말 개수 (기본값: 5)
+    private int player4RemainingPieces = 5; // 플레이어 4 남은 말 개수 (기본값: 5)
+    private JLabel customPopupLabel; // 커스텀 윷 선택 팝업 레이블
+    private boolean isCustomPopupVisible = false; // 커스텀 팝업 표시 여부
+    private int selectedCustomYut = -1; // 선택된 커스텀 윷 값 (-1: 선택 안됨)
+    private JLabel yutResultLabel; // 윷 결과 이미지 라벨
+    private int currentYutResult = -1; // 현재 윷 결과 (-1: 없음, 0: 빽도, 1: 도, 2: 개, 3: 걸, 4: 윷, 5: 모)
+
     // 초기 말 위치 및 정보 저장
     private Map<String, InitialPieceInfo> initialPieceInfo = new HashMap<>();
 
@@ -26,12 +47,414 @@ public class BoardPanel extends JPanel {
         setLayout(null); // 좌표 기반 배치
 
         loadBackgroundImage(boardImageName);
-        initializeNodePositions();
+        initializeNodePositions_4();
         createNodeButtons();
-        createRestartButton();
+        createGameButtons(); // 게임 버튼들(Custom Choice, Restart, Quit) 생성
+        createTurnImage(); // 턴 이미지 생성
+        createPlayerScoreLabels(); // 플레이어 점수 라벨 생성
+        createYutResultLabel(); // 윷 결과 이미지 라벨 생성
+        
+        // 키 이벤트 리스너 추가 (Esc로 팝업 닫기)
+        setFocusable(true); // 키 이벤트를 받기 위해 필요
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE && isCustomPopupVisible) {
+                    hideCustomPopup();
+                }
+            }
+        });
+        
+        // 패널 클릭 이벤트 (팝업 외부 클릭시 닫기)
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (isCustomPopupVisible && customPopupLabel != null) {
+                    // 팝업 영역 계산
+                    Rectangle popupBounds = customPopupLabel.getBounds();
+                    // 클릭 위치가 팝업 영역 밖이면 팝업 닫기
+                    if (!popupBounds.contains(e.getPoint())) {
+                        hideCustomPopup();
+                    }
+                }
+            }
+        });
         
         // 테스트용 말 추가 (실제로는 외부에서 addPiece 메서드로 추가함)
         pieceButtons = new HashMap<>();
+    }
+    
+    // 게임 버튼 생성 (Custom Choice, Restart, Quit)
+    private void createGameButtons() {
+        createRestartButton();
+        createQuitButton();
+        createCustomChoiceButton();
+        createYutThrowButton();
+    }
+    
+    // 윷던지기 버튼 생성
+    private void createYutThrowButton() {
+        yutThrowButton = createImageButton(
+            "src/data/Button/button_throw_up.png",
+            "src/data/Button/button_throw_down.png",
+            473, 473, 207, 93
+        );
+        
+        // 버튼 클릭 이벤트 처리
+        yutThrowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (yutThrowListener != null) { 
+                    int result = yutThrowListener.onYutThrow();
+                    showYutResult(result); // 윷 결과 표시
+                }
+            }
+        });
+        
+        add(yutThrowButton);
+    }
+
+    // 윷 결과 이미지 라벨 생성
+    private void createYutResultLabel() {
+        yutResultLabel = new JLabel();
+        yutResultLabel.setBounds(20, 472, 433, 207); // 지정된 위치에 표시
+        add(yutResultLabel);
+        hideYutResult(); // 초기에는 숨김
+    }
+    
+    // 윷 결과 표시 메서드
+    public void showYutResult(int yutResult) {
+        currentYutResult = yutResult;
+        
+        try {
+            // 윷 결과에 따른 이미지 파일 경로 결정
+            String imagePath;
+            switch (yutResult) {
+                case 0:
+                    imagePath = "src/data/yut/yut_1.png"; // 도
+                    break;
+                case 1:
+                    imagePath = "src/data/yut/yut_2.png"; // 개
+                    break;
+                case 2:
+                    imagePath = "src/data/yut/yut_3.png"; // 걸
+                    break;
+                case 3:
+                    imagePath = "src/data/yut/yut_4.png"; // 윷
+                    break;
+                case 4:
+                    imagePath = "src/data/yut/yut_5.png"; // 모
+                    break;
+                case 5:
+                    imagePath = "src/data/yut/yut_0.png"; // 빽도
+                    break;
+                default:
+                    hideYutResult();
+                    return;
+            }
+            
+            File imageFile = getImageFile(imagePath);
+            if (imageFile.exists()) {
+                BufferedImage yutImage = ImageIO.read(imageFile);
+                
+                // 이미지를 적절한 크기로 리사이징
+                int originalWidth = yutImage.getWidth();
+                int originalHeight = yutImage.getHeight();
+                Image resizedImage = yutImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                
+                yutResultLabel.setIcon(new ImageIcon(resizedImage));
+                yutResultLabel.setVisible(true);
+            } else {
+                // 이미지 파일이 없는 경우 텍스트로 표시
+                yutResultLabel.setIcon(null);
+                String[] yutNames = {"도", "개", "걸", "윷", "모", "빽도"};
+                yutResultLabel.setText(yutNames[yutResult]);
+                yutResultLabel.setFont(new Font("맑은 고딕", Font.BOLD, 36));
+                yutResultLabel.setForeground(Color.BLACK);
+                yutResultLabel.setVisible(true);
+            }
+        } catch (Exception e) {
+            System.err.println("윷 결과 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            
+            // 예외 발생 시 텍스트로 표시
+            yutResultLabel.setIcon(null);
+            String[] yutNames = {"도", "개", "걸", "윷", "모", "빽도"};
+            if (yutResult >= 0 && yutResult < yutNames.length) {
+                yutResultLabel.setText(yutNames[yutResult]);
+            } else {
+                yutResultLabel.setText("알 수 없음");
+            }
+            yutResultLabel.setFont(new Font("맑은 고딕", Font.BOLD, 36));
+            yutResultLabel.setForeground(Color.BLACK);
+            yutResultLabel.setVisible(true);
+        }
+    }
+    
+    // 윷 결과 숨기기 메서드
+    public void hideYutResult() {
+        yutResultLabel.setIcon(null);
+        yutResultLabel.setText("");
+        yutResultLabel.setVisible(false);
+        currentYutResult = -1;
+    }
+    
+    // 현재 윷 결과 반환 메서드
+    public int getCurrentYutResult() {
+        return currentYutResult;
+    }
+
+    // 커스텀 선택 버튼 생성
+    private void createCustomChoiceButton() {
+        customChoiceButton = createImageButton(
+            "src/data/Button/button_custom_up.png", 
+            "src/data/Button/button_custom_down.png",
+            473, 587, 207, 36
+        );
+        
+        // 버튼 클릭 이벤트 처리
+        customChoiceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (customChoiceListener != null) {
+                    customChoiceListener.onCustomChoice();
+                }
+                showCustomPopup(); // 커스텀 윷 선택 팝업 표시
+            }
+        });
+        
+        add(customChoiceButton);
+    }
+
+    // 재시작 버튼 생성
+    private void createRestartButton() {
+        restartButton = createImageButton(
+            "src/data/Button/button_restart_up.png", 
+            "src/data/Button/button_restart_down.png",
+            473, 644, 93, 36
+        );
+        
+        // 버튼 클릭 이벤트 처리
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restartGame();
+            }
+        });
+        
+        add(restartButton);
+    }
+    
+    // 종료 버튼 생성
+    private void createQuitButton() {
+        quitButton = createImageButton(
+            "src/data/Button/button_quit_up.png", 
+            "src/data/Button/button_quit_down.png",
+            584, 644, 93, 36
+        );
+        
+        // 버튼 클릭 이벤트 처리
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (gameQuitListener != null) {
+                    gameQuitListener.onGameQuit();
+                }
+            }
+        });
+        
+        add(quitButton);
+    }
+    
+    // 이미지 파일 경로 처리 유틸리티 메서드
+    private File getImageFile(String imagePath) {
+        // 절대 경로인지 확인
+        File file = new File(imagePath);
+        if (file.isAbsolute() && file.exists()) {
+            return file;
+        }
+        
+        // 프로젝트 루트 경로 확인
+        String projectRoot = System.getProperty("user.dir");
+        
+        // 다양한 가능한 경로 조합 시도
+        String[] possiblePaths = {
+            imagePath,                                // 있는 그대로
+            projectRoot + "/" + imagePath,            // 프로젝트 루트 + 경로
+            projectRoot + File.separator + imagePath, // OS에 맞는 구분자 사용
+            imagePath.replace("src/data/", "src/data/") // 중복 경로 제거
+        };
+        
+        for (String path : possiblePaths) {
+            file = new File(path);
+            if (file.exists()) {
+                System.out.println("이미지 파일 발견: " + file.getAbsolutePath());
+                return file;
+            }
+        }
+        
+        // 마지막 시도 - src/data/ 접두사가 없는 경우 추가
+        if (!imagePath.startsWith("src/data/")) {
+            String pathWithPrefix = "src/data/" + imagePath;
+            file = new File(projectRoot + File.separator + pathWithPrefix);
+            if (file.exists()) {
+                System.out.println("이미지 파일 발견: " + file.getAbsolutePath());
+                return file;
+            }
+        }
+        
+        System.err.println("이미지 파일을 찾을 수 없음: " + imagePath);
+        return file; // 파일을 찾지 못함
+    }
+    
+    // 배경 이미지 로드 및 리사이징
+    private void loadBackgroundImage(String boardImageName) {
+        try {
+            File imageFile = null;
+            
+            // 경로가 포함된 경우 그대로 시도
+            if (boardImageName.contains("/") || boardImageName.contains("\\")) {
+                imageFile = getImageFile(boardImageName);
+            } else {
+                // 1. 일반 파일명만 있는 경우 -> src/data/board/ 디렉토리에서 찾기
+                imageFile = getImageFile("src/data/board/" + boardImageName);
+                
+                // 2. 찾지 못한 경우 -> board/ 디렉토리에서 찾기
+                if (!imageFile.exists()) {
+                    imageFile = getImageFile("board/" + boardImageName);
+                }
+                
+                // 3. 찾지 못한 경우 -> 파일 이름 그대로 찾기
+                if (!imageFile.exists()) {
+                    imageFile = getImageFile(boardImageName);
+                }
+            }
+            
+            if (imageFile.exists()) {
+                System.out.println("배경 이미지 로드: " + imageFile.getAbsolutePath());
+                BufferedImage rawImage = ImageIO.read(imageFile);
+                backgroundImage = resizeImage(rawImage, 700, 700);
+            } else {
+                System.err.println("배경 이미지 파일을 찾을 수 없습니다: " + boardImageName);
+                // 배경이 없어도 패널은 표시되도록 빈 이미지 생성
+                backgroundImage = new BufferedImage(700, 700, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = backgroundImage.createGraphics();
+                g2d.setColor(new Color(240, 240, 240)); // 연한 회색 배경
+                g2d.fillRect(0, 0, 700, 700);
+                g2d.dispose();
+            }
+        } catch (Exception e) {
+            System.err.println("배경 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            
+            // 예외 발생해도 패널은 표시되도록 빈 이미지 생성
+            backgroundImage = new BufferedImage(700, 700, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = backgroundImage.createGraphics();
+            g2d.setColor(new Color(240, 240, 240)); // 연한 회색 배경
+            g2d.fillRect(0, 0, 700, 700);
+            g2d.dispose();
+        }
+    }
+    
+    // 이미지 버튼 생성 유틸리티 메서드 (일반 이미지와 호버 이미지 지정)
+    private JButton createImageButton(String normalImagePath, String hoverImagePath, int x, int y, int width, int height) {
+        JButton button = new JButton();
+        button.setBounds(x, y, width, height);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        
+        try {
+            File normalFile = getImageFile(normalImagePath);
+            File hoverFile = getImageFile(hoverImagePath);
+            
+            if (!normalFile.exists()) {
+                System.err.println("일반 버튼 이미지 파일을 찾을 수 없습니다: " + normalImagePath);
+                button.setText("Button"); // 이미지 로드 실패시 텍스트 표시
+                return button;
+            }
+            
+            if (!hoverFile.exists()) {
+                System.err.println("호버 버튼 이미지 파일을 찾을 수 없습니다: " + hoverImagePath);
+                hoverFile = normalFile; // 호버 이미지 없으면 일반 이미지로 대체
+            }
+            
+            // 기본 이미지와 호버 이미지 로드
+            final BufferedImage normalImage = ImageIO.read(normalFile);
+            final BufferedImage hoverImage = ImageIO.read(hoverFile);
+            
+            // 버튼 이미지 리사이징
+            Image normalResized = normalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            Image hoverResized = hoverImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            
+            // 버튼 이미지 설정
+            final ImageIcon normalIcon = new ImageIcon(normalResized);
+            final ImageIcon hoverIcon = new ImageIcon(hoverResized);
+            
+            button.setIcon(normalIcon);
+            
+            // 호버 효과 추가
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    button.setIcon(hoverIcon);
+                    setCursor(new Cursor(Cursor.HAND_CURSOR));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    button.setIcon(normalIcon);
+                    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("버튼 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            button.setText("Button"); // 이미지 로드 실패시 텍스트 표시
+        }
+        
+        return button;
+    }
+    
+    // 게임 종료 리스너 인터페이스
+    public interface GameQuitListener {
+        void onGameQuit();
+    }
+    
+    // 게임 종료 리스너 설정
+    public void setGameQuitListener(GameQuitListener listener) {
+        this.gameQuitListener = listener;
+    }
+
+    // 윷던지기 리스너 인터페이스
+    public interface YutThrowListener {
+        int onYutThrow(); // 던진 윷 결과 반환
+    }
+    
+    // 윷던지기 리스너 설정
+    public void setYutThrowListener(YutThrowListener listener) {
+        this.yutThrowListener = listener;
+    }
+
+    // 커스텀 선택 리스너 인터페이스
+    public interface CustomChoiceListener {
+        void onCustomChoice();
+        void onCustomYutSelected(int selection);
+    }
+    
+    // 커스텀 선택 리스너 설정
+    public void setCustomChoiceListener(CustomChoiceListener listener) {
+        this.customChoiceListener = listener;
+    }
+    
+    // 게임 재시작 리스너 인터페이스
+    public interface GameRestartListener {
+        void onGameRestart();
+    }
+    
+    // 게임 재시작 리스너 설정
+    public void setGameRestartListener(GameRestartListener listener) {
+        this.gameRestartListener = listener;
     }
     
     // 초기 말 정보 저장 클래스
@@ -59,64 +482,165 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    // 배경 이미지 로드 및 리사이징
-    private void loadBackgroundImage(String boardImageName) {
-        try {
-            // src/data 폴더에서 이미지 로드 (경로 수정)
-            String currentDir = System.getProperty("user.dir");
-            File imageFile = new File(currentDir + "/src/data/" + boardImageName);
-            if (imageFile.exists()) {
-                BufferedImage rawImage = ImageIO.read(imageFile);
-                backgroundImage = resizeImage(rawImage, 700, 700);
-            } else {
-                System.err.println("이미지 파일을 찾을 수 없습니다: " + imageFile.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            System.err.println("이미지 로드 실패: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+    // public Board() {
+    //     switch (boardFigure) {
+    //         case 4 -> init4Graph();
+    //         case 5 -> init5Graph();
+    //         case 6 -> init6Graph();
+    //         default -> throw new IllegalArgumentException("Invalid board figure: " + boardFigure);
+    //     }
+    // }
 
-    // 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
-    private void initializeNodePositions() {
+    // board_four.png 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
+    private void initializeNodePositions_4() {
         nodePositions = new HashMap<>();
         
         // 가장자리 노드들 (시계 방향)
-        nodePositions.put("n1", new Point(432, 354)); 
-        nodePositions.put("n2", new Point(432, 276)); 
-        nodePositions.put("n3", new Point(432, 198)); 
-        nodePositions.put("n4", new Point(432, 120));
-        nodePositions.put("n5", new Point(432, 42));
+        nodePositions.put("p1", new Point(432, 354)); 
+        nodePositions.put("p2", new Point(432, 276)); 
+        nodePositions.put("p3", new Point(432, 198)); 
+        nodePositions.put("p4", new Point(432, 120));
+        nodePositions.put("p5", new Point(432, 42));
         
-        nodePositions.put("n6", new Point(354, 42));   
-        nodePositions.put("n7", new Point(276, 42));  
-        nodePositions.put("n8", new Point(198, 42));    
-        nodePositions.put("n9", new Point(120, 42));
-        nodePositions.put("n10", new Point(42, 42));   
+        nodePositions.put("p6", new Point(354, 42));   
+        nodePositions.put("p7", new Point(276, 42));  
+        nodePositions.put("p8", new Point(198, 42));    
+        nodePositions.put("p9", new Point(120, 42));
+        nodePositions.put("p10", new Point(42, 42));   
 
-        nodePositions.put("n11", new Point(42, 120)); 
-        nodePositions.put("n12", new Point(42, 198));    
-        nodePositions.put("n13", new Point(42, 276));    
-        nodePositions.put("n14", new Point(42, 354));      
-        nodePositions.put("n15", new Point(42, 432));   
+        nodePositions.put("p11", new Point(42, 120)); 
+        nodePositions.put("p12", new Point(42, 198));    
+        nodePositions.put("p13", new Point(42, 276));    
+        nodePositions.put("p14", new Point(42, 354));      
+        nodePositions.put("p15", new Point(42, 432));   
         
-        nodePositions.put("n16", new Point(120, 432));   
-        nodePositions.put("n17", new Point(198, 432));  
-        nodePositions.put("n18", new Point(276, 432)); 
-        nodePositions.put("n19", new Point(354, 432));
-        nodePositions.put("n20", new Point(432, 432));
+        nodePositions.put("p16", new Point(120, 432));   
+        nodePositions.put("p17", new Point(198, 432));  
+        nodePositions.put("p18", new Point(276, 432)); 
+        nodePositions.put("p19", new Point(354, 432));
+        nodePositions.put("p20", new Point(432, 432));
          
-        nodePositions.put("n21", new Point(365, 109));  
-        nodePositions.put("n22", new Point(303, 171));   
-        nodePositions.put("n23", new Point(171, 303));  
-        nodePositions.put("n24", new Point(108, 366));   
+        nodePositions.put("e1", new Point(365, 109));  
+        nodePositions.put("e2", new Point(303, 171));   
+        nodePositions.put("e3", new Point(171, 303));  
+        nodePositions.put("e4", new Point(108, 366));   
 
-        nodePositions.put("n25", new Point(237, 237));
+        nodePositions.put("c", new Point(237, 237));
 
-        nodePositions.put("n26", new Point(109, 108));  
-        nodePositions.put("n27", new Point(170, 171));
-        nodePositions.put("n28", new Point(303, 303));  
-        nodePositions.put("n29", new Point(365, 365));
+        nodePositions.put("e5", new Point(109, 108));  
+        nodePositions.put("e6", new Point(170, 171));
+        nodePositions.put("e7", new Point(303, 303));  
+        nodePositions.put("e8", new Point(365, 365));
+    }
+
+    // board_five.png 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
+    private void initializeNodePositions_5() {
+        nodePositions = new HashMap<>();
+        
+        // 가장자리 노드들 (시계 방향)
+        nodePositions.put("p1", new Point(372, 375)); 
+        nodePositions.put("p2", new Point(388, 375)); 
+        nodePositions.put("p3", new Point(402, 284)); 
+        nodePositions.put("p4", new Point(417, 238));
+        nodePositions.put("p5", new Point(432, 192));
+        
+        nodePositions.put("p6", new Point(393, 164));   
+        nodePositions.put("p7", new Point(354, 135));  
+        nodePositions.put("p8", new Point(315, 107));    
+        nodePositions.put("p9", new Point(276, 78));
+        nodePositions.put("p10", new Point(236, 50));   
+
+        nodePositions.put("p11", new Point(197, 78)); 
+        nodePositions.put("p12", new Point(158, 107));    
+        nodePositions.put("p13", new Point(119, 135));    
+        nodePositions.put("p14", new Point(80, 164));      
+        nodePositions.put("p15", new Point(41, 192));   
+        
+        nodePositions.put("p16", new Point(56, 238));   
+        nodePositions.put("p17", new Point(71, 284));  
+        nodePositions.put("p18", new Point(87, 330)); 
+        nodePositions.put("p19", new Point(101, 375));
+        nodePositions.put("p20", new Point(115, 422));
+         
+        nodePositions.put("p21", new Point(164, 422));  
+        nodePositions.put("p22", new Point(212, 422));   
+        nodePositions.put("p23", new Point(261, 422));  
+        nodePositions.put("p24", new Point(309, 422));   
+        nodePositions.put("p25", new Point(358, 422));   
+
+        nodePositions.put("e1", new Point(354, 217));  
+        nodePositions.put("e2", new Point(295, 236));   
+        nodePositions.put("e3", new Point(200, 305));  
+        nodePositions.put("e4", new Point(164, 355));  
+
+        nodePositions.put("c", new Point(236, 255));
+
+        nodePositions.put("e5", new Point(236, 132));  
+        nodePositions.put("e6", new Point(236, 195));
+        nodePositions.put("e7", new Point(274, 305));  
+        nodePositions.put("e8", new Point(309, 305));
+
+        nodePositions.put("e9", new Point(119, 217));
+        nodePositions.put("e10", new Point(178, 236));
+    }
+
+    // board_six.png 노드 위치 초기화 (보드 이미지에 맞게 좌표 설정)
+    private void initializeNodePositions_6() {
+        nodePositions = new HashMap<>();
+        
+        // 가장자리 노드들 (시계 방향)
+        nodePositions.put("p1", new Point(354, 370)); 
+        nodePositions.put("p2", new Point(373, 337)); 
+        nodePositions.put("p3", new Point(393, 303)); 
+        nodePositions.put("p4", new Point(409, 269));
+        nodePositions.put("p5", new Point(431, 236));
+        
+        nodePositions.put("p6", new Point(409, 203));   
+        nodePositions.put("p7", new Point(393, 169));  
+        nodePositions.put("p8", new Point(373, 133));    
+        nodePositions.put("p9", new Point(354, 101));
+        nodePositions.put("p10", new Point(335, 67));   
+
+        nodePositions.put("p11", new Point(295, 67)); 
+        nodePositions.put("p12", new Point(255, 67));    
+        nodePositions.put("p13", new Point(217, 67));    
+        nodePositions.put("p14", new Point(178, 67));      
+        nodePositions.put("p15", new Point(139, 67));   
+        
+        nodePositions.put("p16", new Point(118, 99));   
+        nodePositions.put("p17", new Point(98, 134));  
+        nodePositions.put("p18", new Point(80, 168)); 
+        nodePositions.put("p19", new Point(60, 202));
+        nodePositions.put("p20", new Point(41, 236));
+         
+        nodePositions.put("p21", new Point(60, 269));  
+        nodePositions.put("p22", new Point(80, 303));   
+        nodePositions.put("p23", new Point(98, 337));  
+        nodePositions.put("p24", new Point(118, 370));   
+        nodePositions.put("p25", new Point(139, 404));   
+
+        nodePositions.put("p26", new Point(178, 404));  
+        nodePositions.put("p27", new Point(217, 404));   
+        nodePositions.put("p28", new Point(256, 404));  
+        nodePositions.put("p29", new Point(295, 404));   
+        nodePositions.put("p30", new Point(335, 404));   
+
+        nodePositions.put("e1", new Point(366, 236));  
+        nodePositions.put("e2", new Point(301, 236));   
+        nodePositions.put("e3", new Point(168, 236));  
+        nodePositions.put("e4", new Point(105, 236));  
+
+        nodePositions.put("c", new Point(235, 236));
+
+        nodePositions.put("e5", new Point(170, 123));  
+        nodePositions.put("e6", new Point(203, 180));
+        nodePositions.put("e7", new Point(268, 292));  
+        nodePositions.put("e8", new Point(298, 348));
+
+        nodePositions.put("e9", new Point(203, 292));
+        nodePositions.put("e10", new Point(170, 348));
+        nodePositions.put("e11", new Point(298, 123));
+        nodePositions.put("e12", new Point(268, 292));
     }
     
     // 노드 버튼 생성
@@ -297,7 +821,7 @@ public class BoardPanel extends JPanel {
             
             // src/data 폴더에서 이미지 로드 (경로 수정)
             String currentDir = System.getProperty("user.dir");
-            File imageFile = new File(currentDir + "/src/data/" + imagePath);
+            File imageFile = new File(currentDir + "/src/data/board/" + imagePath);
             
             if (imageFile.exists()) {
                 // 이미지가 있으면 이미지로 버튼 생성
@@ -469,7 +993,7 @@ public class BoardPanel extends JPanel {
             
             // src/data 폴더에서 이미지 로드 (경로 수정)
             String currentDir = System.getProperty("user.dir");
-            File imageFile = new File(currentDir + "/src/data/" + imagePath);
+            File imageFile = new File(currentDir + "/src/data/board/" + imagePath);
             
             if (imageFile.exists()) {
                 // 이미지가 있으면 이미지로 버튼 생성
@@ -526,55 +1050,6 @@ public class BoardPanel extends JPanel {
         }
     }
 
-    // 재시작 버튼 생성
-    private void createRestartButton() {
-        restartButton = new JButton("게임 초기화");
-        restartButton.setBounds(473, 643, 120, 30); // 지정된 좌표에 배치
-        restartButton.setFocusPainted(false);
-        restartButton.setBackground(new Color(220, 220, 220));
-        restartButton.setForeground(Color.BLACK);
-        restartButton.setFont(new Font("맑은 고딕", Font.BOLD, 12));
-        
-        // 호버 효과 추가
-        restartButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                restartButton.setBackground(new Color(200, 200, 220));
-                restartButton.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(100, 100, 180), 2),
-                    BorderFactory.createEmptyBorder(3, 7, 3, 7)
-                ));
-                setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                restartButton.setBackground(new Color(220, 220, 220));
-                restartButton.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(new Color(100, 100, 100), 1),
-                    BorderFactory.createEmptyBorder(4, 8, 4, 8)
-                ));
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            }
-        });
-        
-        // 버튼 스타일 설정
-        restartButton.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(100, 100, 100), 1),
-            BorderFactory.createEmptyBorder(4, 8, 4, 8)
-        ));
-        
-        // 버튼 클릭 이벤트 처리
-        restartButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                restartGame();
-            }
-        });
-        
-        add(restartButton);
-    }
-    
     // 게임 재시작 메서드
     public void restartGame() {
         // 모든 말 제거
@@ -591,6 +1066,9 @@ public class BoardPanel extends JPanel {
         
         // 초기 말 정보로 말 다시 생성
         restorePieces();
+        
+        // 점수 초기화 추가
+        resetPlayerScores();
         
         // 패널 다시 그리기
         repaint();
@@ -617,16 +1095,6 @@ public class BoardPanel extends JPanel {
                 addPiece(pieceId, info.imagePath, info.nodeId);
             }
         }
-    }
-    
-    // 게임 재시작 리스너 인터페이스
-    public interface GameRestartListener {
-        void onGameRestart();
-    }
-    
-    // 게임 재시작 리스너 설정
-    public void setGameRestartListener(GameRestartListener listener) {
-        this.gameRestartListener = listener;
     }
 
     // Model 데이터를 받아 게임판 업데이트
@@ -695,6 +1163,489 @@ public class BoardPanel extends JPanel {
         
         // 패널 다시 그리기
         repaint();
+    }
+
+    // 턴 이미지 생성 메서드
+    private void createTurnImage() {
+        turnImageLabel = new JLabel();
+        turnImageLabel.setBounds(485, 392, 183, 30); // 지정된 절대 좌표에 위치
+        updateTurnImage(1); // 초기 이미지는 플레이어 1
+        add(turnImageLabel);
+    }
+
+    // 턴 이미지 업데이트 메서드
+    public void updateTurnImage(int playerTurn) {
+        currentPlayerTurn = playerTurn;
+        try {
+            String imagePath;
+            // 플레이어 번호에 따라 적절한 이미지 선택
+            switch (playerTurn) {
+                case 1:
+                    imagePath = "src/data/Turn/turn_1.png";
+                    break;
+                case 2:
+                    imagePath = "src/data/Turn/turn_2.png";
+                    break;
+                case 3:
+                    imagePath = "src/data/Turn/turn_3.png";
+                    break;
+                case 4:
+                    imagePath = "src/data/Turn/turn_4.png";
+                    break;
+                default:
+                    imagePath = "src/data/Turn/turn_1.png"; // 기본값
+                    break;
+            }
+            
+            File imageFile = getImageFile(imagePath);
+            if (imageFile.exists()) {
+                BufferedImage turnImage = ImageIO.read(imageFile);
+                // 이미지 원래 크기 확인
+                int originalWidth = turnImage.getWidth();
+                int originalHeight = turnImage.getHeight();
+                // 이미지를 3분의 1 크기로 리사이징
+                Image resizedImage = turnImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                turnImageLabel.setIcon(new ImageIcon(resizedImage));
+            } else {
+                // 이미지가 없는 경우 텍스트로 대체
+                turnImageLabel.setIcon(null);
+                turnImageLabel.setText("Player " + playerTurn + "'s Turn");
+                turnImageLabel.setFont(new Font("Arial", Font.BOLD, 16));
+                turnImageLabel.setForeground(Color.BLACK);
+            }
+        } catch (Exception e) {
+            System.err.println("턴 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            
+            // 예외 발생 시 텍스트로 대체
+            turnImageLabel.setIcon(null);
+            turnImageLabel.setText("Player " + playerTurn + "'s Turn");
+            turnImageLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            turnImageLabel.setForeground(Color.BLACK);
+        }
+    }
+    
+    // 승리 이미지 표시 메서드
+    public void showWinnerImage(int playerNumber) {
+        try {
+            String imagePath;
+            // 플레이어 번호에 따라 적절한 승리 이미지 선택
+            switch (playerNumber) {
+                case 1:
+                    imagePath = "src/data/Turn/winner_1.png";
+                    break;
+                case 2:
+                    imagePath = "src/data/Turn/winner_2.png";
+                    break;
+                case 3:
+                    imagePath = "src/data/Turn/winner_3.png";
+                    break;
+                case 4:
+                    imagePath = "src/data/Turn/winner_4.png";
+                    break;
+                default:
+                    imagePath = "src/data/Turn/winner_1.png"; // 기본값
+                    break;
+            }
+            
+            BufferedImage winnerImage = ImageIO.read(new File(imagePath));
+            // 이미지 원래 크기 확인
+            int originalWidth = winnerImage.getWidth();
+            int originalHeight = winnerImage.getHeight();
+            // 이미지를 3분의 1 크기로 리사이징
+            Image resizedImage = winnerImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+            turnImageLabel.setIcon(new ImageIcon(resizedImage));
+        } catch (Exception e) {
+            System.err.println("승리 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    // 현재 플레이어 업데이트 메서드 (GameView 인터페이스와는 관계 없음)
+    public void updateCurrentPlayer(String playerID) {
+        // playerID 형식이 "playerX"로 가정
+        if (playerID != null && playerID.startsWith("player")) {
+            try {
+                int playerNum = Integer.parseInt(playerID.substring(6));
+                updateTurnImage(playerNum);
+            } catch (NumberFormatException e) {
+                System.err.println("잘못된 플레이어 ID 형식: " + playerID);
+            }
+        }
+    }
+
+    // 플레이어 점수 라벨 생성 메서드
+    private void createPlayerScoreLabels() {
+        // 플레이어 1 점수 라벨 생성
+        player1ScoreLabel = new JLabel();
+        player1ScoreLabel.setBounds(485, 181, 183,19); // 지정된 절대 좌표에 위치
+        updatePlayer1Score(player1RemainingPieces); // 초기 이미지 설정
+        add(player1ScoreLabel);
+        
+        // 플레이어 2 점수 라벨 생성
+        player2ScoreLabel = new JLabel();
+        player2ScoreLabel.setBounds(485, 228, 183,19); // 플레이어 1 아래에 위치
+        updatePlayer2Score(player2RemainingPieces); // 초기 이미지 설정
+        add(player2ScoreLabel);
+        
+        // 플레이어 3 점수 라벨 생성 
+        player3ScoreLabel = new JLabel();
+        player3ScoreLabel.setBounds(485, 275, 183,19); // 플레이어 2 아래에 위치
+        updatePlayer3Score(player3RemainingPieces); // 초기 이미지 설정
+        add(player3ScoreLabel);
+        
+        // 플레이어 4 점수 라벨 생성 
+        player4ScoreLabel = new JLabel();
+        player4ScoreLabel.setBounds(485, 322, 183,19); // 플레이어 3 아래에 위치
+        updatePlayer4Score(player4RemainingPieces); // 초기 이미지 설정
+        add(player4ScoreLabel);
+    }
+
+    // 플레이어 1 점수 업데이트 메서드
+    public void updatePlayer1Score(int remainingPieces) {
+        if (remainingPieces < 0) remainingPieces = 0;
+        if (remainingPieces > 5) remainingPieces = 5;
+        
+        player1RemainingPieces = remainingPieces;
+        
+        try {
+            String imagePath = "src/data/Score/player1/player1_" + remainingPieces + ".png";
+            File imageFile = getImageFile(imagePath);
+            
+            if (imageFile.exists()) {
+                BufferedImage scoreImage = ImageIO.read(imageFile);
+                // 이미지 원래 크기 확인
+                int originalWidth = scoreImage.getWidth();
+                int originalHeight = scoreImage.getHeight();
+                // 이미지를 3분의 1 크기로 리사이징
+                Image resizedImage = scoreImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                player1ScoreLabel.setIcon(new ImageIcon(resizedImage));
+            } else {
+                // 이미지가 없는 경우 텍스트로 대체
+                player1ScoreLabel.setIcon(null);
+                player1ScoreLabel.setText("Player 1: " + remainingPieces);
+                player1ScoreLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                player1ScoreLabel.setForeground(Color.RED);
+            }
+        } catch (Exception e) {
+            System.err.println("플레이어 1 점수 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            
+            // 예외 발생 시 텍스트로 대체
+            player1ScoreLabel.setIcon(null);
+            player1ScoreLabel.setText("Player 1: " + remainingPieces);
+            player1ScoreLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            player1ScoreLabel.setForeground(Color.RED);
+        }
+    }
+
+    // 플레이어 2 점수 업데이트 메서드
+    public void updatePlayer2Score(int remainingPieces) {
+        if (remainingPieces < 0) remainingPieces = 0;
+        if (remainingPieces > 5) remainingPieces = 5;
+        
+        player2RemainingPieces = remainingPieces;
+        
+        try {
+            String imagePath = "src/data/Score/player2/player2_" + remainingPieces + ".png";
+            File imageFile = getImageFile(imagePath);
+            
+            if (imageFile.exists()) {
+                BufferedImage scoreImage = ImageIO.read(imageFile);
+                // 이미지 원래 크기 확인
+                int originalWidth = scoreImage.getWidth();
+                int originalHeight = scoreImage.getHeight();
+                // 이미지를 3분의 1 크기로 리사이징
+                Image resizedImage = scoreImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                player2ScoreLabel.setIcon(new ImageIcon(resizedImage));
+            } else {
+                // 이미지가 없는 경우 텍스트로 대체
+                player2ScoreLabel.setIcon(null);
+                player2ScoreLabel.setText("Player 2: " + remainingPieces);
+                player2ScoreLabel.setFont(new Font("Arial", Font.BOLD, 12));
+                player2ScoreLabel.setForeground(Color.BLUE);
+            }
+        } catch (Exception e) {
+            System.err.println("플레이어 2 점수 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            
+            // 예외 발생 시 텍스트로 대체
+            player2ScoreLabel.setIcon(null);
+            player2ScoreLabel.setText("Player 2: " + remainingPieces);
+            player2ScoreLabel.setFont(new Font("Arial", Font.BOLD, 12));
+            player2ScoreLabel.setForeground(Color.BLUE);
+        }
+    }
+    
+    // 플레이어 3 점수 업데이트 메서드
+    public void updatePlayer3Score(int remainingPieces) {
+        if (remainingPieces < 0) remainingPieces = 0;
+        if (remainingPieces > 5) remainingPieces = 5;
+        
+        player3RemainingPieces = remainingPieces;
+        
+        try {
+            // 플레이어 3의 이미지 경로가 존재할 경우 사용
+            String imagePath = "src/data/Score/player3/player3_" + remainingPieces + ".png";
+            File imageFile = new File(imagePath);
+            
+            if (imageFile.exists()) {
+                BufferedImage scoreImage = ImageIO.read(imageFile);
+                // 이미지 원래 크기 확인
+                int originalWidth = scoreImage.getWidth();
+                int originalHeight = scoreImage.getHeight();
+                // 이미지를 3분의 1 크기로 리사이징
+                Image resizedImage = scoreImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                player3ScoreLabel.setIcon(new ImageIcon(resizedImage));
+            } else {
+                // 대체 이미지 사용 (없을 경우)
+                player3ScoreLabel.setIcon(null);
+                player3ScoreLabel.setText("Player 3: " + remainingPieces);
+            }
+        } catch (Exception e) {
+            System.err.println("플레이어 3 점수 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            player3ScoreLabel.setIcon(null);
+            player3ScoreLabel.setText("Player 3: " + remainingPieces);
+        }
+    }
+    
+    // 플레이어 4 점수 업데이트 메서드
+    public void updatePlayer4Score(int remainingPieces) {
+        if (remainingPieces < 0) remainingPieces = 0;
+        if (remainingPieces > 5) remainingPieces = 5;
+        
+        player4RemainingPieces = remainingPieces;
+        
+        try {
+            // 플레이어 4의 이미지 경로가 존재할 경우 사용
+            String imagePath = "src/data/Score/player4/player4_" + remainingPieces + ".png";
+            File imageFile = new File(imagePath);
+            
+            if (imageFile.exists()) {
+                BufferedImage scoreImage = ImageIO.read(imageFile);
+                // 이미지 원래 크기 확인
+                int originalWidth = scoreImage.getWidth();
+                int originalHeight = scoreImage.getHeight();
+                // 이미지를 3분의 1 크기로 리사이징
+                Image resizedImage = scoreImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                player4ScoreLabel.setIcon(new ImageIcon(resizedImage));
+            } else {
+                // 대체 이미지 사용 (없을 경우)
+                player4ScoreLabel.setIcon(null);
+                player4ScoreLabel.setText("Player 4: " + remainingPieces);
+            }
+        } catch (Exception e) {
+            System.err.println("플레이어 4 점수 이미지 로드 실패: " + e.getMessage());
+            e.printStackTrace();
+            player4ScoreLabel.setIcon(null);
+            player4ScoreLabel.setText("Player 4: " + remainingPieces);
+        }
+    }
+    
+    // 말이 도착점에 도달했을 때 호출하는 메서드
+    public void decreasePlayerPieceCount(int playerNumber) {
+        switch (playerNumber) {
+            case 1:
+                updatePlayer1Score(player1RemainingPieces - 1);
+                break;
+            case 2:
+                updatePlayer2Score(player2RemainingPieces - 1);
+                break;
+            case 3:
+                updatePlayer3Score(player3RemainingPieces - 1);
+                break;
+            case 4:
+                updatePlayer4Score(player4RemainingPieces - 1);
+                break;
+        }
+    }
+
+    // 게임 재시작 시 점수 초기화 메서드
+    public void resetPlayerScores() {
+        updatePlayer1Score(5);
+        updatePlayer2Score(5);
+        updatePlayer3Score(5);
+        updatePlayer4Score(5);
+    }
+
+    // 커스텀 윷 선택 팝업 표시
+    private void showCustomPopup() {
+        if (customPopupLabel == null) {
+            customPopupLabel = new JLabel();
+            customPopupLabel.setBounds(36, 445, 627, 117); // 지정된 위치에 표시
+            add(customPopupLabel); // 먼저 추가 (getParent가 null이 되지 않도록)
+            customPopupLabel.setVisible(false);
+            
+            try {
+                File imageFile = getImageFile("src/data/custom/custom_steady.png");
+                if (imageFile.exists()) {
+                    BufferedImage steadyImage = ImageIO.read(imageFile);
+                    
+                    // 이미지를 3분의 1 크기로 리사이징
+                    int originalWidth = steadyImage.getWidth();
+                    int originalHeight = steadyImage.getHeight();
+                    Image resizedImage = steadyImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                    
+                    customPopupLabel.setIcon(new ImageIcon(resizedImage));
+                    
+                    // 마우스 움직임 감지를 위한 리스너 추가
+                    customPopupLabel.addMouseMotionListener(new MouseMotionAdapter() {
+                        @Override
+                        public void mouseMoved(MouseEvent e) {
+                            handleCustomPopupHover(e.getX(), e.getY());
+                        }
+                    });
+                    
+                    // 마우스 클릭 이벤트 처리 - 즉시 선택 및 팝업 닫기
+                    customPopupLabel.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            int selection = getCustomSelectionFromPosition(e.getX(), e.getY());
+                            if (selection >= 1 && selection <= 6) {
+                                // 선택한 값 처리 후 팝업 닫기
+                                handleCustomSelection(selection);
+                                hideCustomPopup();
+                            }
+                        }
+                        
+                        @Override
+                        public void mouseExited(MouseEvent e) {
+                            // 마우스가 팝업을 벗어나면 기본 이미지로 복원
+                            try {
+                                File steadyFile = getImageFile("src/data/custom/custom_steady.png");
+                                if (steadyFile.exists()) {
+                                    BufferedImage steadyImage = ImageIO.read(steadyFile);
+                                    
+                                    // 이미지를 3분의 1 크기로 리사이징
+                                    int originalWidth = steadyImage.getWidth();
+                                    int originalHeight = steadyImage.getHeight();
+                                    Image resizedImage = steadyImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                                    
+                                    customPopupLabel.setIcon(new ImageIcon(resizedImage));
+                                }
+                            } catch (Exception ex) {
+                                System.err.println("이미지 로드 실패: " + ex.getMessage());
+                            }
+                        }
+                    });
+                } else {
+                    System.err.println("커스텀 팝업 이미지 파일을 찾을 수 없습니다");
+                    customPopupLabel.setText("Custom Choice");
+                }
+            } catch (Exception e) {
+                System.err.println("커스텀 팝업 이미지 로드 실패: " + e.getMessage());
+                e.printStackTrace();
+                customPopupLabel.setText("Custom Choice");
+            }
+        }
+        
+        customPopupLabel.setVisible(true);
+        isCustomPopupVisible = true;
+        
+        // 팝업을 맨 앞으로 가져오기 (부모가 있을 때만 실행)
+        if (customPopupLabel.getParent() != null) {
+            customPopupLabel.getParent().setComponentZOrder(customPopupLabel, 0);
+        }
+        
+        // 키보드 포커스 얻기 (Esc로 닫기 위함)
+        requestFocusInWindow();
+        
+        repaint();
+    }
+    
+    // 커스텀 팝업 숨기기
+    private void hideCustomPopup() {
+        if (customPopupLabel != null) {
+            customPopupLabel.setVisible(false);
+            isCustomPopupVisible = false;
+            repaint();
+        }
+    }
+    
+    // 마우스 위치에 따른 호버 이미지 변경
+    private void handleCustomPopupHover(int x, int y) {
+        int selection = getCustomSelectionFromPosition(x, y);
+        
+        if (selection >= 1 && selection <= 6) {
+            try {
+                File imageFile = getImageFile("src/data/custom/custom_" + selection + ".png");
+                if (imageFile.exists()) {
+                    BufferedImage hoverImage = ImageIO.read(imageFile);
+                    
+                    // 이미지를 3분의 1 크기로 리사이징
+                    int originalWidth = hoverImage.getWidth();
+                    int originalHeight = hoverImage.getHeight();
+                    Image resizedImage = hoverImage.getScaledInstance(originalWidth/3, originalHeight/3, Image.SCALE_SMOOTH);
+                    
+                    customPopupLabel.setIcon(new ImageIcon(resizedImage));
+                } else {
+                    System.err.println("호버 이미지 파일을 찾을 수 없습니다: " + selection);
+                }
+            } catch (Exception e) {
+                System.err.println("호버 이미지 로드 실패: " + e.getMessage());
+            }
+        }
+    }
+    
+    // 마우스 위치를 기반으로 선택값 반환 (1=도, 2=개, 3=걸, 4=윷, 5=모, 6=빽)
+    private int getCustomSelectionFromPosition(int x, int y) {
+        // 마우스 위치가 어떤 영역에 있는지 판단
+        // 이미지를 6등분하여 각 영역에 대응하는 값 반환
+        int width = customPopupLabel.getWidth();
+        int sectionWidth = width / 6;
+        
+        // x 좌표가 어느 섹션에 속하는지 계산 (0부터 5까지의 인덱스로 변환)
+        int sectionIndex = x / sectionWidth;
+        
+        // 범위를 벗어나는 경우 보정
+        if (sectionIndex < 0) sectionIndex = 0;
+        if (sectionIndex > 5) sectionIndex = 5;
+        
+        // 섹션 인덱스를 1~6 값으로 변환 (1=도, 2=개, 3=걸, 4=윷, 5=모, 6=빽)
+        return sectionIndex + 1;
+    }
+    
+    // 커스텀 선택 처리 메서드
+    private void handleCustomSelection(int selection) {
+        // 선택된 값 저장
+        selectedCustomYut = selection;
+        
+        // 선택된 값에 따른 처리 로직
+        System.out.println("선택된 윷 값: " + getYutNameFromSelection(selection));
+        
+        // 윷 결과 이미지 표시 (커스텀 선택 값에 따라 적절한 윷 결과로 매핑)
+        // 선택 값(1~6)을 윷 결과(0~5)로 변환하는 매핑
+        // 1(도) → 0, 2(개) → 1, 3(걸) → 2, 4(윷) → 3, 5(모) → 4, 6(빽도) → 5
+        showYutResult(selection - 1);
+        
+        // 이벤트 리스너에게 선택 통보
+        if (customChoiceListener != null) {
+            customChoiceListener.onCustomYutSelected(selection);
+        }
+    }
+    
+    // 선택된 커스텀 윷 값 반환
+    public int getSelectedCustomYut() {
+        return selectedCustomYut;
+    }
+    
+    // 선택된 커스텀 윷 이름 반환
+    public String getSelectedCustomYutName() {
+        return getYutNameFromSelection(selectedCustomYut);
+    }
+    
+    // 선택값에 따른 윷 이름 반환
+    private String getYutNameFromSelection(int selection) {
+        switch (selection) {
+            case 1: return "도";
+            case 2: return "개";
+            case 3: return "걸";
+            case 4: return "윷";
+            case 5: return "모";
+            case 6: return "빽도";
+            default: return "알 수 없음";
+        }
     }
 
     @Override
