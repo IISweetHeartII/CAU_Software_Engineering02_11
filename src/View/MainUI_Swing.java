@@ -66,7 +66,20 @@ public class MainUI_Swing extends JFrame implements GameView {
         // 보드 패널 (중앙)
         boardPanel = new BoardPanel(currentBoardType);
         add(boardPanel, BorderLayout.CENTER);
-        
+
+        // 보드 패널에 노드 클릭 리스너 설정
+        boardPanel.setNodeClickListener(nodeId -> {
+            Position clickedPosition = convertNodeIdToPosition(nodeId);
+            if (clickedPosition != null && currentPosableMoves != null && currentPosableMoves.contains(clickedPosition)) {
+                controller.handleMoveRequest(clickedPosition);
+            } else {
+                JOptionPane.showMessageDialog(this, "이동할 수 없는 위치입니다.", "오류", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+
+
+
         // 상태 패널 (하단)
         createStatusPanel();
         add(statusPanel, BorderLayout.SOUTH);
@@ -114,7 +127,16 @@ public class MainUI_Swing extends JFrame implements GameView {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-    
+
+    private Position convertNodeIdToPosition(String nodeId) {
+        for (Map.Entry<String, String> entry : nodeIdMapping.entrySet()) {
+            if (entry.getValue().equals(nodeId)) {
+                return new Position(entry.getKey()); // Position 클래스에 맞게 생성자 사용
+            }
+        }
+        return null;
+    }
+
     private void createControlPanel() {
         controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout());
@@ -258,7 +280,9 @@ public class MainUI_Swing extends JFrame implements GameView {
         return nodeIdMapping.get(position.toString());
     }
 
-    @Override
+
+    //테스트용 코드//
+    /*@Override
     public Position getUserSelectedPosition(ArrayDeque<Position> posableMoves) {
         // 실제 구현에서는 보드 패널의 노드 클릭 이벤트를 처리하여 선택된 위치 반환
         // 여기서는 간단히 첫 번째 이동 가능한 위치를 반환 (테스트용)
@@ -266,7 +290,7 @@ public class MainUI_Swing extends JFrame implements GameView {
             return posableMoves.getFirst();
         }
         return null;
-    }
+    }*/
 
     @Override
     public void BoardRendering() {
@@ -293,7 +317,7 @@ public class MainUI_Swing extends JFrame implements GameView {
             boardPanel.addPiece(pieceId, imagePath, nodeId);
         }
     }
-    
+
     // BoardPanel에서 말을 이동시키는 메서드 (컨트롤러에서 호출)
     public void movePieceOnBoard(String pieceId, Position position) {
         String nodeId = convertPositionToNodeId(position);

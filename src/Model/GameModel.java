@@ -85,6 +85,10 @@ public class GameModel implements Model {
         return gameScores;
     }
 
+    public ArrayDeque<YutResult> getYutResultDeque() {
+        return yutResultArrayDeque;
+    }//Controller에서 윷 결과를 가져가기 위한 메서드 추가
+
     /// methods ///
 
     // 게임 상태 초기화 //

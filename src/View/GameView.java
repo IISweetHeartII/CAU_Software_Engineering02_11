@@ -38,7 +38,7 @@ public interface GameView {
 
     void showPosableMoves(ArrayDeque<Position> posableMoves);
 
-    Position getUserSelectedPosition(ArrayDeque<Position> posableMoves);
+    //Position getUserSelectedPosition(ArrayDeque<Position> posableMoves);
 
     void BoardRendering();
 
