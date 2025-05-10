@@ -161,6 +161,7 @@ public class GameModel implements Model {
                     int groupSize = movablePiece.size;
                     currentPlayer.getMovablePieces().remove(movablePiece);
                     gameScores[currentPlayerIndex] += groupSize; // 그룹화된 말의 개수만큼 점수 추가
+                    currentPlayer.notArrivedCount -= groupSize; // 도착하지 않은 말의 개수 감소
                 }
             }
         }
@@ -172,6 +173,11 @@ public class GameModel implements Model {
         yutResultArrayDeque.removeFirstOccurrence(yutResult);
 
         return true;
+    }
+
+    @Override
+    public int getNotArrivedCount() {
+        return getCurrentPlayer().getNotArrivedCount();
     }
 
     @Override

@@ -7,12 +7,14 @@ public class Player {
     protected final String playerID;
     protected final ArrayDeque<Piece> allPieces; // ArrayDeque로 변경
     protected final ArrayDeque<MovablePiece> movablePieces; // ArrayDeque로 변경
+    protected int notArrivedCount; // 도착하지 않은 말의 개수
 
     /// Constructor ///
     public Player(String playerID, int numPieces) {
         this.playerID = playerID;
         this.allPieces = new ArrayDeque<>(); // ArrayDeque 초기화
-        this.movablePieces = new ArrayDeque<>(); // ArrayDeque 초기화
+        this.movablePieces = new ArrayDeque<>();
+        this.notArrivedCount = numPieces; // ArrayDeque 초기화
 
         // initializing //
         for (int i = 0; i < numPieces; i++) {
@@ -33,6 +35,10 @@ public class Player {
 
     public ArrayDeque<MovablePiece> getMovablePieces() {
         return movablePieces;
+    }
+
+    public int getNotArrivedCount() {
+        return notArrivedCount;
     }
 
     /// methods ///
