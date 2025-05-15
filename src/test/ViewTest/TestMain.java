@@ -1,7 +1,6 @@
 package test.ViewTest;
 
 import View.BoardPanel;
-import View.GameView;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.util.ArrayDeque;
