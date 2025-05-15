@@ -3,11 +3,11 @@
 package Controller;
 
 import Model.*;
-import View.MainUI_Swing;
+import View.SwingUI;
 
 public class GameController {
     public GameModel model;
-    public MainUI_Swing view;
+    public SwingUI view;
 
     // state flag
     public boolean yutState = false;
@@ -15,11 +15,13 @@ public class GameController {
     public boolean resetState = false;
     public boolean endState = false;
 
+
     // --------- Constructor ---------
     public GameController(GameModel gameModel) {
         this.model = gameModel;
-        this.view = new MainUI_Swing(this, this.model); // <----- View.initUI() 포함한다
+        this.view = new SwingUI(this, this.model); // <----- View.initUI() 포함한다
     }
+
 
     // --------- 랜덤 윷 던지기 ---------
     public void handleRandomThrow() { // <----- gameView : ActionListener에서 호출됨
@@ -29,6 +31,7 @@ public class GameController {
         moveState = !yutState;
     }
 
+
     // --------- 지정 윷 던지기 ---------
     public void handleManualThrow(YutResult yutResult) { // <------- gameView : ActionListener에서 호출됨
         YutResult copy = model.throwAndSaveYut(yutResult.getValue());
@@ -37,6 +40,7 @@ public class GameController {
         moveState = !yutState;
     }
 
+
     public void handleManualThrow(int valueOfYut) { // <------- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwAndSaveYut(valueOfYut);
         yutState = yutResult.isExtraTurn();
@@ -44,12 +48,14 @@ public class GameController {
         moveState = !yutState;
     }
 
+
     public void handleManualThrow(String StringOfYut) { // <------- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwAndSaveYut(StringOfYut);
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult);
         moveState = !yutState;
     }
+
 
     // --------- 말 이동 ---------
     public void movePiece(Position selectedPosition) { // <--------- gameView :
@@ -60,7 +66,7 @@ public class GameController {
 
         view.updateBoard();
         view.updatePlayerState();
-        
+
         if (model.getYutResultDeque().isEmpty()) {
             moveState = false;
             if (model.isGameEnd()) {
@@ -83,27 +89,4 @@ public class GameController {
         endState = true;
         return endState;
     }
-
-    /*// 사용자 클릭 위치 받아 처리
-    public void handleMoveRequest(Position selectedPosition) {
-        MovablePiece selectedPiece = Model.getCurrentPlayer().getMovablePieceAt(selectedPosition);
-        if (selectedPiece == null) return;
-
-        String currentPlayerID = Model.getCurrentPlayer().getPlayerID();
-        if (!selectedPiece.getPlayerID().equals(currentPlayerID)) return;
-
-        boolean moved = Model.movePiece(selectedPosition);
-        if (!moved) return;
-
-        if (selectedPiece.isArrived()) {
-            Model.addScore(Model.getCurrentPlayer());
-        }
-
-        View.BoardRendering();
-
-        if (!Model.isExtraTurn()) {
-            Model.changeTurn();
-            View.updateCurrentPlayer(Model.getCurrentPlayer().getPlayerID());
-        }
-    }*/
 }
