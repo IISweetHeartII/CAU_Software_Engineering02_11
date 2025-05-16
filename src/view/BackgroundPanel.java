@@ -3,6 +3,10 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * BackgroundPanel은 JPanel을 상속받아 배경 이미지를 설정할 수 있는 패널입니다.
+ * 이 패널은 paintComponent 메서드를 오버라이드하여 배경 이미지를 그립니다.
+ */
 public class BackgroundPanel extends JPanel {
     private Image backgroundImage;
 

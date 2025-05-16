@@ -15,6 +15,7 @@ public class GameController {
     public boolean resetState = false;
     public boolean endState = false;
 
+    public String selectedNodeId = "";
 
     // --------- Constructor ---------
     public GameController(GameModel gameModel) {
@@ -90,5 +91,9 @@ public class GameController {
     public boolean endGame() {
         endState = true;
         return endState;
+    }
+
+    public void handleBoardClick(String NodeId) {
+        selectedNodeId = NodeId;
     }
 }
