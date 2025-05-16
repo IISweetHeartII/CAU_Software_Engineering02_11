@@ -60,13 +60,21 @@ public class SwingUI {
         backgroundPanel.setLayout(null);  // 절대 위치 지정
         // ------------------------ //
 
-        // Todo: [Throw] Button
+        // ------ title 설정 ------ //
+        {
+            // 이미지 처리
+            ImageIcon titleIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/title.PNG"
+            )));
+            Image scaledTitle = titleIcon.getImage().getScaledInstance(1242 / 6, 558 / 6, Image.SCALE_SMOOTH);
+            titleLabel = new JLabel(new ImageIcon(scaledTitle));
 
-        // Todo: [Custom choice]
+            // 위치 처리 및 보정
+            titleLabel.setBounds(473 - (1242/12), 20 - (558/12), 1242 / 3, 558 / 3);
 
-        // Todo: [Restart] Button
-
-        // Todo: [Quit] Button
+            // 패널에 추가
+            backgroundPanel.add(titleLabel);
+        }
 
         // ------- Board 버튼 설정 -------- //
         {
@@ -85,6 +93,12 @@ public class SwingUI {
             }
         }
         // ------------------------------- //
+
+        // Todo: [Throw] Button
+
+        // Todo: [Custom choice]
+
+        // Todo: [Restart] Button
 
         // ------ Quit 버튼 설정 ------ //
         {
