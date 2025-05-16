@@ -3,6 +3,7 @@ package view;
 import controller.GameController;
 import model.GameModel;
 import model.YutResult;
+import org.w3c.dom.Node;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +22,8 @@ public class SwingUI {
     GameController controller;
     GameModel model;
     private JFrame frame;
+
+    private JLabel scoreLabel;
 
 
     ///  생성자
@@ -52,9 +55,9 @@ public class SwingUI {
         // --------------------- //
 
         // ------- Board 버튼 설정 -------- //
-        Map<String, JButton> boardButtons = createButtons(boardButtonPositions);
+        Map<String, NodeButton> boardButtons = createButtons(boardButtonPositions);
         for (String id : boardButtons.keySet()) {
-            JButton btn = boardButtons.get(id);
+            NodeButton btn = boardButtons.get(id);
             btn.addActionListener(e -> {
                 String clickedId = e.getActionCommand();
 
@@ -115,27 +118,6 @@ public class SwingUI {
         boardButtonPositions.put("E8", new Point(364-20, 364-20));
     }
 
-    public static Map<String, JButton> createButtons(Map<String, Point> positions) {
-        Map<String, JButton> buttonMap = new HashMap<>();
-
-        for (String id : positions.keySet()) {
-            Point p = positions.get(id);
-            JButton button = new JButton();
-
-            button.setBounds(p.x, p.y, 40, 40); // 버튼 위치와 크기 설정
-            button.setOpaque(false);
-            button.setContentAreaFilled(false);
-            button.setBorderPainted(false);
-
-            button.setActionCommand(id); // 버튼마다 고유 ID 지정
-
-            buttonMap.put(id, button);
-        }
-
-        return buttonMap;
-    }
-    // ----------------------------------- //
-
     public static class NodeButton extends JButton {
         private final String nodeId;
 
@@ -145,12 +127,26 @@ public class SwingUI {
             setOpaque(false);
             setContentAreaFilled(false);
             setBorderPainted(false);
+
+            setActionCommand(nodeId); // -> 버튼마다 고유 ID 지정 -> ID로 버튼 클릭 조작
         }
 
         public String getNodeId() {
             return nodeId;
         }
     }
+
+    public static Map<String, NodeButton> createButtons(Map<String, Point> positions) {
+        Map<String, NodeButton> buttonMap = new HashMap<>();
+
+        for (String id : positions.keySet()) {  // boardButtonPositions 에 저장된 위치 정보마다 버튼을 생성
+            Point p = positions.get(id);        // └ boardButtonPositions Map만 수정하면 다각형으로 확장 가능
+            NodeButton button = new NodeButton(id, p.x, p.y);
+            buttonMap.put(id, button);
+        }
+        return buttonMap;
+    }
+    // ----------------------------------- //
 
     public void showYutResult(YutResult yutResult) {
     }
