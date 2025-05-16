@@ -3,7 +3,6 @@ package view;
 import controller.GameController;
 import model.GameModel;
 import model.YutResult;
-import org.w3c.dom.Node;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,12 +11,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SwingUI {
-    /// SwingUI 클래스는 GUI를 구성하는 역할을 합니다.
-    /// 이 클래스는 JFrame을 상속받아 GUI의 기본 틀을 제공합니다.
-    /// 또한, ActionListener를 구현하여 버튼 클릭 이벤트를 처리합니다.
-    ///
-    /// JFrame을 상속받아 GUI의 기본 틀을 제공합니다.
-    /// ActionListener를 구현하여 버튼 클릭 이벤트를 처리합니다.
+    /// 코드 해석용 참고할만한 사항
+    /// 웬만한 코드는 추상적으로 표현되도록 작성돼었습니다.
+    /// 쌩 중괄호{}로 감싸진 부분은 읽을 필요가 없거나, 중요도가 낮은 항목이므로 접어두시는 것을 권장드립니다.
 
     GameController controller;
     GameModel model;
@@ -34,7 +30,7 @@ public class SwingUI {
 
     private JLabel yutLabel;
 
-    ///  생성자
+    // ------ 생성자: Constructor ------- //
     public SwingUI(GameController controller, GameModel model) {
         // GUI 초기화 코드
         this.controller = controller;
@@ -43,14 +39,16 @@ public class SwingUI {
     }
 
 
-    /// 메서드
+    // ------- 메서드: Method ------ //
     public void initUI() {
         // ------- No Need Modification ------- //
-        frame = new JFrame("윷놀이 게임");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(700, 700);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
+        {
+            frame = new JFrame("윷놀이 게임");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(700, 700);
+            frame.setResizable(false);
+            frame.setLocationRelativeTo(null);
+        }
 
         // ------- 배경 설정 ------- //
         ImageIcon bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
@@ -60,7 +58,7 @@ public class SwingUI {
         BackgroundPanel backgroundPanel = new BackgroundPanel(bgImage);
         backgroundPanel.setPreferredSize(new Dimension(700, 700));
         backgroundPanel.setLayout(null);  // 절대 위치 지정
-        // --------------------- //
+        // ------------------------ //
 
         // Todo: [Throw] Button
 
@@ -71,18 +69,20 @@ public class SwingUI {
         // Todo: [Quit] Button
 
         // ------- Board 버튼 설정 -------- //
-        Map<String, NodeButton> boardButtons = createButtons(boardButtonPositions);
-        for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
-            NodeButton btn = boardButtons.get(id);
-            btn.addActionListener(e -> {
-                String clickedId = e.getActionCommand();
+        {
+            Map<String, NodeButton> boardButtons = createBoardButtons(boardButtonPositions);
+            for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
+                NodeButton btn = boardButtons.get(id);
+                btn.addActionListener(e -> {
+                    String clickedId = e.getActionCommand();
 
-                System.out.println("클릭된 노드: " + clickedId); // -> test용, 주석 처리 무관
+                    System.out.println("클릭된 노드: " + clickedId); // -> test용, 주석 처리 무관
 
-                controller.handleBoardClick(clickedId);
-            });
+                    controller.handleBoardClick(clickedId);
+                });
 
-            backgroundPanel.add(btn);
+                backgroundPanel.add(btn);
+            }
         }
         // ------------------------------- //
 
@@ -111,15 +111,24 @@ public class SwingUI {
                 System.exit(0);
             });
 
+            // Hovering 처리
+            ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/button/button_quit_down.png"
+            )));
+            Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
+            quitButton.setRolloverIcon(new ImageIcon(hoverScaled));
+
             // 패널에 버튼 추가
             backgroundPanel.add(quitButton);
         }
         // --------------------------- //
 
         // ------- 최종 설정 No Need Modification ------- //
-        Objects.requireNonNull(frame).setContentPane(backgroundPanel);
-        frame.pack();
-        frame.setVisible(true);
+        {
+            Objects.requireNonNull(frame).setContentPane(backgroundPanel);
+            frame.pack();
+            frame.setVisible(true);
+        }
     }
 
 
@@ -183,7 +192,7 @@ public class SwingUI {
         }
     }
 
-    public static Map<String, NodeButton> createButtons(Map<String, Point> positions) {
+    public static Map<String, NodeButton> createBoardButtons(Map<String, Point> positions) {
         Map<String, NodeButton> buttonMap = new HashMap<>();
 
         for (String id : positions.keySet()) {  // boardButtonPositions 에 저장된 위치 정보마다 버튼을 생성
