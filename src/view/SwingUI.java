@@ -6,6 +6,7 @@ import model.YutResult;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class SwingUI {
     /// SwingUI 클래스는 GUI를 구성하는 역할을 합니다.
@@ -19,6 +20,8 @@ public class SwingUI {
     GameModel model;
     private JFrame frame;
 
+
+    ///  생성자
     public SwingUI(GameController controller, GameModel model) {
         // GUI 초기화 코드
         this.controller = controller;
@@ -27,7 +30,7 @@ public class SwingUI {
     }
 
 
-
+    /// 메서드
     public void initUI() {
         frame = new JFrame("윷놀이 게임");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,9 +39,9 @@ public class SwingUI {
         frame.setLocationRelativeTo(null);
 
         // 이미지 불러오기
-        ImageIcon bgIcon = new ImageIcon(getClass().getResource(
-                "/data/UI/board/board_four.png"
-        ));
+        ImageIcon bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/board/board_four.png"
+        )));
         Image bgImage = bgIcon.getImage();
 
         // 배경 패널 생성
