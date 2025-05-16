@@ -23,8 +23,16 @@ public class SwingUI {
     GameModel model;
     private JFrame frame;
 
-    private JLabel scoreLabel;
+    private JLabel titleLabel;
 
+    private JLabel player1ScoreLabel;
+    private JLabel player2ScoreLabel;
+    private JLabel player3ScoreLabel;
+    private JLabel player4ScoreLabel;
+
+    private JLabel turnLabel;
+
+    private JLabel yutLabel;
 
     ///  생성자
     public SwingUI(GameController controller, GameModel model) {
@@ -37,7 +45,7 @@ public class SwingUI {
 
     /// 메서드
     public void initUI() {
-        // ------- No Modification ------- //
+        // ------- No Need Modification ------- //
         frame = new JFrame("윷놀이 게임");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 700);
@@ -46,7 +54,7 @@ public class SwingUI {
 
         // ------- 배경 설정 ------- //
         ImageIcon bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/UI/Board/board_four.png"
+                "/data/ui/board/board_four.png"
         )));
         Image bgImage = bgIcon.getImage();
         BackgroundPanel backgroundPanel = new BackgroundPanel(bgImage);
@@ -54,9 +62,17 @@ public class SwingUI {
         backgroundPanel.setLayout(null);  // 절대 위치 지정
         // --------------------- //
 
+        // Todo: [Throw] Button
+
+        // Todo: [Custom choice]
+
+        // Todo: [Restart] Button
+
+        // Todo: [Quit] Button
+
         // ------- Board 버튼 설정 -------- //
         Map<String, NodeButton> boardButtons = createButtons(boardButtonPositions);
-        for (String id : boardButtons.keySet()) {
+        for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
             NodeButton btn = boardButtons.get(id);
             btn.addActionListener(e -> {
                 String clickedId = e.getActionCommand();
@@ -68,8 +84,39 @@ public class SwingUI {
 
             backgroundPanel.add(btn);
         }
+        // ------------------------------- //
 
-        // ------- 최종 설정------- //
+        // ------ Quit 버튼 설정 ------ //
+        {
+            // 난 버튼을 생성할 것이다 <- 버튼 객체 생성 및 위치 설정
+            JButton quitButton = new JButton("Quit");
+            quitButton.setBounds(584, 644, 279 / 3, 108 / 3);
+
+            // 이미지 처리
+            ImageIcon quitIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/button/button_quit_up.png"
+            )));
+            Image scaled = quitIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
+            quitButton.setIcon(new ImageIcon(scaled));
+
+            // 버튼 표시 옵션
+            quitButton.setBorderPainted(false);
+            quitButton.setContentAreaFilled(false);
+            quitButton.setFocusPainted(false);
+            quitButton.setOpaque(false);
+            quitButton.setText("");
+
+            // Action 설정
+            quitButton.addActionListener(e -> {
+                System.exit(0);
+            });
+
+            // 패널에 버튼 추가
+            backgroundPanel.add(quitButton);
+        }
+        // --------------------------- //
+
+        // ------- 최종 설정 No Need Modification ------- //
         Objects.requireNonNull(frame).setContentPane(backgroundPanel);
         frame.pack();
         frame.setVisible(true);
