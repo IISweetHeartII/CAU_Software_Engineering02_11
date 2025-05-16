@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.util.ArrayDeque;
 import java.util.Collections;

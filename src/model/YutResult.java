@@ -1,6 +1,6 @@
 //윷 던지기 결과 정의
 
-package Model;
+package model;
 
 public class YutResult {
     private final YutResultType resultType;

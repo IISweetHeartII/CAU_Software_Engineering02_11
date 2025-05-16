@@ -1,23 +1,23 @@
 package main;
 
-import Controller.GameController;
-import Model.GameModel;
+import controller.GameController;
+import model.GameModel;
+import view.SwingUI;
 
 public class Main {
     public static void main(String[] args) {
-        // GameModel 생성
-        GameModel gameModel = new GameModel();
-
-        // GameController 생성 (GameModel과 연결)
-        GameController controller = new GameController(gameModel); // -----> View.initUI() 포함한다
-        // MainUI_Swing은 GameController 내부에서 초기화됨
-        // MainUI_Swing은 GameController를 통해 GameModel과 상호작용
+        // 게임 모델과 컨트롤러 초기화
+        GameModel model = new GameModel();
+        GameController controller = new GameController(model);
+        // Todo: UI를 위한 Interface를 구현하여 SwingUI와 GameController를 연결합니다.
+        SwingUI view = new SwingUI(controller, model);
+        controller.setView(view);
 
         // 게임 시작
         while (true) {
             if (controller.resetGame()) {
-                gameModel = new GameModel();
-                controller = new GameController(gameModel); // -----> View.initUI() 포함한다
+                model = new GameModel();
+                controller = new GameController(model); // -----> View.initUI() 포함한다
             }
             if (controller.endGame()) {
                 break;

@@ -1,7 +1,7 @@
 package test;
 
-import Model.Position;
-import Model.Board;
+import model.Position;
+import model.Board;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,1 +1,1 @@
-javac -d bin src/View/BoardPanel.java src/View/GameView.java src/View/MainFrame.java src/View/MainUI_Swing.java src/View/TestMain.java && java -cp bin View.TestMain
+javac -d bin src/view/BoardPanel.java src/view/GameView.java src/view/MainFrame.java src/view/MainUI_Swing.java src/view/TestMain.java && java -cp bin view.TestMain

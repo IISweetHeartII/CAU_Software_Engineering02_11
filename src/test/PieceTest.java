@@ -1,14 +1,11 @@
 package test;
 
-import Model.Piece;
-import Model.Board;
-import Model.Position;
+import model.Piece;
+import model.Position;
 
 import java.util.Deque;
 
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayDeque;
 
 import static org.junit.jupiter.api.Assertions.*;
 

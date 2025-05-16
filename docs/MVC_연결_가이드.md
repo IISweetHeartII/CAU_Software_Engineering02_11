@@ -2,21 +2,21 @@
 
 ## 목차
 1. [MVC 패턴 개요](#mvc-패턴-개요)
-2. [모델 (Model) 구성](#모델-model-구성)
-3. [뷰 (View) 구성](#뷰-view-구성)
-4. [컨트롤러 (Controller) 구성](#컨트롤러-controller-구성)
+2. [모델 (model) 구성](#모델-model-구성)
+3. [뷰 (view) 구성](#뷰-view-구성)
+4. [컨트롤러 (controller) 구성](#컨트롤러-controller-구성)
 5. [MVC 연결 방법](#mvc-연결-방법)
 6. [테스트 파일 관리 가이드](#테스트-파일-관리-가이드)
 
 ## MVC 패턴 개요
 
-윷놀이 게임은 MVC(Model-View-Controller) 패턴을 적용하여 설계되었습니다. 이 패턴을 통해 코드의 유지보수성을 높이고, 각 구성 요소의 역할을 명확히 분리했습니다.
+윷놀이 게임은 MVC(model-view-controller) 패턴을 적용하여 설계되었습니다. 이 패턴을 통해 코드의 유지보수성을 높이고, 각 구성 요소의 역할을 명확히 분리했습니다.
 
-- **Model**: 게임의 데이터와 비즈니스 로직을 담당
-- **View**: 사용자 인터페이스와 시각적 요소를 담당
-- **Controller**: Model과 View 사이의 상호작용을 조정하고 게임 흐름을 제어
+- **model**: 게임의 데이터와 비즈니스 로직을 담당
+- **view**: 사용자 인터페이스와 시각적 요소를 담당
+- **controller**: Model과 view 사이의 상호작용을 조정하고 게임 흐름을 제어
 
-## 모델 (Model) 구성
+## 모델 (model) 구성
 
 모델은 게임의 상태와 규칙을 관리합니다.
 
@@ -41,12 +41,12 @@
 - `groupPiecesAtPosition()` / `captureOpponentPiece()`: 말 그룹화 및 상대편 말 잡기
 - `nextTurn()`: 다음 턴으로 전환
 
-## 뷰 (View) 구성
+## 뷰 (view) 구성
 
 뷰는 사용자 인터페이스와 시각적 요소를 담당합니다.
 
 ### 주요 클래스
-- `GameView`: 뷰 인터페이스 (View 계층의 최상위 인터페이스)
+- `GameView`: 뷰 인터페이스 (view 계층의 최상위 인터페이스)
 - `BoardPanel`: 게임 보드 표시 및 사용자 상호작용 처리
 - `MainFrame`: 메인 UI 프레임
 - `MainUI_Swing`: Swing 기반 UI 구현
@@ -65,7 +65,7 @@
 - `GameRestartListener`: 게임 재시작 이벤트 처리
 - `GameQuitListener`: 게임 종료 이벤트 처리
 
-## 컨트롤러 (Controller) 구성
+## 컨트롤러 (controller) 구성
 
 컨트롤러는 모델과 뷰 사이의 상호작용을 조정합니다.
 
@@ -85,17 +85,17 @@
 
 ## MVC 연결 방법
 
-### Model → View 연결
+### model → view 연결
 1. 모델은 상태 변경 후 컨트롤러에 알림
 2. 컨트롤러는 뷰의 적절한 메서드를 호출하여 화면 업데이트
    - 예: `gameView.showYutResult(result)`, `gameView.updateCurrentPlayer(playerID)`
 
-### View → Model 연결
+### view → model 연결
 1. 뷰에서 사용자 입력 발생 시 리스너를 통해 컨트롤러에 전달
 2. 컨트롤러는, 모델의 적절한 메서드를 호출하여 게임 상태 업데이트
    - 예: `yutThrowListener.onYutThrow()` → `gameModel.throwAndSaveYut()`
 
-### Controller 설정 과정
+### controller 설정 과정
 ```java
 // 컨트롤러 생성 및 연결 예시
 GameModel gameModel = new GameModel(4, 5); // 4명의 플레이어, 각 5개의 말
@@ -161,7 +161,7 @@ BoardPanel 클래스에서 이미지 처리 시 다음 사항에 주의해야 �
 
 ## 테스트 파일 관리 가이드
 
-View 패키지에 포함된 테스트 파일들은 다음과 같이 관리하는 것을 권장합니다:
+view 패키지에 포함된 테스트 파일들은 다음과 같이 관리하는 것을 권장합니다:
 
 1. **유지해야 할 테스트 파일**:
    - `BoardPanelTest.java`: BoardPanel 기능 테스트에 필요하므로 유지
@@ -177,9 +177,9 @@ View 패키지에 포함된 테스트 파일들은 다음과 같이 관리하는
 4. **테스트 디렉토리 구성 권장사항**:
    ```
    src/
-   ├── Controller/
-   ├── Model/
-   ├── View/
+   ├── controller/
+   ├── model/
+   ├── view/
    └── test/
        ├── ControllerTest/
        ├── ModelTest/
@@ -190,9 +190,9 @@ View 패키지에 포함된 테스트 파일들은 다음과 같이 관리하는
 
 MVC 연결이 올바르게 이루어졌는지 확인하기 위한 체크리스트:
 
-1. Model 클래스들이 View나 Controller에 의존하지 않는지 확인
+1. model 클래스들이 View나 Controller에 의존하지 않는지 확인
 2. View가 Model에 직접 접근하지 않고 Controller를 통해서만 접근하는지 확인
-3. Controller가 View와 Model 사이의 중재자 역할을 제대로 수행하는지 확인
+3. Controller가 View와 model 사이의 중재자 역할을 제대로 수행하는지 확인
 4. 모든 사용자 이벤트가 적절한 리스너를 통해 Controller에 전달되는지 확인
 5. 모든 UI 업데이트가 Controller를 통해 View에 전달되는지 확인
 6. 이미지 및 리소스 파일이 올바른 경로에 위치하는지 확인

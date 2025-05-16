@@ -1,9 +1,9 @@
 //윷 던지기 버튼 선택에 대한 로직 처리
 
-package Controller;
+package controller;
 
-import Model.*;
-import View.SwingUI;
+import model.*;
+import view.SwingUI;
 
 public class GameController {
     public GameModel model;
@@ -19,9 +19,11 @@ public class GameController {
     // --------- Constructor ---------
     public GameController(GameModel gameModel) {
         this.model = gameModel;
-        this.view = new SwingUI(this, this.model); // <----- View.initUI() 포함한다
     }
 
+    public void setView(SwingUI view) {
+        this.view = view;
+    }
 
     // --------- 랜덤 윷 던지기 ---------
     public void handleRandomThrow() { // <----- gameView : ActionListener에서 호출됨
