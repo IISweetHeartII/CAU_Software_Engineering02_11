@@ -36,7 +36,7 @@ public class GameModel implements Model {
     protected int[] gameScores;
     protected int extraTurnCount = 0; // 추가 턴 수
     protected ArrayDeque<YutResult> yutResultArrayDeque = new ArrayDeque<>();
-    protected ArrayDeque<Piece> positionPieceArrayDeque = new ArrayDeque<>();
+    protected ArrayDeque<Unit> positionUnitArrayDeque = new ArrayDeque<>();
 
     private Map<String, String> piecePositionsMap = new HashMap<>(); // key: pieceId, value: positionId
 
@@ -134,7 +134,7 @@ public class GameModel implements Model {
             gameScores[i] = 0;
         }
         yutResultArrayDeque.clear(); // 윷 결과 초기화
-        positionPieceArrayDeque.clear(); // 위치 조각 초기화
+        positionUnitArrayDeque.clear(); // 위치 조각 초기화
         currentPlayerIndex = 0; // 현재 플레이어 인덱스 초기화
         extraTurnCount = 0; // 추가 턴 수 초기화
         return true; // 게임 초기화 성공
@@ -142,37 +142,37 @@ public class GameModel implements Model {
 
     /// Controller 또는 View에서 호출하는 메서드 -> game state 변경
     public boolean movePiece(Position selectedPosition) {
-        Piece selectedPositionPiece = findPositionPieceAt(selectedPosition);
+        Unit selectedPositionUnit = findPositionPieceAt(selectedPosition);
 
-        Piece copyOfSelectedPositionPiece = new Piece(selectedPositionPiece);
-        copyOfSelectedPositionPiece.recentPath.removeFirst(); // 초기 빽도 값 제거 -> 원래 위치
+        Unit copyOfSelectedPositionUnit = new Unit(selectedPositionUnit);
+        copyOfSelectedPositionUnit.recentPath.removeFirst(); // 초기 빽도 값 제거 -> 원래 위치
 
-        MovablePiece selectedMovablePiece = findMovablePieceAt(selectedPosition);
+        Piece selectedPiece = findMovablePieceAt(selectedPosition);
 
-        if (selectedMovablePiece.isArrived()) return false; // 이미 도착한 말은 이동할 수 없음
-        if (selectedPositionPiece == null) return false; // 해당 위치로 이동할 수 없음
+        if (selectedPiece.isArrived()) return false; // 이미 도착한 말은 이동할 수 없음
+        if (selectedPositionUnit == null) return false; // 해당 위치로 이동할 수 없음
 
-        if (groupPiecesAtPosition(selectedMovablePiece, selectedPosition)) return true; // 경로를 target이 이미 저장하고 있으므로
-        if (captureOpponentPiece(selectedMovablePiece, selectedPosition)) extraTurnCount++;
+        if (groupPiecesAtPosition(selectedPiece, selectedPosition)) return true; // 경로를 target이 이미 저장하고 있으므로
+        if (captureOpponentPiece(selectedPiece, selectedPosition)) extraTurnCount++;
 
         int yutSize;
-        selectedMovablePiece.moveTo(-1); // 빽도인데 이동할 위치와 같다면 결과도 빽도
-        if (selectedPositionPiece.currentPosition.equals(selectedMovablePiece.currentPosition)) {
+        selectedPiece.moveTo(-1); // 빽도인데 이동할 위치와 같다면 결과도 빽도
+        if (selectedPositionUnit.currentPosition.equals(selectedPiece.currentPosition)) {
             yutSize = -1; // 빽도
         } else {
             // target의 최근 위치 변화를 통해 윷 결과를 역추적
-            selectedMovablePiece.moveTo(-1);
-            yutSize = selectedPositionPiece.recentPath.size() - 3; // DO라면, [0 -1 0 1] -> 3개
-            selectedMovablePiece.moveTo(yutSize);
+            selectedPiece.moveTo(-1);
+            yutSize = selectedPositionUnit.recentPath.size() - 3; // DO라면, [0 -1 0 1] -> 3개
+            selectedPiece.moveTo(yutSize);
         }
 
         // 이동한 말이 END에 도착했을 때 점수를 추가하고 그룹화된 말들을 Player -> MovablePieces에서 제거
         Player currentPlayer = getCurrentPlayer();
-        if (selectedMovablePiece.isArrived()) {
-            for (MovablePiece movablePiece : currentPlayer.getMovablePieces()) {
-                if (movablePiece.isArrived()) {
-                    int groupSize = movablePiece.size;
-                    currentPlayer.getMovablePieces().remove(movablePiece);
+        if (selectedPiece.isArrived()) {
+            for (Piece piece : currentPlayer.getMovablePieces()) {
+                if (piece.isArrived()) {
+                    int groupSize = piece.size;
+                    currentPlayer.getMovablePieces().remove(piece);
                     gameScores[currentPlayerIndex] += groupSize; // 그룹화된 말의 개수만큼 점수 추가
                     currentPlayer.notArrivedCount -= groupSize; // 도착하지 않은 말의 개수 감소
                 }
@@ -180,7 +180,7 @@ public class GameModel implements Model {
         }
 
         // PositionPieceArrayDeque 초기화
-        positionPieceArrayDeque.clear();
+        positionUnitArrayDeque.clear();
         // 사용한 윷 제거
         YutResult yutResult = yut.throwYut(yutSize);
         yutResultArrayDeque.removeFirstOccurrence(yutResult);
@@ -188,11 +188,11 @@ public class GameModel implements Model {
         return true;
     }
 
-    public MovablePiece findMovablePieceAt(Position position) {
+    public Piece findMovablePieceAt(Position position) {
         for (Player player : players) {
-            for (MovablePiece movablePiece : player.getMovablePieces()) {
-                if (movablePiece.getCurrentPosition().equals(position)) {
-                    return movablePiece; // 해당 위치에 있는 MovablePiece 반환
+            for (Piece piece : player.getMovablePieces()) {
+                if (piece.getCurrentPosition().equals(position)) {
+                    return piece; // 해당 위치에 있는 MovablePiece 반환
                 }
             }
         }
@@ -209,12 +209,12 @@ public class GameModel implements Model {
     }
 
     @Override
-    public ArrayDeque<MovablePiece> getAllMovablePieces() {
-        ArrayDeque<MovablePiece> allMovablePieces = new ArrayDeque<>();
+    public ArrayDeque<Piece> getAllMovablePieces() {
+        ArrayDeque<Piece> allPieces = new ArrayDeque<>();
         for (Player player : players) {
-            allMovablePieces.addAll(player.getMovablePieces());
+            allPieces.addAll(player.getMovablePieces());
         }
-        return allMovablePieces;
+        return allPieces;
     }
 
     @Override
@@ -234,24 +234,24 @@ public class GameModel implements Model {
 
     @Override
     public ArrayDeque<Position> getPosableMoves() {
-        ArrayDeque<MovablePiece> movablePieces = getCurrentPlayer().getMovablePieces();
+        ArrayDeque<Piece> pieces = getCurrentPlayer().getMovablePieces();
         // 현재 플레이어에 대한 시작 위치를 각 movablePiece의 위치로 하는 PositionPiece 생성
         int caseSize = yutResultArrayDeque.size();
-        for (MovablePiece movablePiece : movablePieces) {
-            if (movablePiece.isArrived()) continue; // 이미 도착한 말은 제외
-            movablePiece.moveTo(-1);
-            Position startPosition = movablePiece.getCurrentPosition();
+        for (Piece piece : pieces) {
+            if (piece.isArrived()) continue; // 이미 도착한 말은 제외
+            piece.moveTo(-1);
+            Position startPosition = piece.getCurrentPosition();
             for (YutResult yutResult : yutResultArrayDeque) {
-                Piece positionPiece = new Piece(movablePiece.getPlayerID(), movablePiece.getPieceArrayDeque().peekFirst().pieceID, startPosition);
-                positionPiece.moveTo(-1); // 빽도 반영하려고... 뒤 한칸을 시작 위치로 갔다가 앞으로 한 칸...
-                positionPiece.moveTo(yutResult.getValue());
-                positionPieceArrayDeque.add(positionPiece);
+                Unit positionUnit = new Unit(piece.getPlayerID(), piece.getPieceArrayDeque().peekFirst().pieceID, startPosition);
+                positionUnit.moveTo(-1); // 빽도 반영하려고... 뒤 한칸을 시작 위치로 갔다가 앞으로 한 칸...
+                positionUnit.moveTo(yutResult.getValue());
+                positionUnitArrayDeque.add(positionUnit);
             }
         }
 
         ArrayDeque<Position> posableMoves = new ArrayDeque<>();
-        for (Piece piece : positionPieceArrayDeque) {
-            posableMoves.add(piece.getCurrentPosition());
+        for (Unit unit : positionUnitArrayDeque) {
+            posableMoves.add(unit.getCurrentPosition());
         }
 
         return posableMoves;
@@ -297,10 +297,10 @@ public class GameModel implements Model {
     }
 
     /// 내부에서 사용할 메서드 ///
-    public Piece findPositionPieceAt(Position position) {
-        for (Piece piece : positionPieceArrayDeque) {
-            if (piece.getCurrentPosition().equals(position)) {
-                return piece; // 해당 위치에 있는 Piece 반환
+    public Unit findPositionPieceAt(Position position) {
+        for (Unit unit : positionUnitArrayDeque) {
+            if (unit.getCurrentPosition().equals(position)) {
+                return unit; // 해당 위치에 있는 Piece 반환
             }
         }
         return null; // 해당 위치에 Piece가 없음
@@ -316,20 +316,20 @@ public class GameModel implements Model {
 
     // grouping //
     // 특정 위치에 있는 말을 그룹화
-    public boolean groupPiecesAtPosition(MovablePiece movedPiece, Position position) {
+    public boolean groupPiecesAtPosition(Piece movedPiece, Position position) {
         // movedPiece의 ID와 현재 플레이어의 ID를 비교
         Player currentPlayer = getCurrentPlayer();
         String currentPlayerID = currentPlayer.getPlayerID();
         String movedPieceID = movedPiece.getPieceArrayDeque().peekFirst() != null ? movedPiece.getPieceArrayDeque().peekFirst().getPlayerID() : null;
         if (movedPieceID != null && !movedPieceID.equals(currentPlayerID)) return false;
 
-        MovablePiece targetPiece = currentPlayer.getMovablePieceAt(position);
+        Piece targetPiece = currentPlayer.getMovablePieceAt(position);
 
         if (targetPiece != null) {
             // 그룹화
             targetPiece.getPieceArrayDeque().addAll(movedPiece.getPieceArrayDeque());
             targetPiece.size += movedPiece.size; // 그룹화된 크기 업데이트
-            currentPlayer.movablePieces.removeFirstOccurrence(movedPiece);
+            currentPlayer.pieces.removeFirstOccurrence(movedPiece);
             targetPiece.updatePieceId(); // 그룹화된 MovablePiece의 ID 업데이트
             return true; // 그룹화 성공
         }
@@ -338,7 +338,7 @@ public class GameModel implements Model {
     }
 
     // Capture opponent's piece //
-    public boolean captureOpponentPiece(MovablePiece movedPiece, Position position) {
+    public boolean captureOpponentPiece(Piece movedPiece, Position position) {
         // 현재 플레이어 정보 가져오기
         Player currentPlayer = getCurrentPlayer();
         String currentPlayerID = currentPlayer.getPlayerID();
@@ -354,7 +354,7 @@ public class GameModel implements Model {
         }
 
         // 해당 위치에 있는 MovablePiece 가져오기
-        MovablePiece targetPiece = getMovablePieceAt(position);
+        Piece targetPiece = getMovablePieceAt(position);
 
         // 상대편 말이 존재하고, 현재 플레이어의 말이 아닌 경우
         if (targetPiece != null && !targetPiece.getPlayerID().equals(currentPlayerID)) {
@@ -369,30 +369,30 @@ public class GameModel implements Model {
         return false; // 상대편 말을 잡지 못한 경우
     }
 
-    public void initializeGrouping(MovablePiece movablePiece) {
+    public void initializeGrouping(Piece piece) {
         // 그룹화 초기화
-        for (Piece piece : movablePiece.getPieceArrayDeque()) {
-            piece.moveTo(0); // 초기 위치로 이동
+        for (Unit unit : piece.getPieceArrayDeque()) {
+            unit.moveTo(0); // 초기 위치로 이동
         }
         // 그룹 해제
-        Player owner = getPlayerByID(movablePiece.getPlayerID());
+        Player owner = getPlayerByID(piece.getPlayerID());
         if (owner != null) {
-            owner.getMovablePieces().remove(movablePiece);
+            owner.getMovablePieces().remove(piece);
             // 그룹 해제된 MovablePiece를 다시 추가
-            for (int i = 0; i < movablePiece.size; i++) {
-                Piece piece = new Piece(owner.getPlayerID(), movablePiece.getPieceArrayDeque().pop().pieceID);
-                MovablePiece newMovablePiece = new MovablePiece(piece);
-                owner.getMovablePieces().add(newMovablePiece);
+            for (int i = 0; i < piece.size; i++) {
+                Unit unit = new Unit(owner.getPlayerID(), piece.getPieceArrayDeque().pop().pieceID);
+                Piece newPiece = new Piece(unit);
+                owner.getMovablePieces().add(newPiece);
             }
         }
     }
 
 
-    public MovablePiece getMovablePieceAt(Position position) {
+    public Piece getMovablePieceAt(Position position) {
         for (Player player : players) {
-            for (MovablePiece movablePiece : player.getMovablePieces()) {
-                if (movablePiece.getCurrentPosition().equals(position)) {
-                    return movablePiece; // 해당 위치에 있는 MovablePiece 반환
+            for (Piece piece : player.getMovablePieces()) {
+                if (piece.getCurrentPosition().equals(position)) {
+                    return piece; // 해당 위치에 있는 MovablePiece 반환
                 }
             }
         }
@@ -411,10 +411,10 @@ public class GameModel implements Model {
     private void updatePiecePositionsMap() {
         piecePositionsMap.clear();
         for (Player player : players) {
-            for (MovablePiece movablePiece : player.getMovablePieces()) {
-                String pieceID = movablePiece.getPieceArrayDeque().peekFirst() != null ? movablePiece.getPieceId() : null;
+            for (Piece piece : player.getMovablePieces()) {
+                String pieceID = piece.getPieceArrayDeque().peekFirst() != null ? piece.getPieceId() : null;
                 if (pieceID != null) {
-                    piecePositionsMap.put(pieceID, movablePiece.getCurrentPosition().getId());
+                    piecePositionsMap.put(pieceID, piece.getCurrentPosition().getId());
                 }
             }
         }

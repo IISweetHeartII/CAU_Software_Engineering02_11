@@ -67,7 +67,13 @@ public class GameController {
 
 
     // --------- 말 이동 ---------
-    public void movePiece(Position selectedPosition) { // <--------- gameView :
+    public void handleBoardClick(String nodeId) {
+        selectedNodeId = nodeId;
+        Position selectedPosition = new Position(nodeId);
+        movePiece(selectedPosition);
+    }
+
+    private void movePiece(Position selectedPosition) { // <--------- gameView :
         if (!moveState) return;
 
         model.getPosableMoves();
@@ -98,9 +104,5 @@ public class GameController {
     public boolean endGame() {
         endState = true;
         return endState;
-    }
-
-    public void handleBoardClick(String NodeId) {
-        selectedNodeId = NodeId;
     }
 }

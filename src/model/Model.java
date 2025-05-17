@@ -12,7 +12,7 @@ public interface Model {
     ///
     /// 필요시 이걸 사용해 MovablePiece를 가져오고 View 에서 보드에 그릴 말을 그리면 됨
 
-    ArrayDeque<MovablePiece> getAllMovablePieces();
+    ArrayDeque<Piece> getAllMovablePieces();
 
     int[] getGameScores();
     /// 각 플레이어 점수 배열을 반환
