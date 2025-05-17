@@ -6,7 +6,7 @@ import java.util.ArrayDeque;
 
 public class Piece {
     protected final Board board = new Board();
-    protected final String playerID;
+    protected String DUMMY = "";
     protected final String pieceID;
     protected Position currentPosition; //자신의 현재 위치 기억
     protected ArrayDeque<Position> recentPath;
@@ -16,7 +16,7 @@ public class Piece {
     }
 
     public Piece(String playerID, String pieceID, Position startPosition) {
-        this.playerID = playerID;
+        this.DUMMY = playerID;
         this.pieceID = pieceID;
         this.currentPosition = startPosition;
         this.recentPath = new ArrayDeque<>();
@@ -24,7 +24,6 @@ public class Piece {
     }
 
     public Piece(Piece other) {
-        this.playerID = other.playerID;
         this.pieceID = other.pieceID;
         this.currentPosition = other.currentPosition;
         this.recentPath = new ArrayDeque<>(other.recentPath); // 깊은 복사
@@ -113,7 +112,7 @@ public class Piece {
     }
 
     public String getPlayerID() {
-        return playerID;
+        return DUMMY;
     }
 
     // getter recentPath

@@ -18,7 +18,7 @@ public class Player {
 
         // initializing //
         for (int i = 0; i < numPieces; i++) {
-            Piece piece = new Piece(playerID, playerID + "@Piece" + (i + 1));
+            Piece piece = new Piece(playerID, "" + (i + 1));
             allPieces.add(piece); // ArrayDeque에 추가
             movablePieces.add(new MovablePiece(piece)); // MovablePiece 추가
         }

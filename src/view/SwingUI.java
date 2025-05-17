@@ -20,15 +20,16 @@ public class SwingUI {
     private JFrame frame;
 
     private JLabel titleLabel;
-
     private JLabel player1ScoreLabel;
     private JLabel player2ScoreLabel;
     private JLabel player3ScoreLabel;
     private JLabel player4ScoreLabel;
-
     private JLabel turnLabel;
-
     private JLabel yutLabel;
+
+    private BackgroundPanel backgroundPanel;
+
+    private Map<String, JLabel> piecePositions = new HashMap<>();
 
     // ------ 생성자: Constructor ------- //
     public SwingUI(GameController controller, GameModel model) {
@@ -37,7 +38,6 @@ public class SwingUI {
         this.model = model;
         initUI();
     }
-
 
     // ------- 메서드: Method ------ //
     public void initUI() {
@@ -55,7 +55,7 @@ public class SwingUI {
                 "/data/ui/board/board_four.png"
         )));
         Image bgImage = bgIcon.getImage();
-        BackgroundPanel backgroundPanel = new BackgroundPanel(bgImage);
+        backgroundPanel = new BackgroundPanel(bgImage);
         backgroundPanel.setPreferredSize(new Dimension(700, 700));
         backgroundPanel.setLayout(null);  // 절대 위치 지정
         // ------------------------ //
@@ -221,8 +221,59 @@ public class SwingUI {
     public void showYutResult(YutResult yutResult) {
     }
 
+    // ------ update board ------ //
+    private static final int PIECE_SCALE_FACTOR = 3;
+    private static final int POSITION_ADJUSTMENT_FACTOR = 6;
     public void updateBoard() {
+        // 기존에 표시된 모든 말 제거
+        removePreviousPieces();
+
+        // 새로운 말 위치 정보 가져오기
+        Map<String, String> piecePositionsMap = model.getPiecePositionsMap();
+
+        // 새로운 말들을 생성하고 표시
+        piecePositionsMap.forEach((pieceId, nodeId) -> {
+            JLabel pieceLabel = createScaledPieceLabel(pieceId);
+            adjustPiecePosition(pieceLabel, nodeId);
+            piecePositions.put(pieceId, pieceLabel);  // Map에 저장
+            backgroundPanel.add(pieceLabel);
+        });
+
+        // 화면 갱신
+        backgroundPanel.revalidate();
+        backgroundPanel.repaint();
     }
+
+    private JLabel createScaledPieceLabel(String pieceId) { // -> updateBoard()
+        ImageIcon pieceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
+        )));
+
+        Image scaledPiece = pieceIcon.getImage().getScaledInstance(
+                pieceIcon.getIconWidth() / PIECE_SCALE_FACTOR,
+                pieceIcon.getIconHeight() / PIECE_SCALE_FACTOR,
+                Image.SCALE_SMOOTH);
+
+        return new JLabel(new ImageIcon(scaledPiece));
+    }
+
+    private void adjustPiecePosition(JLabel pieceLabel, String nodeId) { // -> updateBoard()
+        Icon icon = pieceLabel.getIcon();
+        Point position = boardButtonPositions.get(nodeId);
+
+        pieceLabel.setBounds(
+                position.x - ((ImageIcon) icon).getIconWidth() / POSITION_ADJUSTMENT_FACTOR,
+                position.y - ((ImageIcon) icon).getIconHeight() / POSITION_ADJUSTMENT_FACTOR,
+                ((ImageIcon) icon).getIconWidth() / PIECE_SCALE_FACTOR,
+                ((ImageIcon) icon).getIconHeight() / PIECE_SCALE_FACTOR);
+    }
+
+    private void removePreviousPieces() { // -> updateBoard()
+        // 기존 말들을 패널에서 제거
+        piecePositions.values().forEach(backgroundPanel::remove);
+        piecePositions.clear();
+    }
+    // ------------------ //
 
     public void updatePlayerState() {
     }

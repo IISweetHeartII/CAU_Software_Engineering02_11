@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayDeque;
 import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GameModel implements Model {
     /// Responsibilities
@@ -36,21 +38,23 @@ public class GameModel implements Model {
     protected ArrayDeque<YutResult> yutResultArrayDeque = new ArrayDeque<>();
     protected ArrayDeque<Piece> positionPieceArrayDeque = new ArrayDeque<>();
 
+    private Map<String, String> piecePositionsMap = new HashMap<>();
+
     /// Constructor ///
     public GameModel() {
-        this.numberOfPlayers = loadPlayer();
-        this.numberOfPieces = loadNumpiece();
+        this.numberOfPlayers = loadPlayerCount();
+        this.numberOfPieces = loadPieceCount();
         this.players = new Player[numberOfPlayers];
         this.gameScores = new int[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
-            players[i] = new Player("Player" + (i+1), numberOfPieces);
+            players[i] = new Player("" + (i + 1), numberOfPieces);
         }
         for (int i = 0; i < numberOfPlayers; i++) {
             gameScores[i] = 0;
         }
     }
 
-    private int loadPlayer() {
+    private int loadPlayerCount() {
         try (Scanner scanner = new Scanner(new File("src/data/player.txt"))) {
             if (scanner.hasNextInt()) {
                 return scanner.nextInt();
@@ -61,7 +65,7 @@ public class GameModel implements Model {
         return 4; // 기본값
     }
 
-    private int loadNumpiece() {
+    private int loadPieceCount() {
         try (Scanner scanner = new Scanner(new File("src/data/numpiece.txt"))) {
             if (scanner.hasNextInt()) {
                 return scanner.nextInt();
@@ -113,6 +117,10 @@ public class GameModel implements Model {
     public ArrayDeque<YutResult> getYutResultDeque() {
         return yutResultArrayDeque;
     }//Controller에서 윷 결과를 가져가기 위한 메서드 추가
+
+    public Map<String, String> getPiecePositionsMap() {
+        return piecePositionsMap;
+    }
 
     /// methods ///
 
