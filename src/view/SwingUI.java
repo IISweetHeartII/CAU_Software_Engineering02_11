@@ -317,10 +317,12 @@ public class SwingUI {
 
         // 새로운 말들을 생성하고 표시
         piecePositionsMap.forEach((pieceId, nodeId) -> {
-            JLabel pieceLabel = createScaledPieceLabel(pieceId);
-            adjustPiecePosition(pieceLabel, nodeId);
-            piecePositions.put(pieceId, pieceLabel);  // Map에 저장
-            backgroundPanel.add(pieceLabel);
+            if (!(nodeId.equals("START") || nodeId.equals("END"))) { // SART, END 제외
+                JLabel pieceLabel = createScaledPieceLabel(pieceId);
+                adjustPiecePosition(pieceLabel, nodeId);
+                piecePositions.put(pieceId, pieceLabel);  // Map에 저장
+                backgroundPanel.add(pieceLabel);
+            }
         });
 
         // 화면 갱신
@@ -375,7 +377,6 @@ public class SwingUI {
                 turnIcon.getIconWidth() / 3,
                 turnIcon.getIconHeight() / 3,
                 Image.SCALE_SMOOTH);
-
         // 사진 교체
         turnLabel.setIcon(new ImageIcon(scaledTurnIcon));
     }

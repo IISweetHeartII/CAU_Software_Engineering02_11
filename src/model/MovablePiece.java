@@ -8,6 +8,7 @@ public class MovablePiece {
     protected ArrayDeque<Piece> pieceArrayDeque; // ArrayDeque로 변경
     protected Position currentPosition;
     protected String playerID;
+    private String pieceId = "";
     protected int size;
     protected boolean isArrived;
 
@@ -18,9 +19,11 @@ public class MovablePiece {
         this.currentPosition = pieces[0].getCurrentPosition();
         this.playerID = pieces[0].getPlayerID();
         this.size = pieces.length;
+        this.isArrived = isArrived();
+        for (Piece piece : pieces) {
+            this.pieceId = this.pieceId + piece.getPieceID(); // 각 Piece의 ID 업데이트
+        }
     }
-
-    /// setters ///
 
     /// getters ///
     public ArrayDeque<Piece> getPieceArrayDeque() {
@@ -56,5 +59,16 @@ public class MovablePiece {
         if (obj == null || getClass() != obj.getClass()) return false;
         MovablePiece other = (MovablePiece) obj;
         return pieceArrayDeque.equals(other.pieceArrayDeque);
+    }
+
+    public void updatePieceId() {
+        this.pieceId = ""; // 초기화
+        for (Piece piece : pieceArrayDeque) {
+            this.pieceId = this.pieceId + piece.getPieceID(); // 각 Piece의 ID 업데이트
+        }
+    }
+
+    public String getPieceId() {
+        return pieceId;
     }
 }

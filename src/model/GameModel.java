@@ -38,7 +38,7 @@ public class GameModel implements Model {
     protected ArrayDeque<YutResult> yutResultArrayDeque = new ArrayDeque<>();
     protected ArrayDeque<Piece> positionPieceArrayDeque = new ArrayDeque<>();
 
-    private Map<String, String> piecePositionsMap = new HashMap<>();
+    private Map<String, String> piecePositionsMap = new HashMap<>(); // key: pieceId, value: positionId
 
     /// Constructor ///
     public GameModel() {
@@ -330,6 +330,7 @@ public class GameModel implements Model {
             targetPiece.getPieceArrayDeque().addAll(movedPiece.getPieceArrayDeque());
             targetPiece.size += movedPiece.size; // 그룹화된 크기 업데이트
             currentPlayer.movablePieces.removeFirstOccurrence(movedPiece);
+            targetPiece.updatePieceId(); // 그룹화된 MovablePiece의 ID 업데이트
             return true; // 그룹화 성공
         }
 
@@ -405,5 +406,17 @@ public class GameModel implements Model {
             }
         }
         return null;
+    }
+
+    private void updatePiecePositionsMap() {
+        piecePositionsMap.clear();
+        for (Player player : players) {
+            for (MovablePiece movablePiece : player.getMovablePieces()) {
+                String pieceID = movablePiece.getPieceArrayDeque().peekFirst() != null ? movablePiece.getPieceId() : null;
+                if (pieceID != null) {
+                    piecePositionsMap.put(pieceID, movablePiece.getCurrentPosition().getId());
+                }
+            }
+        }
     }
 }
