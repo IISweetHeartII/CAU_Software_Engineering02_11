@@ -10,7 +10,7 @@ public class GameController {
     public SwingUI view;
 
     // state flag
-    public boolean yutState = false;
+    public boolean yutState = true;
     public boolean moveState = false;
     public boolean resetState = false;
     public boolean endState = false;
@@ -28,11 +28,13 @@ public class GameController {
 
     // --------- 랜덤 윷 던지기 ---------
     public void handleRandomThrow() { // <----- gameView : ActionListener에서 호출됨
+        if (!yutState) return;
         YutResult yutResult = model.throwAndSaveYut();
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
         System.out.println("yutResult: " + yutResult.getValue());
-        // moveState = !yutState;
+        moveState = !yutState;
+        yutState = false;
     }
 
 
@@ -42,6 +44,7 @@ public class GameController {
         yutState = copy.isExtraTurn();
         view.showYutResult(copy.getValue());
         moveState = !yutState;
+        yutState = false;
     }
 
 
@@ -50,6 +53,7 @@ public class GameController {
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
         moveState = !yutState;
+        yutState = false;
     }
 
 
@@ -58,6 +62,7 @@ public class GameController {
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
         moveState = !yutState;
+        yutState = false;
     }
 
 
@@ -69,16 +74,17 @@ public class GameController {
         model.movePiece(selectedPosition);
 
         view.updateBoard();
-        view.updatePlayerState();
+        view.updatePlayerScore();
 
         if (model.getYutResultDeque().isEmpty()) {
             moveState = false;
+            yutState = true;
             if (model.isGameEnd()) {
                 view.showGameEnd(model.getCurrentPlayer().getPlayerID());
                 return;
             }
             model.changeTurn();
-            view.updateCurrentPlayer(model.getCurrentPlayer().getPlayerID());
+            view.updateTurn(model.getCurrentPlayer().getPlayerID());
         }
     }
 

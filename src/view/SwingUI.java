@@ -2,7 +2,6 @@ package view;
 
 import controller.GameController;
 import model.GameModel;
-import model.YutResult;
 
 import javax.swing.*;
 import java.awt.*;
@@ -95,7 +94,26 @@ public class SwingUI {
         }
         // ------------------------------- //
 
-        // ------ Todo: [Throw] Button ------ //
+        // ------ Player Score 설정 ------ //
+
+        // ------------------------------ //
+
+        //------ Turn 설정 ------ //
+        {
+            // 이미지 처리 및 보정
+            ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/turn/turn_1.png"
+            )));
+            Image scaledTurnIcon = turnIcon.getImage().getScaledInstance(turnIcon.getIconWidth() / 3, turnIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
+            turnLabel = new JLabel(new ImageIcon(scaledTurnIcon));
+            turnLabel.setBounds(485, 392, scaledTurnIcon.getWidth(null), scaledTurnIcon.getHeight(null));
+
+            // 패널에 추가
+            backgroundPanel.add(turnLabel);
+        }
+        // --------------------- //
+
+        // ------ [Throw] Button 설정 ------ //
         {
             // 버튼 객체 할당
             throwButton = new JButton("Throw");
@@ -146,8 +164,7 @@ public class SwingUI {
             yutLabel.setBounds(20, 472, scaledYutIcon.getWidth(null), scaledYutIcon.getHeight(null));
             backgroundPanel.add(yutLabel);
         }
-        // ---------------------------------- //
-
+        // --------------------------------- //
 
         // Todo: [Custom choice] Button
 
@@ -271,6 +288,7 @@ public class SwingUI {
     }
     // ----------------------------------- //
 
+
     // ------ show yut result <---- controller ------ //
     public void showYutResult(Integer yutResult) {
         // 이미지 처리
@@ -341,12 +359,24 @@ public class SwingUI {
     }
     // ------------------ //
 
-    public void updatePlayerState() {
+    public void updatePlayerScore() {
     }
 
     public void showGameEnd(String playerID) {
     }
 
-    public void updateCurrentPlayer(String playerID) {
+    // ------ update turn ------ //
+    public void updateTurn(String playerID) {
+        // 이미지 처리 및 보정
+        ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/turn/turn_" + playerID + ".png"
+        )));
+        Image scaledTurnIcon = turnIcon.getImage().getScaledInstance(
+                turnIcon.getIconWidth() / 3,
+                turnIcon.getIconHeight() / 3,
+                Image.SCALE_SMOOTH);
+
+        // 사진 교체
+        turnLabel.setIcon(new ImageIcon(scaledTurnIcon));
     }
 }
