@@ -7,11 +7,6 @@ public interface Model {
     Player getCurrentPlayer();
     /// 현재 턴의 플레이어를 반환
 
-    Player[] getAllPlayers();
-    /// 모든 플레이어를 반환
-    ///
-    /// 필요시 이걸 사용해 MovablePiece를 가져오고 View 에서 보드에 그릴 말을 그리면 됨
-
     ArrayDeque<Piece> getAllMovablePieces();
 
     int[] getGameScores();
@@ -26,15 +21,12 @@ public interface Model {
     /// 게임 초기화
 
     // selectedPiece는 이동할 말, selectedPosition은 이동할 위치
-    boolean movePiece(Position selectedPosition);
+    boolean movePiece(Piece piece, Position selectedPosition);
     /// selectedPiece가 selectedPosition으로 이동할 수 있는지 확인하고, 이동 가능하면 이동
     ///
     /// Grouping과 Catpure 처리
     ///
     /// selectedPiece가 이동에 성공했을 때 true를 반환, 실패시 false를 반환
-
-    //
-    ArrayDeque<Position> getPosableMoves();
 
     YutResult throwAndSaveYut();
     YutResult throwAndSaveYut(int n);
@@ -52,7 +44,7 @@ public interface Model {
 
     boolean isGameEnd();
 
-    int[] getNotArrivedCount();
+    int[] getNotStartedCount();
 
     boolean changeTurn();
     /// ExtraTurnCount를 확인하지않고 강제로 턴을 넘김

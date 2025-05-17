@@ -7,29 +7,46 @@ import java.util.*;
 public class Board {
     protected final Map<Position, List<Position>> pathGraph = new HashMap<>();
     protected final Position center = new Position("C");
-    protected final Position START = new Position("START");
-    protected final Position END = new Position("END");
     protected int boardFigure = loadBoardFigure();
-
+    protected String beforeEND;
 
     private int loadBoardFigure() {
-        try (Scanner scanner = new Scanner(new File("src/data/figure.txt"))) {
-            if (scanner.hasNextInt()) {
-                return scanner.nextInt();
+        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("board:")) {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        return Integer.parseInt(parts[1].trim());
+                    }
+                }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.err.println("piece 값이 올바르지 않습니다.");
         }
-        return 0; // 기본값
+        return 4; // 기본값
     }
 
     // Constructor
     public Board() {
         switch (boardFigure) {
-            case 4 -> init4Graph();
-            case 5 -> init5Graph();
-            case 6 -> init6Graph();
-            default -> throw new IllegalArgumentException("Invalid board figure: " + boardFigure);
+            case 4:
+                init4Graph();
+                beforeEND = "P20";
+                break;
+            case 5:
+                init5Graph();
+                beforeEND = "P25";
+                break;
+            case 6:
+                init6Graph();
+                beforeEND = "P30";
+                break;
+            default:
+                init4Graph();
+                beforeEND = "P20";
         }
     }
 

@@ -8,6 +8,7 @@ public class Player {
     protected final ArrayDeque<Unit> allUnits; // ArrayDeque로 변경
     protected final ArrayDeque<Piece> pieces; // ArrayDeque로 변경
     protected int notArrivedCount; // 도착하지 않은 말의 개수
+    protected int notStartedCount; // 시작하지 않은 말의 개수
 
     /// Constructor ///
     public Player(String playerID, int numPieces) {
@@ -29,11 +30,11 @@ public class Player {
         return playerID;
     }
 
-    public ArrayDeque<Unit> getAllPieces() {
+    public ArrayDeque<Unit> getAllUnits() {
         return allUnits;
     }
 
-    public ArrayDeque<Piece> getMovablePieces() {
+    public ArrayDeque<Piece> getPieces() {
         return pieces;
     }
 
@@ -58,5 +59,14 @@ public class Player {
             }
         }
         return null; // 해당 위치에 말이 없음
+    }
+
+    public void updateNotStartedCount() {
+        notStartedCount = 0;
+        for (Piece piece : pieces) {
+            if (piece.getCurrentPosition().equals("START")) {
+                notStartedCount += piece.size; // START에 있는 말의 개수
+            }
+        }
     }
 }

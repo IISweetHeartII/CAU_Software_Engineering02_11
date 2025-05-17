@@ -12,10 +12,10 @@ public class GameController {
     // state flag
     public boolean yutState = true;
     public boolean moveState = false;
+    public boolean selectPieceState = false;
+    public boolean selectPositionState = false;
     public boolean resetState = false;
     public boolean endState = false;
-
-    public String selectedNodeId = "";
 
     // --------- Constructor ---------
     public GameController(GameModel gameModel) {
@@ -35,6 +35,7 @@ public class GameController {
         System.out.println("yutResult: " + yutResult.getValue());
         moveState = !yutState;
         yutState = false;
+        selectPieceState = true;
     }
 
 
@@ -67,30 +68,46 @@ public class GameController {
 
 
     // --------- 말 이동 ---------
+    private String selectedPieceId = "";
+    private String selectedNodeId = "";
+
     public void handleBoardClick(String nodeId) {
-        selectedNodeId = nodeId;
-        Position selectedPosition = new Position(nodeId);
-        movePiece(selectedPosition);
-    }
-
-    private void movePiece(Position selectedPosition) { // <--------- gameView :
-        if (!moveState) return;
-
-        model.getPosableMoves();
-        model.movePiece(selectedPosition);
-
-        view.updateBoard();
-        view.updatePlayerScore();
-
-        if (model.getYutResultDeque().isEmpty()) {
-            moveState = false;
-            yutState = true;
-            if (model.isGameEnd()) {
-                view.showGameEnd(model.getCurrentPlayer().getPlayerID());
+        if (selectPieceState && !selectPositionState) { // 1. 움직일 말 선택
+            // check if the selected piece is movable
+            if (!(model.checkCurrentPlayerPieceAt(nodeId))) {
+                System.out.println("해당 위치에 현재 플레이어의 말 없음"); // ---> 테스트용
                 return;
             }
-            model.changeTurn();
-            view.updateTurn(model.getCurrentPlayer().getPlayerID());
+            selectedPieceId = nodeId;
+            selectPieceState = false;
+            selectPositionState = true;
+        } else if (!selectPieceState && selectPositionState) { // 2. 이동할 위치 선택
+            if (model.checkCurrentPlayerPieceAt(nodeId)) { // 이동할 말을 바꾼다면
+                selectedPieceId = nodeId;
+                return;
+            }
+            if (!(model.checkPosableMoves(nodeId))) { // 이동할 위치가 유효하지 않다면
+                System.out.println("해당 위치로 이동할 수 없음"); // ---> 테스트용
+                return;
+            }
+            selectedNodeId = nodeId;
+
+            model.handleMovePiece(selectedPieceId, selectedNodeId);
+            selectPieceState = true;
+            selectPositionState = false;
+
+            view.updateBoard();
+            view.updatePlayerScore();
+            if (model.getYutResultDeque().isEmpty()) {
+                moveState = false;
+                yutState = true;
+                if (model.isGameEnd()) {
+                    view.showGameEnd(model.getCurrentPlayer().getPlayerID());
+                    return;
+                }
+                model.changeTurn();
+                view.updateTurn(model.getCurrentPlayer().getPlayerID());
+            }
         }
     }
 
@@ -105,4 +122,8 @@ public class GameController {
         endState = true;
         return endState;
     }
+
+    // Todo: Turn 처리
+
+    // Todo: 점수 처리
 }
