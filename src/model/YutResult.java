@@ -28,5 +28,9 @@ public class YutResult {
         if (!(obj instanceof YutResult other)) return false;
         return this.resultType == other.resultType;
     }
+
+    public String toString() {
+        return resultType.toString();
+    }
 }
 

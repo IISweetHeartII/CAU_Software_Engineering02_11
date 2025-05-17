@@ -30,8 +30,9 @@ public class GameController {
     public void handleRandomThrow() { // <----- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwAndSaveYut();
         yutState = yutResult.isExtraTurn();
-        view.showYutResult(yutResult);
-        moveState = !yutState;
+        view.showYutResult(yutResult.getValue());
+        System.out.println("yutResult: " + yutResult.getValue());
+        // moveState = !yutState;
     }
 
 
@@ -39,7 +40,7 @@ public class GameController {
     public void handleManualThrow(YutResult yutResult) { // <------- gameView : ActionListener에서 호출됨
         YutResult copy = model.throwAndSaveYut(yutResult.getValue());
         yutState = copy.isExtraTurn();
-        view.showYutResult(copy);
+        view.showYutResult(copy.getValue());
         moveState = !yutState;
     }
 
@@ -47,7 +48,7 @@ public class GameController {
     public void handleManualThrow(int valueOfYut) { // <------- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwAndSaveYut(valueOfYut);
         yutState = yutResult.isExtraTurn();
-        view.showYutResult(yutResult);
+        view.showYutResult(yutResult.getValue());
         moveState = !yutState;
     }
 
@@ -55,7 +56,7 @@ public class GameController {
     public void handleManualThrow(String StringOfYut) { // <------- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwAndSaveYut(StringOfYut);
         yutState = yutResult.isExtraTurn();
-        view.showYutResult(yutResult);
+        view.showYutResult(yutResult.getValue());
         moveState = !yutState;
     }
 

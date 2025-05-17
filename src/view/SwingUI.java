@@ -18,6 +18,7 @@ public class SwingUI {
     GameController controller;
     GameModel model;
     private JFrame frame;
+    private BackgroundPanel backgroundPanel;
 
     private JLabel titleLabel;
     private JLabel player1ScoreLabel;
@@ -27,7 +28,7 @@ public class SwingUI {
     private JLabel turnLabel;
     private JLabel yutLabel;
 
-    private BackgroundPanel backgroundPanel;
+    private JButton throwButton;
 
     private Map<String, JLabel> piecePositions = new HashMap<>();
 
@@ -94,9 +95,61 @@ public class SwingUI {
         }
         // ------------------------------- //
 
-        // Todo: [Throw] Button
+        // ------ Todo: [Throw] Button ------ //
+        {
+            // 버튼 객체 할당
+            throwButton = new JButton("Throw");
 
-        // Todo: [Custom choice]
+            // 이미지 처리 및 보정
+            ImageIcon throwIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/button/button_throw_up.png"
+            )));
+            Image scaledThrowIcon = throwIcon.getImage().getScaledInstance(
+                    throwIcon.getIconWidth() / 3,
+                    throwIcon.getIconHeight() / 3,
+                    Image.SCALE_SMOOTH);
+            throwButton.setIcon(new ImageIcon(scaledThrowIcon));
+
+            // 버튼 위치 할당
+            throwButton.setBounds(473,473, scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null));
+
+            // 버튼 옵션 설정
+            throwButton.setBorderPainted(false);
+            throwButton.setContentAreaFilled(false);
+            throwButton.setFocusPainted(false);
+            throwButton.setOpaque(false);
+            throwButton.setText("");
+
+            // Action 설정
+            throwButton.addActionListener(e -> {
+                controller.handleRandomThrow();
+                System.out.println("Throw Button Clicked");
+            });
+            // view:throwButton -> controller:handleRandomThrow -> View:showYutResult
+
+            // Hovering 처리
+            ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/button/button_throw_down.png"
+            )));
+            Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null), Image.SCALE_SMOOTH);
+            throwButton.setRolloverIcon(new ImageIcon(hoverScaled));
+
+            //패널에 버튼 추가
+            Objects.requireNonNull(backgroundPanel).add(throwButton);
+
+            // ------ 기본 윷 표시 ------ //
+            ImageIcon yutIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/yut/yut_5.png"
+            )));
+            Image scaledYutIcon = yutIcon.getImage().getScaledInstance(yutIcon.getIconWidth() / 3, yutIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
+            yutLabel = new JLabel(new ImageIcon(scaledYutIcon));
+            yutLabel.setBounds(20, 472, scaledYutIcon.getWidth(null), scaledYutIcon.getHeight(null));
+            backgroundPanel.add(yutLabel);
+        }
+        // ---------------------------------- //
+
+
+        // Todo: [Custom choice] Button
 
         // Todo: [Restart] Button
 
@@ -133,7 +186,7 @@ public class SwingUI {
             quitButton.setRolloverIcon(new ImageIcon(hoverScaled));
 
             // 패널에 버튼 추가
-            backgroundPanel.add(quitButton);
+            Objects.requireNonNull(backgroundPanel).add(quitButton);
         }
         // --------------------------- //
 
@@ -218,8 +271,21 @@ public class SwingUI {
     }
     // ----------------------------------- //
 
-    public void showYutResult(YutResult yutResult) {
+    // ------ show yut result <---- controller ------ //
+    public void showYutResult(Integer yutResult) {
+        // 이미지 처리
+        ImageIcon yutResultIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/yut/yut_" + yutResult + ".png"
+        )));
+        Image scaledYutResult = yutResultIcon.getImage().getScaledInstance(
+                yutResultIcon.getIconWidth() / 3,
+                yutResultIcon.getIconHeight() / 3,
+                Image.SCALE_SMOOTH);
+
+        // 객체 생성
+        yutLabel.setIcon(new ImageIcon(scaledYutResult));
     }
+    // ---------------------------------------------- //
 
     // ------ update board ------ //
     private static final int PIECE_SCALE_FACTOR = 3;
