@@ -20,22 +20,28 @@ public class SwingUI {
     private BackgroundPanel backgroundPanel;
 
     private JLabel titleLabel;
-    private JLabel player1ScoreLabel;
-    private JLabel player2ScoreLabel;
-    private JLabel player3ScoreLabel;
-    private JLabel player4ScoreLabel;
+    private JLabel[] playerScoreLabel;
     private JLabel turnLabel;
     private JLabel yutLabel;
 
     private JButton throwButton;
+    private JButton STARTButton;
 
     private Map<String, JLabel> piecePositions = new HashMap<>();
+
+    private int numberOfPlayers; // 플레이어 수
+    private int numberOfPieces; // 플레이어당 말 수
 
     // ------ 생성자: Constructor ------- //
     public SwingUI(GameController controller, GameModel model) {
         // GUI 초기화 코드
         this.controller = controller;
         this.model = model;
+
+        this.numberOfPlayers = model.getNumberOfPlayers();
+        this.numberOfPieces = model.getNumberOfPieces();
+        this.playerScoreLabel = new JLabel[numberOfPlayers + 1]; // 0번은 사용하지 않음
+
         initUI();
     }
 
@@ -95,8 +101,52 @@ public class SwingUI {
         // ------------------------------- //
 
         // ------ Player Score 설정 ------ //
+        // 이 프로그램에서 Score는 시작하지않은(START에 위치하는) 말의 개수를 의미합니다.
+        {
+            for (int i = 1; i < numberOfPlayers + 1; i++) {
+                // 이미지 처리
+                ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                        "/data/ui/score/player" + i + "/player" + i + "_" + numberOfPieces + ".png"
+                )));
+                Image scaledPlayerScore = playerScoreIcon.getImage().getScaledInstance(
+                        playerScoreIcon.getIconWidth() / 3,
+                        playerScoreIcon.getIconHeight() / 3,
+                        Image.SCALE_SMOOTH);
+                playerScoreLabel[i] = new JLabel(new ImageIcon(scaledPlayerScore));
 
+                // 위치 처리 및 보정
+                playerScoreLabel[i].setBounds(485, 181 + 47*(i - 1), scaledPlayerScore.getWidth(null), scaledPlayerScore.getHeight(null));
+
+                // 패널에 추가
+                backgroundPanel.add(playerScoreLabel[i]);
+            }
+        }
         // ------------------------------ //
+
+        // ------ START Button 설정 ------ //
+        {
+            // 버튼 객체 할당
+            STARTButton = new JButton("START");
+
+            // 버튼 위치 할당
+            STARTButton.setBounds(473+10, 161, 184, 202);
+
+            // 버튼 옵션 설정
+            STARTButton.setBorderPainted(false);
+            STARTButton.setContentAreaFilled(false);
+            STARTButton.setFocusPainted(false);
+            STARTButton.setOpaque(false);
+            STARTButton.setText("");
+
+            // Action 설정
+            STARTButton.addActionListener(e -> {
+                controller.handleBoardClick("START");
+                System.out.println("START Button Clicked");
+            });
+
+            // 패널에 버튼 추가
+            backgroundPanel.add(STARTButton);
+        }
 
         //------ Turn 설정 ------ //
         {
@@ -362,6 +412,23 @@ public class SwingUI {
     // ------------------ //
 
     public void updatePlayerScore() {
+        int[] gameScores = model.getNotStartedCount();
+        for (int i = 0; i < numberOfPlayers; i++) {
+            // 플레이어의 점수 가져오기
+            int notStartedCount = gameScores[i];
+
+            // 이미지 처리
+            ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/score/player" + (i + 1) + "/player" + (i + 1) + "_" + notStartedCount + ".png"
+            )));
+            Image scaledPlayerScore = playerScoreIcon.getImage().getScaledInstance(
+                    playerScoreIcon.getIconWidth() / 3,
+                    playerScoreIcon.getIconHeight() / 3,
+                    Image.SCALE_SMOOTH);
+
+            // 사진 교체
+            playerScoreLabel[i + 1].setIcon(new ImageIcon(scaledPlayerScore));
+        }
     }
 
     public void showGameEnd(String playerID) {
