@@ -106,11 +106,6 @@ public class Unit {
         return recentPath;
     }
 
-    @Override
-    public String toString() {
-        return pieceID + "@" + currentPosition;
-    }
-
     public String getPlayerID() {
         return String.valueOf(pieceID.charAt(0)); // 플레이어 ID는 pieceID의 첫 글자
     }

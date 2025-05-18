@@ -146,8 +146,14 @@ public class GameModel implements Model {
     public boolean handleMovePiece(String selectedPieceId, String selectedNodeId) { // <--- controller
         markerArrayDeque.clear();
         getPosableMoves();
-
-        Piece selectedPiece = getSelectedPieceAt(selectedPieceId);
+        Piece selectedPiece;
+        for (Player player : players) {
+            for (Piece piece : player.getPieces()) {
+                if (piece.getPieceId().equals(selectedPieceId)) {
+                    selectedPiece = piece; // 해당 ID를 가진 Piece 반환
+                }
+            }
+        }
         Piece marker = null;
         for (Piece piece : markerArrayDeque) {
             if (piece.getCurrentPosition().equals(new Position(selectedNodeId))) {
@@ -205,6 +211,17 @@ public class GameModel implements Model {
         }
 
         return posableMoves;
+    }
+
+    private Piece getPieceById(String pieceId) {
+        for (Player player : players) {
+            for (Piece piece : player.getPieces()) {
+                if (piece.getPieceId().equals(pieceId)) {
+                    return piece; // 해당 ID를 가진 Piece 반환
+                }
+            }
+        }
+        return null; // 해당 ID를 가진 Piece가 없음
     }
 
     // grouping //
@@ -436,6 +453,18 @@ public class GameModel implements Model {
         currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
         if (extraTurnCount != 0) state = false;
         return state;
+    }
+
+    public String getPieceIdAt(String piecePositionId) {
+        Position position = new Position(piecePositionId);
+        for (Player player : players) {
+            for (Piece piece : player.getPieces()) {
+                if (piece.getCurrentPosition().equals(position)) {
+                    return piece.getPieceId(); // 해당 위치에 있는 MovablePiece의 ID 반환
+                }
+            }
+        }
+        return null; // 해당 위치에 MovablePiece가 없음
     }
 
     private Piece getPieceAt(Position position) {

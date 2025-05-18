@@ -384,6 +384,9 @@ public class SwingUI {
         ImageIcon pieceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
                 "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
         )));
+        
+        // test
+        System.out.println("pieceId: " + pieceId);
 
         Image scaledPiece = pieceIcon.getImage().getScaledInstance(
                 pieceIcon.getIconWidth() / PIECE_SCALE_FACTOR,

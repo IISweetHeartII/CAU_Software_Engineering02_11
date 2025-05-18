@@ -68,7 +68,7 @@ public class GameController {
 
 
     // --------- 말 이동 ---------
-    private String selectedPieceId = "";
+    private String selectedPiecePositionId = "";
     private String selectedNodeId = "";
 
     public void handleBoardClick(String nodeId) {
@@ -78,12 +78,12 @@ public class GameController {
                 System.out.println("해당 위치에 현재 플레이어의 말 없음"); // ---> 테스트용
                 return;
             }
-            selectedPieceId = nodeId;
+            selectedPiecePositionId = nodeId;
             selectPieceState = false;
             selectPositionState = true;
         } else if (!selectPieceState && selectPositionState) { // 2. 이동할 위치 선택
             if (model.checkCurrentPlayerPieceAt(nodeId)) { // 이동할 말을 바꾼다면
-                selectedPieceId = nodeId;
+                selectedPiecePositionId = nodeId;
                 return;
             }
             if (!(model.checkPosableMoves(nodeId))) { // 이동할 위치가 유효하지 않다면
@@ -91,7 +91,7 @@ public class GameController {
                 return;
             }
             selectedNodeId = nodeId;
-
+            String selectedPieceId = model.getPieceIdAt(selectedPiecePositionId);
             model.handleMovePiece(selectedPieceId, selectedNodeId);
             selectPieceState = true;
             selectPositionState = false;
