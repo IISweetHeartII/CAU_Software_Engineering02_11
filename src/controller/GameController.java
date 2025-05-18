@@ -98,6 +98,13 @@ public class GameController {
 
             view.updateBoard();
             view.updatePlayerScore();
+
+            // test
+            System.out.println("selectedPieceId: " + selectedPieceId);
+            System.out.println("selectedNodeId: " + selectedNodeId);
+            System.out.println("currentPlayer: " + model.getCurrentPlayer().getPlayerID());
+            System.out.println("notStarted: " + model.getNotStartedCount()[model.getPlayerTurn() - 1]);
+
             if (model.getYutResultDeque().isEmpty()) {
                 moveState = false;
                 yutState = true;

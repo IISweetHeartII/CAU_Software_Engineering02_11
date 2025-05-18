@@ -100,6 +100,14 @@ public class GameModel implements Model {
     public Map<String, String> getPiecePositionsMap() {
         return piecePositionsMap;
     }
+
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
+
+    public int getNumberOfPieces() {
+        return numberOfPieces;
+    }
     // ------------------------------- //
 
 
@@ -154,13 +162,15 @@ public class GameModel implements Model {
 
         selectedPiece = new Piece(marker);
 
-        // grouping check
-        checkGrouping(selectedPiece, new Position(selectedNodeId));
+        // END일 때 grouping과 catch를 하지 않음
+        if(!selectedNodeId.equals("END")) {
+            // grouping check
+            checkGrouping(selectedPiece, new Position(selectedNodeId));
 
-        // catch check
+            // catch check
 
-        checkCatch(selectedPiece, new Position(selectedNodeId));
-
+            checkCatch(selectedPiece, new Position(selectedNodeId));
+        }
         updatePiecePositionsMap();
 
         Player currentPlayer = getCurrentPlayer();
@@ -169,12 +179,6 @@ public class GameModel implements Model {
         markerArrayDeque.clear();
         yutResultArrayDeque.removeFirstOccurrence(markerMap.get(marker));
         return true;
-    }
-
-    @Override
-    public boolean movePiece(Piece piece, Position selectedPosition) {
-
-        return false; // 이동 불가능한 경우
     }
 
     private Map<Piece, YutResult> markerMap = new HashMap<>();
