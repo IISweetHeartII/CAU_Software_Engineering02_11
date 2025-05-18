@@ -1,130 +1,102 @@
 package model;
 
-import java.util.Deque;
 import java.util.ArrayDeque;
-
+import java.util.Collections;
 
 public class Piece {
-    protected final Board board = new Board();
-    protected String DUMMY = "";
-    protected final String pieceID;
-    protected Position currentPosition; //자신의 현재 위치 기억
-    protected ArrayDeque<Position> recentPath;
+    // ------ fields ------ //
+    protected String playerID;
+    private String pieceId = "";
 
-    public Piece(String playerID, String pieceID) {
-        this(playerID, pieceID, new Position("START")); // 기본 위치는 START
+    protected Position currentPosition;
+    protected int size;
+    protected boolean isArrived;
+
+    protected ArrayDeque<Unit> unitArrayDeque = new ArrayDeque<>(); // ArrayDeque로 변경
+
+    // ------ constructor ------ //
+    public Piece(Unit... units) { // 가변 인자를 사용해 여러 개의 말을 그룹화
+        this.playerID = units[0].getPlayerID();
+        for (Unit unit : units) {
+            this.pieceId = this.pieceId + unit.getPieceID(); // 각 Piece의 ID 업데이트
+        }
+
+        this.currentPosition = units[0].getCurrentPosition();
+        this.size = units.length;
+        this.isArrived = isArrived();
+
+        Collections.addAll(this.unitArrayDeque, units);
     }
 
-    public Piece(String playerID, String pieceID, Position startPosition) {
-        this.DUMMY = playerID;
-        this.pieceID = pieceID;
-        this.currentPosition = startPosition;
-        this.recentPath = new ArrayDeque<>();
-        recentPath.addLast(startPosition); // 초기 위치 저장
+    public Piece(Unit unit) { // 단일 Unit으로 초기화
+        this.playerID = unit.getPlayerID();
+        this.pieceId = unit.getPieceID();
+        this.currentPosition = unit.getCurrentPosition();
+        this.size = 1;
+        this.isArrived = isArrived();
+
+        this.unitArrayDeque.add(unit);
     }
 
-    public Piece(Piece other) {
-        this.pieceID = other.pieceID;
+    public Piece(Piece other) { // 깊은 복사 생성자
+        this.playerID = other.playerID;
+        this.pieceId = other.pieceId;
         this.currentPosition = other.currentPosition;
-        this.recentPath = new ArrayDeque<>(other.recentPath); // 깊은 복사
-    }
+        this.size = other.size;
+        this.isArrived = other.isArrived;
 
-    /// n이 음수일 경우 뒤로 한 칸 이동하고, n이 양수일경우 앞으로 n칸 이동
-    public void moveTo(int n) {
-        if (n < 0) {
-            moveBackward(); // 음수일 경우 뒤로 한 칸 이동
-        } else if (n == 0) {
-            currentPosition = new Position("START"); // 현재 위치를 START로 초기화
-            recentPath.clear();
-            recentPath.add(currentPosition); // START 위치 추가
-        } else {
-            moveForward(n);
+        for (Unit unit : other.unitArrayDeque) {
+            this.unitArrayDeque.add(new Unit(unit)); // 깊은 복사
         }
     }
 
-    public void moveForward(int n) {
-        if (n > 0) {
-            Position nextPosition = board.getNNextPosition(currentPosition, n);
-            moveForward(nextPosition);
-        }
-    }
-
-    // 앞으로 이동할 때 호출됨
-    public void moveForward(Position nextPosition) {
-        // 현재 위치부터 다음 위치까지의 경로를 모두 저장
-        while (!currentPosition.equals(nextPosition)) {
-            currentPosition = board.getNNextPosition(currentPosition, 1); // 한 칸씩 이동
-            recentPath.addLast(currentPosition); // 이동한 위치를 경로에 추가
-        }
-        this.currentPosition = nextPosition; // 최종 위치 업데이트
-    }
-
-    // 빽도: 한 칸 뒤로 이동 (이동 성공 시 true 반환)
-    public void moveBackward() {
-        /*if (recentPath.size() > 1) { // 시작 위치를 제외한 경로가 있는 경우
-            recentPath.removeLast(); // 현재 위치 제거
-            currentPosition = recentPath.peekLast(); // 이전 위치로 이동
-        }*/
-        // P1 빽도일때 예외 상황 추가
-        if (recentPath.peekLast() != null) {
-            if (recentPath.peekLast().equals("P1")) {
-                switch (board.boardFigure) {
-                    case 4 -> {
-                        currentPosition = new Position("P20");
-                        recentPath.addLast(currentPosition); // [P1 P20]
-                    }
-                    case 5 -> {
-                        currentPosition = new Position("P25");
-                        recentPath.addLast(currentPosition); // [P1 P25]
-                    }
-                    case 6 -> {
-                        currentPosition = new Position("P30");
-                        recentPath.addLast(currentPosition); // [P1 P30]
-                    }
-                }
-            }
-        }
-        currentPosition = recentPath.peekLast(); // [P1 P2]
-        recentPath.pop(); // [P1]
-        Position previousPosition = recentPath.peekLast(); // [P1]
-        if (previousPosition != null) {
-            recentPath.addLast(currentPosition); // [P1 P2]
-            recentPath.addLast(previousPosition); // [P1 P2 P1]
-            currentPosition = recentPath.peekLast();
-        }
+    // ------ getters ------ //
+    public ArrayDeque<Unit> getUnitArrayDeque() {
+        return unitArrayDeque;
     }
 
     public Position getCurrentPosition() {
         return currentPosition;
     }
 
-    public String getPieceID() {
-        return pieceID;
+    public String getPlayerID() {
+        return playerID;
     }
 
-    public ArrayDeque<Position> getPath() {
-        return recentPath;
+    // ------ methods ------ //
+    public void moveTo(int n) {
+        for (Unit unit : unitArrayDeque) {
+            unit.moveTo(n);
+        }
+        if (unitArrayDeque.peekFirst() != null) {
+            currentPosition = unitArrayDeque.peekFirst().getCurrentPosition(); // 그룹의 첫 번째 말의 위치로 업데이트
+            this.isArrived = isArrived();
+            updatePieceId();
+        }
+    }
+
+    public boolean isArrived() {
+        return currentPosition.equals(new Position("END")); // 그룹의 첫 번째 말이 END에 도착했음
     }
 
     @Override
-    public String toString() {
-        return pieceID + "@" + currentPosition;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Piece other = (Piece) obj;
+        return this.pieceId.equals(other.pieceId)
+                && this.currentPosition.equals(other.currentPosition);
     }
 
-    public String getPlayerID() {
-        return DUMMY;
+    public void updatePieceId() {
+        this.pieceId = ""; // 초기화
+        for (Unit unit : unitArrayDeque) {
+            this.pieceId = this.pieceId + unit.getPieceID(); // 각 Piece의 ID 업데이트
+        }
     }
 
-    // getter recentPath
-    public Deque<Position> getRecentPath() {
-        return recentPath;
-    }
-
-    public boolean isEnd() {
-        return currentPosition.equals("END"); // 현재 위치가 END인지 확인
-    }
-
-    public boolean isStart() {
-        return currentPosition.equals("START"); // 현재 위치가 START인지 확인
+    public String getPieceId() {
+        return pieceId;
     }
 }

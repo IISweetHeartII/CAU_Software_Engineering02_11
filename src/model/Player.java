@@ -5,22 +5,23 @@ import java.util.ArrayDeque;
 public class Player {
     /// fields ///
     protected final String playerID;
-    protected final ArrayDeque<Piece> allPieces; // ArrayDeque로 변경
-    protected final ArrayDeque<MovablePiece> movablePieces; // ArrayDeque로 변경
+    protected final ArrayDeque<Unit> allUnits; // ArrayDeque로 변경
+    protected final ArrayDeque<Piece> pieces; // ArrayDeque로 변경
     protected int notArrivedCount; // 도착하지 않은 말의 개수
+    protected int notStartedCount; // 시작하지 않은 말의 개수
 
     /// Constructor ///
     public Player(String playerID, int numPieces) {
         this.playerID = playerID;
-        this.allPieces = new ArrayDeque<>(); // ArrayDeque 초기화
-        this.movablePieces = new ArrayDeque<>();
+        this.allUnits = new ArrayDeque<>(); // ArrayDeque 초기화
+        this.pieces = new ArrayDeque<>();
         this.notArrivedCount = numPieces; // ArrayDeque 초기화
 
         // initializing //
         for (int i = 0; i < numPieces; i++) {
-            Piece piece = new Piece(playerID, "" + (i + 1));
-            allPieces.add(piece); // ArrayDeque에 추가
-            movablePieces.add(new MovablePiece(piece)); // MovablePiece 추가
+            Unit unit = new Unit(playerID, "" + (i + 1));
+            allUnits.add(unit); // ArrayDeque에 추가
+            pieces.add(new Piece(unit)); // MovablePiece 추가
         }
     }
 
@@ -29,12 +30,12 @@ public class Player {
         return playerID;
     }
 
-    public ArrayDeque<Piece> getAllPieces() {
-        return allPieces;
+    public ArrayDeque<Unit> getAllUnits() {
+        return allUnits;
     }
 
-    public ArrayDeque<MovablePiece> getMovablePieces() {
-        return movablePieces;
+    public ArrayDeque<Piece> getPieces() {
+        return pieces;
     }
 
     public int getNotArrivedCount() {
@@ -43,7 +44,7 @@ public class Player {
 
     /// methods ///
     public boolean hasAllPiecesAtEnd() {
-        for (MovablePiece piece : movablePieces) {
+        for (Piece piece : pieces) {
             if (!piece.getCurrentPosition().equals("END")) {
                 return false; // 하나라도 END가 아니면 false
             }
@@ -51,12 +52,21 @@ public class Player {
         return true; // 모든 말이 END에 도착했음
     }
 
-    public MovablePiece getMovablePieceAt(Position position) {
-        for (MovablePiece piece : movablePieces) {
+    public Piece getMovablePieceAt(Position position) {
+        for (Piece piece : pieces) {
             if (piece.getCurrentPosition().equals(position)) {
                 return piece; // 해당 위치에 있는 말 반환
             }
         }
         return null; // 해당 위치에 말이 없음
+    }
+
+    public void updateNotStartedCount() {
+        notStartedCount = 0;
+        for (Piece piece : pieces) {
+            if (piece.getCurrentPosition().equals("START")) {
+                notStartedCount += piece.size; // START에 있는 말의 개수
+            }
+        }
     }
 }
