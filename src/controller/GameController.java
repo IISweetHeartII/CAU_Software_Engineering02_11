@@ -6,7 +6,7 @@ import model.*;
 import view.SwingUI;
 
 public class GameController {
-    public GameModel model;
+    public GameManager model;
     public SwingUI view;
 
     // state flag
@@ -18,8 +18,8 @@ public class GameController {
     public boolean endState = false;
 
     // --------- Constructor ---------
-    public GameController(GameModel gameModel) {
-        this.model = gameModel;
+    public GameController(GameManager gameManager) {
+        this.model = gameManager;
     }
 
     public void setView(SwingUI view) {
@@ -29,7 +29,7 @@ public class GameController {
     // --------- 랜덤 윷 던지기 ---------
     public void handleRandomThrow() { // <----- gameView : ActionListener에서 호출됨
         if (!yutState) return;
-        YutResult yutResult = model.throwAndSaveYut();
+        YutResult yutResult = model.throwYutRandom();
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
         System.out.println("yutResult: " + yutResult.getValue());
@@ -41,7 +41,7 @@ public class GameController {
 
     // --------- 지정 윷 던지기 ---------
     public void handleManualThrow(YutResult yutResult) { // <------- gameView : ActionListener에서 호출됨
-        YutResult copy = model.throwAndSaveYut(yutResult.getValue());
+        YutResult copy = model.throwYutManual(yutResult.getValue());
         yutState = copy.isExtraTurn();
         view.showYutResult(copy.getValue());
         moveState = !yutState;
@@ -50,7 +50,7 @@ public class GameController {
 
 
     public void handleManualThrow(int value) { // <------- gameView : ActionListener에서 호출됨
-        YutResult yutResult = model.throwAndSaveYut(value);
+        YutResult yutResult = model.throwYutManual(value);
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
         moveState = !yutState;

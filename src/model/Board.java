@@ -10,25 +10,6 @@ public class Board {
     protected int boardFigure = loadBoardFigure();
     protected String beforeEND;
 
-    private int loadBoardFigure() {
-        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.startsWith("board:")) {
-                    String[] parts = line.split(":");
-                    if (parts.length == 2) {
-                        return Integer.parseInt(parts[1].trim());
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.err.println("piece 값이 올바르지 않습니다.");
-        }
-        return 4; // 기본값
-    }
-
     // Constructor
     public Board() {
         switch (boardFigure) {
@@ -55,19 +36,19 @@ public class Board {
     }
 
     /* find and return n-th next position from specific positon */
-    public Position getNNextPosition(Position position, int n) {
+    public Position getPositionByMoveCount(Position position, int moveCount) {
         // Field
         List<Position> nextPositionList = pathGraph.get(position);
         Position previousPosition = null;
 
         // Exception Handling
-        if (position == null || n <= 0)
+        if (position == null || moveCount <= 0)
             return null;
         if (nextPositionList == null || nextPositionList.isEmpty())
             return null;
 
         // Main Logic
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < moveCount; i++) {
             // END에 도달하면 END를 반환
             if (nextPositionList.isEmpty()) {
                 return new Position("END");
@@ -106,50 +87,6 @@ public class Board {
     }
 
     private void init4Graph() {
-        // 일반 외곽 경로
-        Position START = new Position("START");
-        Position P1 = new Position("P1"); // 시작점
-        Position P2 = new Position("P2");
-        Position P3 = new Position("P3");
-        Position P4 = new Position("P4");
-        Position P5 = new Position("P5");
-
-        Position P6 = new Position("P6");
-        Position P7 = new Position("P7");
-        Position P8 = new Position("P8");
-        Position P9 = new Position("P9");
-        Position P10 = new Position("P10");
-
-        Position P11 = new Position("P11");
-        Position P12 = new Position("P12");
-        Position P13 = new Position("P13");
-        Position P14 = new Position("P14");
-        Position P15 = new Position("P15");
-
-        Position P16 = new Position("P16");
-        Position P17 = new Position("P17");
-        Position P18 = new Position("P18");
-        Position P19 = new Position("P19");
-        Position P20 = new Position("P20");
-
-        Position END = new Position("END"); // 종료점
-
-        // 중심점 및 교차 경로
-        Position C = center;
-
-        Position E1 = new Position("E1");
-        Position E2 = new Position("E2");
-
-        Position E3 = new Position("E3");
-        Position E4 = new Position("E4");
-
-        Position E5 = new Position("E5");
-        Position E6 = new Position("E6");
-
-        Position E7 = new Position("E7");
-        Position E8 = new Position("E8");
-
-
         // 외곽 경로 설정
         pathGraph.put(START, List.of(P1)); // 시작점
         pathGraph.put(P1, List.of(P2));
@@ -192,57 +129,6 @@ public class Board {
     }
 
     private void init5Graph() {
-        // 일반 외곽 경로
-        Position START = new Position("START");
-        Position P1 = new Position("P1"); // 시작점
-        Position P2 = new Position("P2");
-        Position P3 = new Position("P3");
-        Position P4 = new Position("P4");
-        Position P5 = new Position("P5");
-
-        Position P6 = new Position("P6");
-        Position P7 = new Position("P7");
-        Position P8 = new Position("P8");
-        Position P9 = new Position("P9");
-        Position P10 = new Position("P10");
-
-        Position P11 = new Position("P11");
-        Position P12 = new Position("P12");
-        Position P13 = new Position("P13");
-        Position P14 = new Position("P14");
-        Position P15 = new Position("P15");
-
-        Position P16 = new Position("P16");
-        Position P17 = new Position("P17");
-        Position P18 = new Position("P18");
-        Position P19 = new Position("P19");
-        Position P20 = new Position("P20");
-
-        Position P21 = new Position("P21");
-        Position P22 = new Position("P22");
-        Position P23 = new Position("P23");
-        Position P24 = new Position("P24");
-        Position P25 = new Position("P25");
-        Position END = new Position("END"); // 종료점
-
-        Position C = center;
-
-        Position E1 = new Position("E1");
-        Position E2 = new Position("E2");
-
-        Position E3 = new Position("E3");
-        Position E4 = new Position("E4");
-
-        Position E5 = new Position("E5");
-        Position E6 = new Position("E6");
-
-        Position E7 = new Position("E7");
-        Position E8 = new Position("E8");
-
-        // new inner path
-        Position E9 = new Position("E9");
-        Position E10 = new Position("E10");
-
         // 외곽 경로 설정
         pathGraph.put(START, List.of(P1)); // 시작점
         pathGraph.put(P1, List.of(P2));
@@ -297,66 +183,6 @@ public class Board {
     }
 
     private void init6Graph() {
-// 일반 외곽 경로
-        Position START = new Position("START");
-        Position P1 = new Position("P1"); // 시작점
-        Position P2 = new Position("P2");
-        Position P3 = new Position("P3");
-        Position P4 = new Position("P4");
-        Position P5 = new Position("P5");
-
-        Position P6 = new Position("P6");
-        Position P7 = new Position("P7");
-        Position P8 = new Position("P8");
-        Position P9 = new Position("P9");
-        Position P10 = new Position("P10");
-
-        Position P11 = new Position("P11");
-        Position P12 = new Position("P12");
-        Position P13 = new Position("P13");
-        Position P14 = new Position("P14");
-        Position P15 = new Position("P15");
-
-        Position P16 = new Position("P16");
-        Position P17 = new Position("P17");
-        Position P18 = new Position("P18");
-        Position P19 = new Position("P19");
-        Position P20 = new Position("P20");
-
-        Position P21 = new Position("P21");
-        Position P22 = new Position("P22");
-        Position P23 = new Position("P23");
-        Position P24 = new Position("P24");
-        Position P25 = new Position("P25");
-
-        Position P26 = new Position("P26");
-        Position P27 = new Position("P27");
-        Position P28 = new Position("P28");
-        Position P29 = new Position("P29");
-        Position P30 = new Position("P30");
-        Position END = new Position("END"); // 종료점
-
-        Position C = center;
-
-        Position E1 = new Position("E1");
-        Position E2 = new Position("E2");
-
-        Position E3 = new Position("E3");
-        Position E4 = new Position("E4");
-
-        Position E5 = new Position("E5");
-        Position E6 = new Position("E6");
-
-        Position E7 = new Position("E7");
-        Position E8 = new Position("E8");
-
-        // new inner path
-        Position E9 = new Position("E9");
-        Position E10 = new Position("E10");
-
-        Position E11 = new Position("E11");
-        Position E12 = new Position("E12");
-
         // 외곽 경로 설정
         pathGraph.put(START, List.of(P1)); // 시작점
         pathGraph.put(P1, List.of(P2));
@@ -417,5 +243,85 @@ public class Board {
 
         // 교차점
         pathGraph.put(C, List.of(E3, E9, E7)); // 교차점
+    }
+
+    // 일반 외곽 경로
+    Position START = new Position("START");
+    Position P1 = new Position("P1"); // 시작점
+    Position P2 = new Position("P2");
+    Position P3 = new Position("P3");
+    Position P4 = new Position("P4");
+    Position P5 = new Position("P5");
+
+    Position P6 = new Position("P6");
+    Position P7 = new Position("P7");
+    Position P8 = new Position("P8");
+    Position P9 = new Position("P9");
+    Position P10 = new Position("P10");
+
+    Position P11 = new Position("P11");
+    Position P12 = new Position("P12");
+    Position P13 = new Position("P13");
+    Position P14 = new Position("P14");
+    Position P15 = new Position("P15");
+
+    Position P16 = new Position("P16");
+    Position P17 = new Position("P17");
+    Position P18 = new Position("P18");
+    Position P19 = new Position("P19");
+    Position P20 = new Position("P20");
+
+    Position P21 = new Position("P21");
+    Position P22 = new Position("P22");
+    Position P23 = new Position("P23");
+    Position P24 = new Position("P24");
+    Position P25 = new Position("P25");
+
+    Position P26 = new Position("P26");
+    Position P27 = new Position("P27");
+    Position P28 = new Position("P28");
+    Position P29 = new Position("P29");
+    Position P30 = new Position("P30");
+    Position END = new Position("END"); // 종료점
+
+    Position C = center;
+
+    Position E1 = new Position("E1");
+    Position E2 = new Position("E2");
+
+    Position E3 = new Position("E3");
+    Position E4 = new Position("E4");
+
+    Position E5 = new Position("E5");
+    Position E6 = new Position("E6");
+
+    Position E7 = new Position("E7");
+    Position E8 = new Position("E8");
+
+    // new inner path
+    Position E9 = new Position("E9");
+    Position E10 = new Position("E10");
+
+    Position E11 = new Position("E11");
+    Position E12 = new Position("E12");
+
+    // --------- file load --------- //
+    private int loadBoardFigure() {
+        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("board:")) {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        return Integer.parseInt(parts[1].trim());
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.err.println("piece 값이 올바르지 않습니다.");
+        }
+        return 4; // 기본값
     }
 }

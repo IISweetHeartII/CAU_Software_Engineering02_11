@@ -1,7 +1,7 @@
 package view;
 
 import controller.GameController;
-import model.GameModel;
+import model.GameManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,7 @@ public class SwingUI {
     /// 쌩 중괄호{}로 감싸진 부분은 읽을 필요가 없거나, 중요도가 낮은 항목이므로 접어두시는 것을 권장드립니다.
 
     GameController controller;
-    GameModel model;
+    GameManager model;
     private JFrame frame;
     private BackgroundPanel backgroundPanel;
 
@@ -33,7 +33,7 @@ public class SwingUI {
     private int numberOfPieces; // 플레이어당 말 수
 
     // ------ 생성자: Constructor ------- //
-    public SwingUI(GameController controller, GameModel model) {
+    public SwingUI(GameController controller, GameManager model) {
         // GUI 초기화 코드
         this.controller = controller;
         this.model = model;

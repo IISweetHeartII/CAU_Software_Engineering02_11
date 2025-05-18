@@ -1,102 +1,67 @@
 package model;
 
-import java.util.ArrayDeque;
-import java.util.Collections;
-
 public class Piece {
-    // ------ fields ------ //
-    protected String playerID;
-    private String pieceId = "";
-
-    protected Position currentPosition;
-    protected int size;
-    protected boolean isArrived;
-
-    protected ArrayDeque<Unit> unitArrayDeque = new ArrayDeque<>(); // ArrayDeque로 변경
+    // --- 설계 전략 ---
+    // id는 플레이어와 말의 그룹 갯수를 포합하는 형태를 가집니다.
+    // 예를 들어 "1"은 플레이어 1의 말 1개를 의미합니다.
+    // "111"은 플레이어 1의 말 3개가 모여있는 상태를 의미합니다.
+    // "2222"는 플레이어 2의 말 4개가 모여있는 상태를 의미합니다.
+    // "11"의 말과 "111"의 말이 같은 그룹으로 묶이면 "11111"의 형태가 됩니다.
+    private String id;
+    private int size;
+    // --- 빽도 전략 ---
+    // 말은 이전 위치만 기억하고, 현재 위치는 GameManager에서 관리합니다.
+    // 뒤로 한 칸 이동하는 경우 현재 위치와 이전 위치가 바뀌게 됩니다.
+    private Position previousPosition;
 
     // ------ constructor ------ //
-    public Piece(Unit... units) { // 가변 인자를 사용해 여러 개의 말을 그룹화
-        this.playerID = units[0].getPlayerID();
-        for (Unit unit : units) {
-            this.pieceId = this.pieceId + unit.getPieceID(); // 각 Piece의 ID 업데이트
-        }
-
-        this.currentPosition = units[0].getCurrentPosition();
-        this.size = units.length;
-        this.isArrived = isArrived();
-
-        Collections.addAll(this.unitArrayDeque, units);
+    public Piece(String id, String previousPosition) {
+        this.id = id;
+        this.size = id.length();
+        this.previousPosition = new Position(previousPosition);
     }
 
-    public Piece(Unit unit) { // 단일 Unit으로 초기화
-        this.playerID = unit.getPlayerID();
-        this.pieceId = unit.getPieceID();
-        this.currentPosition = unit.getCurrentPosition();
-        this.size = 1;
-        this.isArrived = isArrived();
-
-        this.unitArrayDeque.add(unit);
+    // ------ getter ------ //
+    public String getId() {
+        return id;
     }
 
-    public Piece(Piece other) { // 깊은 복사 생성자
-        this.playerID = other.playerID;
-        this.pieceId = other.pieceId;
-        this.currentPosition = other.currentPosition;
-        this.size = other.size;
-        this.isArrived = other.isArrived;
-
-        for (Unit unit : other.unitArrayDeque) {
-            this.unitArrayDeque.add(new Unit(unit)); // 깊은 복사
-        }
+    public int getSize() {
+        return size;
     }
 
-    // ------ getters ------ //
-    public ArrayDeque<Unit> getUnitArrayDeque() {
-        return unitArrayDeque;
+    public String getPlayerId() {
+        return id.substring(0, 1);
     }
 
-    public Position getCurrentPosition() {
-        return currentPosition;
+    public Position getPreviousPosition() {
+        return previousPosition;
     }
 
-    public String getPlayerID() {
-        return playerID;
+    // ------ setter ------ //
+    public void setPreviousPosition(String previousPosition) {
+        this.previousPosition = new Position(previousPosition);
     }
 
-    // ------ methods ------ //
-    public void moveTo(int n) {
-        for (Unit unit : unitArrayDeque) {
-            unit.moveTo(n);
-        }
-        if (unitArrayDeque.peekFirst() != null) {
-            currentPosition = unitArrayDeque.peekFirst().getCurrentPosition(); // 그룹의 첫 번째 말의 위치로 업데이트
-            this.isArrived = isArrived();
-            updatePieceId();
-        }
-    }
-
-    public boolean isArrived() {
-        return currentPosition.equals(new Position("END")); // 그룹의 첫 번째 말이 END에 도착했음
-    }
-
+    // ------ method ------ //
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-
-        Piece other = (Piece) obj;
-        return this.pieceId.equals(other.pieceId)
-                && this.currentPosition.equals(other.currentPosition);
+        if (!(obj instanceof Piece other)) return false;
+        return this.id.equals(other.id)
+                && this.size == other.size
+                && this.previousPosition.equals(other.previousPosition);
     }
 
-    public void updatePieceId() {
-        this.pieceId = ""; // 초기화
-        for (Unit unit : unitArrayDeque) {
-            this.pieceId = this.pieceId + unit.getPieceID(); // 각 Piece의 ID 업데이트
+    public void group(Piece other) {
+        if (this.id.charAt(0) != other.id.charAt(0)) {
+            System.out.println("group:그룹화할 수 없습니다. 플레이어가 다릅니다.");
+            return;
         }
+        this.id += other.id;
+        this.size += other.size;
     }
 
-    public String getPieceId() {
-        return pieceId;
+    public boolean isSamePlayers(Piece other) {
+        return this.id.charAt(0) == other.id.charAt(0);
     }
 }

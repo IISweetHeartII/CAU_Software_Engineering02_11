@@ -3,14 +3,14 @@ package model;
 import java.util.Random;
 
 
-public class Yut {
+public class YutManager {
     private final Random random = new Random();
 
     /**
      * 랜덤 윷 던지기 로직
      * 도, 개, 걸, 윷, 모 or 빽도를 무작위 생성
      */
-    public YutResult throwYut() {
+    public YutResult throwYutRandom() {
         int rand = random.nextInt(100) + 1; // 1 ~ 100
 
         YutResultType result;
@@ -36,16 +36,7 @@ public class Yut {
      * 사용자가 입력한 문자열로 결과 생성
      * 유효하지 않은 입력은 예외 발생
      */
-    public YutResult throwYut(String input) {
-        try {
-            YutResultType result = YutResultType.valueOf(input.toUpperCase());
-            return new YutResult(result);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("잘못된 윷 종류입니다: " + input);
-        }
-    }
-
-    public YutResult throwYut(int n) {
+    public YutResult throwYutCustom(int n) {
         return switch (n) {
             case -1 -> new YutResult(YutResultType.BACK_DO);
             case 1 -> new YutResult(YutResultType.DO);
