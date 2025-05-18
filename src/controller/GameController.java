@@ -49,17 +49,8 @@ public class GameController {
     }
 
 
-    public void handleManualThrow(int valueOfYut) { // <------- gameView : ActionListener에서 호출됨
-        YutResult yutResult = model.throwAndSaveYut(valueOfYut);
-        yutState = yutResult.isExtraTurn();
-        view.showYutResult(yutResult.getValue());
-        moveState = !yutState;
-        yutState = false;
-    }
-
-
-    public void handleManualThrow(String StringOfYut) { // <------- gameView : ActionListener에서 호출됨
-        YutResult yutResult = model.throwAndSaveYut(StringOfYut);
+    public void handleManualThrow(int value) { // <------- gameView : ActionListener에서 호출됨
+        YutResult yutResult = model.throwAndSaveYut(value);
         yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
         moveState = !yutState;
@@ -74,7 +65,7 @@ public class GameController {
     public void handleBoardClick(String nodeId) {
         if (selectPieceState && !selectPositionState) { // 1. 움직일 말 선택
             // check if the selected piece is movable
-            if (!(model.checkCurrentPlayerPieceAt(nodeId))) {
+            if (!(model.isCurrentPlayersPiecePresent(nodeId))) {
                 System.out.println("해당 위치에 현재 플레이어의 말 없음"); // ---> 테스트용
                 return;
             }
@@ -82,16 +73,16 @@ public class GameController {
             selectPieceState = false;
             selectPositionState = true;
         } else if (!selectPieceState && selectPositionState) { // 2. 이동할 위치 선택
-            if (model.checkCurrentPlayerPieceAt(nodeId)) { // 이동할 말을 바꾼다면
+            if (model.isCurrentPlayersPiecePresent(nodeId)) { // 이동할 말을 바꾼다면
                 selectedPiecePositionId = nodeId;
                 return;
             }
-            if (!(model.checkPosableMoves(nodeId))) { // 이동할 위치가 유효하지 않다면
+            if (!(model.isPositionMovable(nodeId))) { // 이동할 위치가 유효하지 않다면
                 System.out.println("해당 위치로 이동할 수 없음"); // ---> 테스트용
                 return;
             }
             selectedNodeId = nodeId;
-            String selectedPieceId = model.getPieceIdAt(selectedPiecePositionId);
+            String selectedPieceId = model.getPieceIdAtNodeId(selectedPiecePositionId);
             model.handleMovePiece(selectedPieceId, selectedNodeId);
             selectPieceState = true;
             selectPositionState = false;
@@ -102,18 +93,19 @@ public class GameController {
             // test
             System.out.println("selectedPieceId: " + selectedPieceId);
             System.out.println("selectedNodeId: " + selectedNodeId);
-            System.out.println("currentPlayer: " + model.getCurrentPlayer().getPlayerID());
-            System.out.println("notStarted: " + model.getNotStartedCount()[model.getPlayerTurn() - 1]);
+            System.out.println("currentPlayer: " + model.getCurrentPlayerNumber());
+            System.out.println("notStarted: " + model.getNotStartedCount()[model.getCurrentPlayerNumber() - 1]);
 
-            if (model.getYutResultDeque().isEmpty()) {
+            if (model.isALlMoved()) {
                 moveState = false;
                 yutState = true;
                 if (model.isGameEnd()) {
-                    view.showGameEnd(model.getCurrentPlayer().getPlayerID());
+                    view.showGameEnd(model.getCurrentPlayerNumber());
                     return;
                 }
-                model.changeTurn();
-                view.updateTurn(model.getCurrentPlayer().getPlayerID());
+                // Todo: 테스트용 턴 변경
+                // model.changeTurn();
+                view.updateTurn();
             }
         }
     }

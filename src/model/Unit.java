@@ -15,6 +15,7 @@ public class Unit {
         this(playerID, pieceID, new Position("START")); // 기본 위치는 START
     }
 
+    // Junit 테스트를 위한 생성자
     public Unit(String playerID, String pieceID, Position startPosition) {
         this.DUMMY = playerID;
         this.pieceID = pieceID;
@@ -43,10 +44,15 @@ public class Unit {
     }
 
     public void moveForward(int n) {
-        if (n > 0) {
+        for (int i = 0; i < n; i++) {
+            Position nextPosition = board.getNNextPosition(currentPosition, 1); // 한 칸씩 이동
+            recentPath.addLast(nextPosition); // 이동한 위치를 경로에 추가
+            currentPosition = nextPosition; // 최종 위치 업데이트
+        }
+        /*if (n > 0) {
             Position nextPosition = board.getNNextPosition(currentPosition, n);
             moveForward(nextPosition);
-        }
+        }*/
     }
 
     // 앞으로 이동할 때 호출됨

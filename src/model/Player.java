@@ -7,15 +7,13 @@ public class Player {
     protected final String playerID;
     protected final ArrayDeque<Unit> allUnits; // ArrayDeque로 변경
     protected final ArrayDeque<Piece> pieces; // ArrayDeque로 변경
-    protected int notArrivedCount; // 도착하지 않은 말의 개수
-    protected int notStartedCount; // 시작하지 않은 말의 개수
+    protected int notStartedCount = 5; // START에 있는 말의 개수
 
     /// Constructor ///
     public Player(String playerID, int numPieces) {
         this.playerID = playerID;
         this.allUnits = new ArrayDeque<>(); // ArrayDeque 초기화
         this.pieces = new ArrayDeque<>();
-        this.notArrivedCount = numPieces; // ArrayDeque 초기화
 
         // initializing //
         for (int i = 0; i < numPieces; i++) {
@@ -38,8 +36,8 @@ public class Player {
         return pieces;
     }
 
-    public int getNotArrivedCount() {
-        return notArrivedCount;
+    public int getNotStartedCount() {
+        return notStartedCount;
     }
 
     /// methods ///

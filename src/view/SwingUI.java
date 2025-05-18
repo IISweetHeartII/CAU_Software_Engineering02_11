@@ -356,7 +356,7 @@ public class SwingUI {
     // ---------------------------------------------- //
 
     // ------ update board ------ //
-    private static final int PIECE_SCALE_FACTOR = 3;
+    private static final int PIECE_SCALE_FACTOR = 2;
     private static final int POSITION_ADJUSTMENT_FACTOR = 6;
     public void updateBoard() {
         // 기존에 표시된 모든 말 제거
@@ -384,13 +384,13 @@ public class SwingUI {
         ImageIcon pieceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
                 "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
         )));
-        
+
         // test
         System.out.println("pieceId: " + pieceId);
 
         Image scaledPiece = pieceIcon.getImage().getScaledInstance(
-                pieceIcon.getIconWidth() / PIECE_SCALE_FACTOR,
-                pieceIcon.getIconHeight() / PIECE_SCALE_FACTOR,
+                pieceIcon.getIconWidth()/PIECE_SCALE_FACTOR,
+                pieceIcon.getIconHeight()/PIECE_SCALE_FACTOR,
                 Image.SCALE_SMOOTH);
 
         return new JLabel(new ImageIcon(scaledPiece));
@@ -403,8 +403,8 @@ public class SwingUI {
         pieceLabel.setBounds(
                 position.x - ((ImageIcon) icon).getIconWidth() / POSITION_ADJUSTMENT_FACTOR,
                 position.y - ((ImageIcon) icon).getIconHeight() / POSITION_ADJUSTMENT_FACTOR,
-                ((ImageIcon) icon).getIconWidth() / PIECE_SCALE_FACTOR,
-                ((ImageIcon) icon).getIconHeight() / PIECE_SCALE_FACTOR);
+                ((ImageIcon) icon).getIconWidth(),
+                ((ImageIcon) icon).getIconHeight());
     }
 
     private void removePreviousPieces() { // -> updateBoard()
@@ -415,10 +415,10 @@ public class SwingUI {
     // ------------------ //
 
     public void updatePlayerScore() {
-        int[] gameScores = model.getNotStartedCount();
+        int[] notStartedCount1 = model.getNotStartedCount();
         for (int i = 0; i < numberOfPlayers; i++) {
             // 플레이어의 점수 가져오기
-            int notStartedCount = gameScores[i];
+            int notStartedCount = notStartedCount1[i];
 
             // 이미지 처리
             ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
@@ -434,12 +434,13 @@ public class SwingUI {
         }
     }
 
-    public void showGameEnd(String playerID) {
+    public void showGameEnd(int winner) {
     }
 
     // ------ update turn ------ //
-    public void updateTurn(String playerID) {
+    public void updateTurn() {
         // 이미지 처리 및 보정
+        int playerID = model.getCurrentPlayerNumber();
         ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
                 "/data/ui/turn/turn_" + playerID + ".png"
         )));
