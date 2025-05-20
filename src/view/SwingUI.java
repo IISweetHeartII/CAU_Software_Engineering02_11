@@ -10,10 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SwingUI {
-    /// 코드 해석용 참고할만한 사항
-    /// 웬만한 코드는 추상적으로 표현되도록 작성돼었습니다.
-    /// 쌩 중괄호{}로 감싸진 부분은 읽을 필요가 없거나, 중요도가 낮은 항목이므로 접어두시는 것을 권장드립니다.
-
     GameController controller;
     GameManager model;
     private JFrame frame;
@@ -26,6 +22,7 @@ public class SwingUI {
 
     private JButton throwButton;
     private JButton STARTButton;
+    private JButton ENDButton;
 
     private Map<String, JLabel> piecePositions = new HashMap<>();
 
@@ -147,6 +144,23 @@ public class SwingUI {
         // 패널에 버튼 추가
         backgroundPanel.add(STARTButton);
 
+        // ------ END Button 설정 ------ //
+        // Todo:
+        // 버튼 객체 할당
+        ENDButton = new JButton("END");
+        // 버튼 위치 할당
+        ENDButton.setBounds(20, 472, 1299/3, 621/3);
+        // 버튼 옵션 설정
+        ENDButton.setBorderPainted(false);
+        ENDButton.setContentAreaFilled(false);
+        ENDButton.setFocusPainted(false);
+        ENDButton.setOpaque(false);
+        ENDButton.setText("");
+        // Action 설정
+        ENDButton.addActionListener(e -> {
+            controller.handleBoardClick("END");
+            System.out.println("END Button Clicked");
+        });
 
         //------ Turn 설정 ------ //
         {
@@ -166,10 +180,10 @@ public class SwingUI {
         // ------ [Throw] Button 설정 ------ //
         createThrowButton();
 
-        // Todo: [Custom choice] Button
+        // ------ [Custom] Button 설정 ------ //
         createPopupButton();
 
-        // Todo: [Restart] Button
+        // ------ [Restart] Button 설정 ------ //
         createRestartButton();
 
         // ------ Quit 버튼 설정 ------ //
@@ -666,9 +680,6 @@ public class SwingUI {
             // 사진 교체
             playerScoreLabel[i + 1].setIcon(new ImageIcon(scaledPlayerScore));
         }
-    }
-
-    public void showGameEnd(int winner) {
     }
 
     // ------ update turn ------ //

@@ -113,7 +113,8 @@ public class GameManager {
         // piece 불러오기: 시작 위치가 START인 경우 예외 처리
         Piece piece;
         if (startPosition.equals("START")) {
-            piece = new Piece(String.valueOf(currentPlayerIndex + 1), startPosition);
+            piece = new Piece(String.valueOf(currentPlayerIndex + 1), boardManager.beforeEND);
+            positionPieceMap.put(startPosition, piece);
             countOfPieceAtStart[currentPlayerIndex]--;
         } else {
             piece = positionPieceMap.get(startPosition);
