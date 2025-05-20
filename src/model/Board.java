@@ -40,16 +40,26 @@ public class Board {
     }
 
     /* find and return n-th next position from specific positon, must moveCount > 0 */
-    public Position moveToNextPosition(Position currentPosition, int moveCount, Piece piece) {
+    public Position setPreviousPosition(Position currentPosition, int moveCount, Piece piece) {
         // Field
         List<Position> nextPositionList = pathGraph.get(currentPosition);
+        boolean startSign = true;
         Position previousPosition = null;
 
         // Exception Handling
-        if (currentPosition == null || moveCount <= 0)
+        if (moveCount == -1) { // 빽도 : piece 내부의 이전 위치를 가져와서 current위치와 교환
+            if (piece.getPreviousPosition() == null) {
+                return null;
+            }
+            previousPosition = currentPosition;
+            currentPosition = piece.getPreviousPosition();
+            piece.setPreviousPosition(previousPosition.getId());
+            return currentPosition;
+        }
+        if (currentPosition == null)
             return null;
         if (nextPositionList == null || nextPositionList.isEmpty())
-            return null;
+            return new Position("END");
 
         // Main Logic
         for (int i = 0; i < moveCount; i++) {
@@ -60,9 +70,10 @@ public class Board {
 
             // NextPosition 계산
             if (currentPosition.equals(center)) { // center:[E3, E7]
-                if (previousPosition == null) {
+                if (startSign) {
                     previousPosition = currentPosition;
                     currentPosition = nextPositionList.getLast();
+                    startSign = false;
                 } else if (previousPosition.equals("E2")) {
                     previousPosition = currentPosition;
                     currentPosition = nextPositionList.getFirst();
