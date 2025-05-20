@@ -363,10 +363,10 @@ public class SwingUI {
         removePreviousPieces();
 
         // 새로운 말 위치 정보 가져오기
-        Map<String, String> piecePositionsMap = model.getPiecePositionsMap();
+        Map<String, String> PositionPieceMap = model.getPositionPieceMap();
 
         // 새로운 말들을 생성하고 표시
-        piecePositionsMap.forEach((pieceId, nodeId) -> {
+        PositionPieceMap.forEach((nodeId, pieceId) -> {
             if (!(nodeId.equals("START") || nodeId.equals("END"))) { // SART, END 제외
                 JLabel pieceLabel = createScaledPieceLabel(pieceId);
                 adjustPiecePosition(pieceLabel, nodeId);
@@ -415,7 +415,7 @@ public class SwingUI {
     // ------------------ //
 
     public void updatePlayerScore() {
-        int[] notStartedCount1 = model.getNotStartedPiecesCount();
+        int[] notStartedCount1 = model.getCountOfPieceAtStart();
         for (int i = 0; i < numberOfPlayers; i++) {
             // 플레이어의 점수 가져오기
             int notStartedCount = notStartedCount1[i];

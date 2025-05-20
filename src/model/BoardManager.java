@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class Board {
+public class BoardManager {
     protected final Map<Position, List<Position>> pathGraph = new HashMap<>();
     protected final Position center = new Position("C");
     protected int boardFigure = loadBoardFigure();
     protected String beforeEND;
 
     // Constructor
-    public Board() {
+    public BoardManager() {
         switch (boardFigure) {
             case 4:
                 init4Graph();

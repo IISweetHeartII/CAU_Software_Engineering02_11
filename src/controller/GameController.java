@@ -99,6 +99,7 @@ public class GameController {
             selectedNodeId = nodeId;
             model.controlMovePiece(selectedPiecePositionId, selectedNodeId);
             view.updateBoard();
+            view.updatePlayerScore();
 
             // update state
             selectPieceState = false;
@@ -107,15 +108,21 @@ public class GameController {
             selectedNodeId = "";
             System.out.println("controller: 이동 완료");
 
-            model.printPiecePositionMap();
-
             // Turn 처리
             if (model.isExtraTurn()) {
                 System.out.println("controller: 추가 윷을 던질 수 있습니다.");
                 yutState = true;
-            } else {
+            } else if (model.isExtraMove()) {
+                System.out.println("controller: 추가 이동을 할 수 있습니다.");
+                model.printYutHistory();
+                yutState = false;
+                selectPieceState = true;
+                selectPositionState = false;
+            }
+            else {
                 System.out.println("controller: 턴을 넘깁니다.");
                 model.nextTurn();
+                view.updateTurn();
                 yutState = true;
             }
         }
