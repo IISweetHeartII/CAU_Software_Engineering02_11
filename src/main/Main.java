@@ -14,14 +14,15 @@ public class Main {
         controller.setView(view);
 
         // 게임 시작
-        while (true) {
+        /*while (true) {
             if (controller.resetGame()) {
+                System.out.println("reset이 눌린거여");
                 model = new GameManager();
                 controller = new GameController(model); // -----> View.initUI() 포함한다
             }
             if (controller.endGame()) {
                 break;
             }
-        }
+        }*/
     }
 }

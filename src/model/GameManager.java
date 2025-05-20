@@ -248,13 +248,14 @@ public class GameManager {
         currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
     }
 
-    public void isGameEnd() {
+    public boolean isGameEnd() {
         for (int i = 0; i < numberOfPlayers; i++) {
             if (countOfPieceAtEnd[i] == numberOfPieces) {
                 System.out.println("플레이어 " + (i + 1) + "가 승리했습니다.");
-                return;
+                return true;
             }
         }
+        return false;
     }
 
 

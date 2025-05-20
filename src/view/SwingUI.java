@@ -170,6 +170,7 @@ public class SwingUI {
         createPopupButton();
 
         // Todo: [Restart] Button
+        createRestartButton();
 
         // ------ Quit 버튼 설정 ------ //
         createQuitButton();
@@ -271,6 +272,20 @@ public class SwingUI {
         yutLabel.setIcon(new ImageIcon(scaledYutResult));
     }
     // ---------------------------------------------- //
+
+    // ------ show winner <---- controller ------ //
+    public void showWinner(int winner) {
+        // 이미지 처리
+        ImageIcon winnerIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/turn/winner_" + winner + ".png"
+        )));
+        Image scaledWinnerIcon = winnerIcon.getImage().getScaledInstance(
+                winnerIcon.getIconWidth() / 3,
+                winnerIcon.getIconHeight() / 3,
+                Image.SCALE_SMOOTH);
+        // turn Label에 winner 이미지 설정
+        turnLabel.setIcon(new ImageIcon(scaledWinnerIcon));
+    }
 
     // ------ update board ------ //
     private static final int PIECE_SCALE_FACTOR = 2;
@@ -397,6 +412,44 @@ public class SwingUI {
 
         // 패널에 버튼 추가
         Objects.requireNonNull(backgroundPanel).add(quitButton);
+    }
+
+    private void createRestartButton() {
+        // 객체 생성
+        JButton restartButton = new JButton("Restart");
+        // 버튼 옵션 설정
+        restartButton.setBorderPainted(false);
+        restartButton.setContentAreaFilled(false);
+        restartButton.setFocusPainted(false);
+        restartButton.setOpaque(false);
+        restartButton.setText("");
+        // 이미지 처리
+        ImageIcon restartIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_restart_up.png"
+        )));
+        Image scaledRestartIcon = restartIcon.getImage().getScaledInstance(
+                restartIcon.getIconWidth() / 3,
+                restartIcon.getIconHeight() / 3,
+                Image.SCALE_SMOOTH);
+        // 위치 설정 및 이미지 삽입
+        restartButton.setBounds(473, 644, restartIcon.getIconWidth()/3, restartIcon.getIconHeight()/3);
+        restartButton.setIcon(new ImageIcon(scaledRestartIcon));
+        // Action 설정
+        restartButton.addActionListener(e -> {
+            // 게임 초기화
+            controller.resetGame();
+            // 현재 창 종료
+            frame.dispose();
+            System.out.println("Restart Button Clicked");
+        });
+        // Hovering 처리
+        ImageIcon restartHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_restart_down.png"
+        )));
+        Image hoverScaled = restartHoverIcon.getImage().getScaledInstance(scaledRestartIcon.getWidth(null), scaledRestartIcon.getHeight(null), Image.SCALE_SMOOTH);
+        restartButton.setRolloverIcon(new ImageIcon(hoverScaled));
+        // 패널에 버튼 추가
+        backgroundPanel.add(restartButton);
     }
 
     private void createPopupButton() {

@@ -40,15 +40,6 @@ public class GameController {
 
 
     // --------- 지정 윷 던지기 ---------
-    public void handleManualThrow(YutResult yutResult) { // <------- gameView : ActionListener에서 호출됨
-        YutResult copy = model.throwYutManual(yutResult.getValue());
-        yutState = copy.isExtraTurn();
-        view.showYutResult(copy.getValue());
-        yutState = false;
-        selectPieceState = true;
-    }
-
-
     public void handleManualThrow(int value) { // <------- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwYutManual(value);
         view.showYutResult(yutResult.getValue());
@@ -108,6 +99,15 @@ public class GameController {
             selectedNodeId = "";
             System.out.println("controller: 이동 완료");
 
+            // 게임 종료 처리
+            if (model.isGameEnd()) {
+                view.showWinner(model.getCurrentPlayer());
+                System.out.println("controller: 게임 종료");
+                yutState = false;
+                selectPieceState = false;
+                selectPositionState = false;
+            }
+
             // Turn 처리
             if (model.isExtraTurn()) {
                 System.out.println("controller: 추가 윷을 던질 수 있습니다.");
@@ -133,9 +133,9 @@ public class GameController {
     }
 
     // --------- 게임 초기화 ---------
-    public boolean resetGame() {
-        resetState = true;
-        return resetState;
+    public void resetGame() {
+        model = new GameManager();
+        view = new SwingUI(this, model);
     }
 
     // --------- 게임 종료 ---------
