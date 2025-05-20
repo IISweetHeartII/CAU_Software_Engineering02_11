@@ -217,6 +217,7 @@ public class SwingUI {
         // --------------------------------- //
 
         // Todo: [Custom choice] Button
+        createPopupButton();
 
         // Todo: [Restart] Button
 
@@ -394,6 +395,46 @@ public class SwingUI {
                 Image.SCALE_SMOOTH);
 
         return new JLabel(new ImageIcon(scaledPiece));
+    }
+
+    private void createPopupButton() {
+        // 팝업 버튼 생성
+        JButton popupButton = new JButton("Popup");
+        popupButton.setBounds(473, 587, 621 / 3, 108 / 3);
+
+        // 이미지 처리
+        ImageIcon popupIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_custom_up.png"
+        )));
+        Image scaledPopupIcon = popupIcon.getImage().getScaledInstance(
+                621 / 3,
+                108 / 3,
+                Image.SCALE_SMOOTH);
+        popupButton.setIcon(new ImageIcon(scaledPopupIcon));
+
+        // Hovering 처리
+        ImageIcon popupHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_custom_down.png"
+        )));
+        Image hoverScaled = popupHoverIcon.getImage().getScaledInstance(621 / 3, 108 / 3, Image.SCALE_SMOOTH);
+        popupButton.setRolloverIcon(new ImageIcon(hoverScaled));
+
+        // 버튼 옵션 설정
+        popupButton.setBorderPainted(false);
+        popupButton.setContentAreaFilled(false);
+        popupButton.setFocusPainted(false);
+        popupButton.setOpaque(false);
+        popupButton.setText("");
+
+        // Action 설정
+        popupButton.addActionListener(e -> {
+            // 팝업 버튼 클릭 시 동작
+            System.out.println("Popup Button Clicked");
+        });
+
+        // Hovering 처리
+
+        backgroundPanel.add(popupButton);
     }
 
     private void adjustPiecePosition(JLabel pieceLabel, String nodeId) { // -> updateBoard()
