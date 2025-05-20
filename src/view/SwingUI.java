@@ -17,9 +17,6 @@ public class SwingUI {
     GameController controller;
     GameManager model;
     private JFrame frame;
-
-    private JPanel popupPanel; // 팝업 패널 (멤버 변수로 선언)
-    private JLayeredPane layeredPane; // 레이어드 팬
     private BackgroundPanel backgroundPanel;
 
     private JLabel titleLabel;
@@ -29,7 +26,6 @@ public class SwingUI {
 
     private JButton throwButton;
     private JButton STARTButton;
-    private JButton CustomChoiceButton;
 
     private Map<String, JLabel> piecePositions = new HashMap<>();
 
@@ -167,64 +163,6 @@ public class SwingUI {
         }
         // --------------------- //
 
-        // Todo: [Custom choice] Button
-        // 1. JLayeredPane 생성
-        layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(700, 700));
-        layeredPane.setLayout(null);
-
-        // 2. 배경 추가
-        backgroundPanel.setBounds(0, 0, 700, 700);
-        layeredPane.add(backgroundPanel, JLayeredPane.DEFAULT_LAYER);
-
-        // 3. PopupPanel 생성 및 추가
-        popupPanel = new PopupPanel(this.controller);
-        popupPanel.setVisible(false); // 처음엔 안 보임
-        layeredPane.add(popupPanel, JLayeredPane.POPUP_LAYER);
-
-        // 객체 생성
-        CustomChoiceButton = new JButton("Custom Choice");
-
-        // 이미지 처리
-        ImageIcon customChoiceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_custom_up.png"
-        )));
-        Image scaledCustomChoiceIcon = customChoiceIcon.getImage().getScaledInstance(
-                customChoiceIcon.getIconWidth() / 3,
-                customChoiceIcon.getIconHeight() / 3,
-                Image.SCALE_SMOOTH);
-
-        // 위치 설정 및 이미지 처리
-        CustomChoiceButton.setBounds(473, 587, scaledCustomChoiceIcon.getWidth(null), scaledCustomChoiceIcon.getHeight(null));
-        CustomChoiceButton.setIcon(new ImageIcon(scaledCustomChoiceIcon));
-
-        // Action 설정
-        CustomChoiceButton.addActionListener(e -> {
-            popupPanel.setVisible(true);
-            System.out.println("Custom Choice Button Clicked");
-        });
-
-        // Hovering 처리
-        ImageIcon customChoiceHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_custom_down.png"
-        )));
-        Image hoverScaledCustomChoice = customChoiceHoverIcon.getImage().getScaledInstance(
-                scaledCustomChoiceIcon.getWidth(null) / 3,
-                scaledCustomChoiceIcon.getHeight(null) / 3,
-                Image.SCALE_SMOOTH);
-        CustomChoiceButton.setRolloverIcon(new ImageIcon(hoverScaledCustomChoice));
-
-        // 버튼 표시 옵션
-        CustomChoiceButton.setBorderPainted(false);
-        CustomChoiceButton.setContentAreaFilled(false);
-        CustomChoiceButton.setFocusPainted(false);
-        CustomChoiceButton.setOpaque(true);
-        CustomChoiceButton.setText("");
-
-        // 패널에 버튼 추가
-        backgroundPanel.add(CustomChoiceButton);
-
-
         // ------ [Throw] Button 설정 ------ //
         {
             // 버튼 객체 할당
@@ -278,6 +216,7 @@ public class SwingUI {
         }
         // --------------------------------- //
 
+        // Todo: [Custom choice] Button
 
         // Todo: [Restart] Button
 
@@ -319,10 +258,11 @@ public class SwingUI {
         // --------------------------- //
 
         // ------- 최종 설정 No Need Modification ------- //
-        // 4. 최종 설정
-        frame.setContentPane(layeredPane);
-        frame.pack();
-        frame.setVisible(true);
+        {
+            Objects.requireNonNull(frame).setContentPane(backgroundPanel);
+            frame.pack();
+            frame.setVisible(true);
+        }
     }
 
 
