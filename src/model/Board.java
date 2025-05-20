@@ -35,14 +35,18 @@ public class Board {
         return boardFigure;
     }
 
-    /* find and return n-th next position from specific positon */
-    public Position getPositionByMoveCount(Position position, int moveCount) {
+    public String getBeforeEND() {
+        return beforeEND;
+    }
+
+    /* find and return n-th next position from specific positon, must moveCount > 0 */
+    public Position moveToNextPosition(Position currentPosition, int moveCount, Piece piece) {
         // Field
-        List<Position> nextPositionList = pathGraph.get(position);
+        List<Position> nextPositionList = pathGraph.get(currentPosition);
         Position previousPosition = null;
 
         // Exception Handling
-        if (position == null || moveCount <= 0)
+        if (currentPosition == null || moveCount <= 0)
             return null;
         if (nextPositionList == null || nextPositionList.isEmpty())
             return null;
@@ -55,35 +59,38 @@ public class Board {
             }
 
             // NextPosition 계산
-            if (position.equals(center)) { // center:[E3, E7]
+            if (currentPosition.equals(center)) { // center:[E3, E7]
                 if (previousPosition == null) {
-                    previousPosition = position;
-                    position = nextPositionList.getLast();
+                    previousPosition = currentPosition;
+                    currentPosition = nextPositionList.getLast();
                 } else if (previousPosition.equals("E2")) {
-                    previousPosition = position;
-                    position = nextPositionList.getFirst();
+                    previousPosition = currentPosition;
+                    currentPosition = nextPositionList.getFirst();
                 } else if (previousPosition.equals("E6")) {
-                    previousPosition = position;
-                    position = nextPositionList.getLast();
+                    previousPosition = currentPosition;
+                    currentPosition = nextPositionList.getLast();
                 } else if (previousPosition.equals("E10")) { // 오각형
-                    previousPosition = position;
-                    position = nextPositionList.getLast();
+                    previousPosition = currentPosition;
+                    currentPosition = nextPositionList.getLast();
                 } else if (previousPosition.equals("E12")) { // 육각형
-                    previousPosition = position;
-                    position = nextPositionList.get(1); // 중간으로 이동
+                    previousPosition = currentPosition;
+                    currentPosition = nextPositionList.get(1); // 중간으로 이동
                 }
             } else if (nextPositionList.size() > 1 && i == 0) {
-                previousPosition = position;
-                position = nextPositionList.getLast();
+                previousPosition = currentPosition;
+                currentPosition = nextPositionList.getLast();
             } else {
-                previousPosition = position;
-                position = nextPositionList.getFirst();
+                previousPosition = currentPosition;
+                currentPosition = nextPositionList.getFirst();
             }
 
-            nextPositionList = pathGraph.get(position);
+            // Piece에 이전 위치를 저장
+            piece.setPreviousPosition(previousPosition.getId());
+
+            nextPositionList = pathGraph.get(currentPosition);
         }
 
-        return position;
+        return currentPosition;
     }
 
     private void init4Graph() {

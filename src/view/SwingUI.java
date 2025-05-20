@@ -48,13 +48,13 @@ public class SwingUI {
     // ------- 메서드: Method ------ //
     public void initUI() {
         // ------- No Need Modification ------- //
-        {
-            frame = new JFrame("윷놀이 게임");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(700, 700);
-            frame.setResizable(false);
-            frame.setLocationRelativeTo(null);
-        }
+
+        frame = new JFrame("윷놀이 게임");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(700, 700);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+
 
         // ------- 배경 설정 ------- //
         ImageIcon bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
@@ -67,86 +67,86 @@ public class SwingUI {
         // ------------------------ //
 
         // ------ title 설정 ------ //
-        {
-            // 이미지 처리
-            ImageIcon titleIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/title.PNG"
-            )));
-            Image scaledTitle = titleIcon.getImage().getScaledInstance(1242 / 6, 558 / 6, Image.SCALE_SMOOTH);
-            titleLabel = new JLabel(new ImageIcon(scaledTitle));
 
-            // 위치 처리 및 보정
-            titleLabel.setBounds(473 - (1242/12), 20 - (558/12), 1242 / 3, 558 / 3);
+        // 이미지 처리
+        ImageIcon titleIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/title.PNG"
+        )));
+        Image scaledTitle = titleIcon.getImage().getScaledInstance(1242 / 6, 558 / 6, Image.SCALE_SMOOTH);
+        titleLabel = new JLabel(new ImageIcon(scaledTitle));
 
-            // 패널에 추가
-            backgroundPanel.add(titleLabel);
-        }
+        // 위치 처리 및 보정
+        titleLabel.setBounds(473 - (1242/12), 20 - (558/12), 1242 / 3, 558 / 3);
+
+        // 패널에 추가
+        backgroundPanel.add(titleLabel);
+
 
         // ------- Board 버튼 설정 -------- //
-        {
-            Map<String, NodeButton> boardButtons = createBoardButtons(boardButtonPositions);
-            for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
-                NodeButton btn = boardButtons.get(id);
-                btn.addActionListener(e -> {
-                    String clickedId = e.getActionCommand();
 
-                    System.out.println("클릭된 노드: " + clickedId); // -> test용, 주석 처리 무관
+        Map<String, NodeButton> boardButtons = createBoardButtons(boardButtonPositions);
+        for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
+            NodeButton btn = boardButtons.get(id);
+            btn.addActionListener(e -> {
+                String clickedId = e.getActionCommand();
 
-                    controller.handleBoardClick(clickedId);
-                });
+                System.out.println("클릭된 노드: " + clickedId); // -> test용, 주석 처리 무관
 
-                backgroundPanel.add(btn);
-            }
+                controller.handleBoardClick(clickedId);
+            });
+
+            backgroundPanel.add(btn);
         }
+
         // ------------------------------- //
 
         // ------ Player Score 설정 ------ //
         // 이 프로그램에서 Score는 시작하지않은(START에 위치하는) 말의 개수를 의미합니다.
-        {
-            for (int i = 1; i < numberOfPlayers + 1; i++) {
-                // 이미지 처리
-                ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                        "/data/ui/score/player" + i + "/player" + i + "_" + numberOfPieces + ".png"
-                )));
-                Image scaledPlayerScore = playerScoreIcon.getImage().getScaledInstance(
-                        playerScoreIcon.getIconWidth() / 3,
-                        playerScoreIcon.getIconHeight() / 3,
-                        Image.SCALE_SMOOTH);
-                playerScoreLabel[i] = new JLabel(new ImageIcon(scaledPlayerScore));
 
-                // 위치 처리 및 보정
-                playerScoreLabel[i].setBounds(485, 181 + 47*(i - 1), scaledPlayerScore.getWidth(null), scaledPlayerScore.getHeight(null));
+        for (int i = 1; i < numberOfPlayers + 1; i++) {
+            // 이미지 처리
+            ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/score/player" + i + "/player" + i + "_" + numberOfPieces + ".png"
+            )));
+            Image scaledPlayerScore = playerScoreIcon.getImage().getScaledInstance(
+                    playerScoreIcon.getIconWidth() / 3,
+                    playerScoreIcon.getIconHeight() / 3,
+                    Image.SCALE_SMOOTH);
+            playerScoreLabel[i] = new JLabel(new ImageIcon(scaledPlayerScore));
 
-                // 패널에 추가
-                backgroundPanel.add(playerScoreLabel[i]);
-            }
+            // 위치 처리 및 보정
+            playerScoreLabel[i].setBounds(485, 181 + 47*(i - 1), scaledPlayerScore.getWidth(null), scaledPlayerScore.getHeight(null));
+
+            // 패널에 추가
+            backgroundPanel.add(playerScoreLabel[i]);
         }
+
         // ------------------------------ //
 
         // ------ START Button 설정 ------ //
-        {
-            // 버튼 객체 할당
-            STARTButton = new JButton("START");
 
-            // 버튼 위치 할당
-            STARTButton.setBounds(473+10, 161, 184, 202);
+        // 버튼 객체 할당
+        STARTButton = new JButton("START");
 
-            // 버튼 옵션 설정
-            STARTButton.setBorderPainted(false);
-            STARTButton.setContentAreaFilled(false);
-            STARTButton.setFocusPainted(false);
-            STARTButton.setOpaque(false);
-            STARTButton.setText("");
+        // 버튼 위치 할당
+        STARTButton.setBounds(473+10, 161, 184, 202);
 
-            // Action 설정
-            STARTButton.addActionListener(e -> {
-                controller.handleBoardClick("START");
-                System.out.println("START Button Clicked");
-            });
+        // 버튼 옵션 설정
+        STARTButton.setBorderPainted(false);
+        STARTButton.setContentAreaFilled(false);
+        STARTButton.setFocusPainted(false);
+        STARTButton.setOpaque(false);
+        STARTButton.setText("");
 
-            // 패널에 버튼 추가
-            backgroundPanel.add(STARTButton);
-        }
+        // Action 설정
+        STARTButton.addActionListener(e -> {
+            controller.handleBoardClick("START");
+            System.out.println("START Button Clicked");
+        });
+
+        // 패널에 버튼 추가
+        backgroundPanel.add(STARTButton);
+
 
         //------ Turn 설정 ------ //
         {
@@ -415,7 +415,7 @@ public class SwingUI {
     // ------------------ //
 
     public void updatePlayerScore() {
-        int[] notStartedCount1 = model.getNotStartedCount();
+        int[] notStartedCount1 = model.getNotStartedPiecesCount();
         for (int i = 0; i < numberOfPlayers; i++) {
             // 플레이어의 점수 가져오기
             int notStartedCount = notStartedCount1[i];

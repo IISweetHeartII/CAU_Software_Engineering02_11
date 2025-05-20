@@ -10,8 +10,8 @@ public class GameController {
     public SwingUI view;
 
     // state flag
+    // sequence: yut -> selectPiece -> selectPosition
     public boolean yutState = true;
-    public boolean moveState = false;
     public boolean selectPieceState = false;
     public boolean selectPositionState = false;
     public boolean resetState = false;
@@ -30,12 +30,12 @@ public class GameController {
     public void handleRandomThrow() { // <----- gameView : ActionListener에서 호출됨
         if (!yutState) return;
         YutResult yutResult = model.throwYutRandom();
-        yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
-        System.out.println("yutResult: " + yutResult.getValue());
-        moveState = !yutState;
-        yutState = false;
-        selectPieceState = true;
+        System.out.println("Controller: yutResult: " + yutResult.getValue());
+
+        // update state
+        yutState = yutResult.isExtraTurn();
+        selectPieceState = !yutState;
     }
 
 
@@ -44,69 +44,84 @@ public class GameController {
         YutResult copy = model.throwYutManual(yutResult.getValue());
         yutState = copy.isExtraTurn();
         view.showYutResult(copy.getValue());
-        moveState = !yutState;
         yutState = false;
+        selectPieceState = true;
     }
 
 
     public void handleManualThrow(int value) { // <------- gameView : ActionListener에서 호출됨
         YutResult yutResult = model.throwYutManual(value);
-        yutState = yutResult.isExtraTurn();
         view.showYutResult(yutResult.getValue());
-        moveState = !yutState;
-        yutState = false;
+
+        // update state
+        yutState = yutResult.isExtraTurn();
+        selectPieceState = !yutState;
     }
 
 
     // --------- 말 이동 ---------
-    private String selectedPiecePositionId = "";
-    private String selectedNodeId = "";
+    private String selectedPiecePositionId = ""; // 말 이동을 완료했을 때 이 String은 초기화 해야함
+    private String selectedNodeId = ""; // 말 이동을 완료했을 때 이 String은 초기화 해야함
 
     public void handleBoardClick(String nodeId) {
-        if (selectPieceState && !selectPositionState) { // 1. 움직일 말 선택
-            // check if the selected piece is movable
-            if (!(model.isCurrentPlayersPiecePresent(nodeId))) {
-                System.out.println("해당 위치에 현재 플레이어의 말 없음"); // ---> 테스트용
+        if (yutState) {
+            System.out.println("controller: 윷을 던지는 단계입니다.");
+            return;
+        }
+
+        if (selectPieceState) {
+            System.out.println("controller: 말 선택 단계입니다.");
+            if (!model.isCurrentPlayersPiecePresent(nodeId)) {
+                System.out.println("controller: 현재 플레이어의 말이 아니거나 위치에 현재 플레이어의 말이 없습니다.");
                 return;
             }
             selectedPiecePositionId = nodeId;
+
             selectPieceState = false;
             selectPositionState = true;
-        } else if (!selectPieceState && selectPositionState) { // 2. 이동할 위치 선택
-            if (model.isCurrentPlayersPiecePresent(nodeId)) { // 이동할 말을 바꾼다면
-                selectedPiecePositionId = nodeId;
+        }
+
+        else if (selectPositionState) {
+            // 움직인 말 선택을 바꾸고 싶은 경우
+            if (selectedPiecePositionId.equals(nodeId)) {
+                System.out.println("controller: 선택한 말과 같은 위치입니다. 움직일 말을 다시 선택합니다.");
+                selectPieceState = true;
+                selectPositionState = false;
+                selectedPiecePositionId = "";
+                selectedNodeId = "";
                 return;
             }
-            if (!(model.isPositionMovable(nodeId))) { // 이동할 위치가 유효하지 않다면
-                System.out.println("해당 위치로 이동할 수 없음"); // ---> 테스트용
+
+            if (!model.isValidMove(selectedPiecePositionId, nodeId)) {
+                System.out.println("controller: 이동할 수 없는 위치입니다.");
                 return;
             }
             selectedNodeId = nodeId;
-            String selectedPieceId = model.getPieceIdAtNodeId(selectedPiecePositionId);
-            model.handleMovePiece(selectedPieceId, selectedNodeId);
-            selectPieceState = true;
-            selectPositionState = false;
-
+            model.controlMovePiece(selectedPiecePositionId, selectedNodeId);
             view.updateBoard();
-            view.updatePlayerScore();
 
-            // test
-            System.out.println("selectedPieceId: " + selectedPieceId);
-            System.out.println("selectedNodeId: " + selectedNodeId);
-            System.out.println("currentPlayer: " + model.getCurrentPlayerNumber());
-            System.out.println("notStarted: " + model.getNotStartedCount()[model.getCurrentPlayerNumber() - 1]);
+            // update state
+            selectPieceState = false;
+            selectPositionState = false;
+            selectedPiecePositionId = "";
+            selectedNodeId = "";
+            System.out.println("controller: 이동 완료");
 
-            if (model.isALlMoved()) {
-                moveState = false;
+            model.printPiecePositionMap();
+
+            // Turn 처리
+            if (model.isExtraTurn()) {
+                System.out.println("controller: 추가 윷을 던질 수 있습니다.");
                 yutState = true;
-                if (model.isGameEnd()) {
-                    view.showGameEnd(model.getCurrentPlayerNumber());
-                    return;
-                }
-                // Todo: 테스트용 턴 변경
-                // model.changeTurn();
-                view.updateTurn();
+            } else {
+                System.out.println("controller: 턴을 넘깁니다.");
+                model.nextTurn();
+                yutState = true;
             }
+        }
+        else {
+            System.out.println("controller: state error");
+            return;
         }
     }
 

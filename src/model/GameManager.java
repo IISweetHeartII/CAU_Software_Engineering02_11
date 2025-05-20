@@ -48,6 +48,23 @@ public class GameManager {
         return positionsMap;
     }
 
+    public int getExtraTurnCount() {
+        return extraTurnCount;
+    }
+
+    public int[] getNotStartedPiecesCount() {
+        int[] notStartedPiecesCount = new int[numberOfPlayers];
+        for (Map.Entry<Piece, String> entry : piecePositionMap.entrySet()) {
+            String position = entry.getValue();
+            if (position.equals("START")) {
+                String playerId = entry.getKey().getPlayerId();
+                int playerIndex = Integer.parseInt(playerId) - 1;
+                notStartedPiecesCount[playerIndex]++;
+            }
+        }
+        return notStartedPiecesCount;
+    }
+
     // ------- initialize ------ //
     public void initialize() {
         // Todo: 게임 상태를 초기화 합니다.
@@ -68,21 +85,23 @@ public class GameManager {
         if (moveCount == INVALID_MOVE_COUNT) {
             return;
         }
+        // 역추적한 결과가 yutHistory에 있는지 확인
+        if (!yutHistory.contains(moveCount)) {
+            System.out.println("이동할 수 없는 위치입니다.");
+            return;
+        }
 
         movePiece(piece, moveCount);
         yutHistory.remove(moveCount);
-
-        if (extraTurnCount > 0) {
-            extraTurnCount--;
-        }
     }
 
-    public int getMoveCount(Piece piece, String targetPositionId) {
+    private int getMoveCount(Piece piece, String targetPositionId) {
+        Piece DUMMY = new Piece("DUMMY", "DUMMY");
         if (piece.getPreviousPosition().equals(targetPositionId)) {
             return -1;
         } else {
             for (int i = 1; i <= 5; i++) {
-                Position targetPosition = board.getPositionByMoveCount(new Position(piecePositionMap.get(piece)), i);
+                Position targetPosition = board.moveToNextPosition(new Position(piecePositionMap.get(piece)), i, DUMMY);
                 if (targetPosition.equals(targetPositionId)) {
                     return i;
                 }
@@ -92,7 +111,8 @@ public class GameManager {
         return INVALID_MOVE_COUNT;
     }
 
-    public void movePiece(Piece piece, int moveCount) {
+    private void movePiece(Piece piece, int moveCount) {
+        System.out.println("movePiece: " + piece.getId() + " : " + moveCount);
         Position targetPosition;
         Position currentPosition = piecePositionMap.get(piece) == null ? null : new Position(piecePositionMap.get(piece));
 
@@ -106,8 +126,12 @@ public class GameManager {
         }
         else {
             // 일반적인 경우
-            targetPosition = board.getPositionByMoveCount(currentPosition, moveCount);
-            moveByOneSteps(piece, targetPosition.getId());
+            // 현재 위치를 piecePositionMap에서 제거
+            piecePositionMap.remove(piece);
+            // 이동할 위치를 계산하면서 piece의 이전 위치 업데이트
+            targetPosition = board.moveToNextPosition(currentPosition, moveCount, piece);
+            // piece의 현재 위치 업데이트
+            piecePositionMap.put(piece, targetPosition.getId());
         }
 
         // 이동할 위치에 다른 말이 있는지 확인
@@ -117,20 +141,6 @@ public class GameManager {
         }
     }
 
-    private void moveByOneSteps(Piece piece, String targetPositionId) {
-        Position previousPosition = piece.getPreviousPosition();
-        Position nextPosition;
-        Position targetPosition = new Position(targetPositionId);
-        for (int i = 0; i < 5; i++) {
-            nextPosition = board.getPositionByMoveCount(previousPosition, 1);
-            piecePositionMap.remove(piece);
-            piece.setPreviousPosition(piecePositionMap.get(piece));
-            piecePositionMap.put(piece, nextPosition.getId());
-            if (nextPosition.equals(targetPosition)) {
-                return;
-            }
-        }
-    }
 
     private void captureOrGroup(Piece me, Piece other) {
         if (other == null) {
@@ -145,10 +155,14 @@ public class GameManager {
             // 말 잡기 설계 전략
             // 다른 플레이어의 말을 piecePositionMap에서 제거하고 START 위치로 size 만큼 재생성
             // 다른 플레이어의 말 정보 보관
+
+            // 상대 말의 player Id를 가져옴
             String playerId = other.getPlayerId();
+            // 상대 말의 size를 가져옴
             int otherSize = other.getSize();
 
             // 다른 플레이어의 말이라면 잡기
+            // 상대 말을 board에서 제거하고 START 위치로 size 만큼 재생성
             piecePositionMap.remove(other);
             for (int i = 0; i < otherSize; i++) {
                 Piece newPiece = new Piece(playerId, board.beforeEND);
@@ -157,6 +171,7 @@ public class GameManager {
             extraTurnCount++;
         }
     }
+
 
     // ------ throw yut ------ //
     public YutResult throwYutRandom() {
@@ -182,6 +197,7 @@ public class GameManager {
         return yutResult;
     }
 
+
     // ------ turn management ------ //
     public int getCurrentPlayerNumber() {
         return currentPlayerIndex + 1;
@@ -199,14 +215,80 @@ public class GameManager {
         currentPlayerIndex = (currentPlayerIndex + 1) % numberOfPlayers;
     }
 
+
     // ------ get by at ------ //
     private Piece getPieceByPositionId(String position) {
+        // START 위치는 다른 플레이어의 말과 같이 존재할 수 있기 때문에 예외 처리
+        if (position.equals("START")) {
+            for (Map.Entry<Piece, String> entry : piecePositionMap.entrySet()) {
+                if (entry.getValue().equals(position)) {
+                    return entry.getKey();
+                }
+            }
+            System.out.println("getPieceByPositionId: 해당 위치에 말이 없습니다.");
+            return null;
+        }
         for (Map.Entry<Piece, String> entry : piecePositionMap.entrySet()) {
             if (entry.getValue().equals(position)) {
                 return entry.getKey();
             }
         }
+        System.out.println("getPieceByPositionId: 해당 위치에 말이 없습니다.");
         return null;
+    }
+
+
+    // ------ check ------ //
+    // View에서 클릭한 위치에 현재 플레이어의 말이 있는지 확인 -> 움직일 말 선택
+    public boolean isCurrentPlayersPiecePresent(String position) {
+        // START 위치는 다른 플레이어의 말과 같이 존재할 수 있기 때문에 예외 처리, START위치인 모든 말 중에서 현재 플레이어의 말이 있는지 확인
+        if (position.equals("START")) {
+            for (Map.Entry<Piece, String> entry : piecePositionMap.entrySet()) {
+                if (entry.getValue().equals(position) && entry.getKey().getPlayerId().equals(String.valueOf(currentPlayerIndex + 1))) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        Piece piece = getPieceByPositionId(position);
+        if (piece == null) {
+            return false;
+        }
+        return piece.getPlayerId().equals(String.valueOf(currentPlayerIndex + 1));
+    }
+
+    // View에서 클릭한 위치에 이동 가능한지 확인 -> 이동할 위치 선택
+    public boolean isValidMove(String pieceId, String targetPositionId) {
+        // 해당 위치가 현재의 말 위치와 윷 결과로 도달할 수 있는 가능성을 가졌는지 확인
+        Piece piece = getPieceByPositionId(pieceId);
+        if (piece == null) {
+            System.out.println("game manager: isPositionMovable: 해당 위치에 말이 없습니다.");
+            return false;
+        }
+        // 윷 결과 역추적
+        int moveCount = getMoveCount(piece, targetPositionId);
+        if (moveCount == INVALID_MOVE_COUNT) {
+            return false;
+        }
+        // 역추적한 결과가 yutHistory에 있는지 확인
+        if (!yutHistory.contains(moveCount)) {
+            System.out.println("game manager: isPositionMovable: 이동할 위치는 윷 결과로 갈 수 없습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isExtraTurn() {
+        return extraTurnCount > 0;
+    }
+
+    // ------ test ------ //
+    public void printPiecePositionMap() {
+        System.out.println("piecePositionMap:");
+        for (Map.Entry<Piece, String> entry : piecePositionMap.entrySet()) {
+            System.out.println(entry.getKey().getId() + " : " + entry.getValue());
+        }
     }
 
 

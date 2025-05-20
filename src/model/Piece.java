@@ -38,6 +38,11 @@ public class Piece {
         return previousPosition;
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     // ------ setter ------ //
     public void setPreviousPosition(String previousPosition) {
         this.previousPosition = new Position(previousPosition);
