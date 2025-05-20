@@ -164,57 +164,7 @@ public class SwingUI {
         // --------------------- //
 
         // ------ [Throw] Button 설정 ------ //
-        {
-            // 버튼 객체 할당
-            throwButton = new JButton("Throw");
-
-            // 이미지 처리 및 보정
-            ImageIcon throwIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/button/button_throw_up.png"
-            )));
-            Image scaledThrowIcon = throwIcon.getImage().getScaledInstance(
-                    throwIcon.getIconWidth() / 3,
-                    throwIcon.getIconHeight() / 3,
-                    Image.SCALE_SMOOTH);
-            throwButton.setIcon(new ImageIcon(scaledThrowIcon));
-
-            // 버튼 위치 할당
-            throwButton.setBounds(473,473, scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null));
-
-            // 버튼 옵션 설정
-            throwButton.setBorderPainted(false);
-            throwButton.setContentAreaFilled(false);
-            throwButton.setFocusPainted(false);
-            throwButton.setOpaque(false);
-            throwButton.setText("");
-
-            // Action 설정
-            throwButton.addActionListener(e -> {
-                controller.handleRandomThrow();
-                System.out.println("Throw Button Clicked");
-            });
-            // view:throwButton -> controller:handleRandomThrow -> View:showYutResult
-
-            // Hovering 처리
-            ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/button/button_throw_down.png"
-            )));
-            Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null), Image.SCALE_SMOOTH);
-            throwButton.setRolloverIcon(new ImageIcon(hoverScaled));
-
-            //패널에 버튼 추가
-            Objects.requireNonNull(backgroundPanel).add(throwButton);
-
-            // ------ 기본 윷 표시 ------ //
-            ImageIcon yutIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/yut/yut_5.png"
-            )));
-            Image scaledYutIcon = yutIcon.getImage().getScaledInstance(yutIcon.getIconWidth() / 3, yutIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
-            yutLabel = new JLabel(new ImageIcon(scaledYutIcon));
-            yutLabel.setBounds(20, 472, scaledYutIcon.getWidth(null), scaledYutIcon.getHeight(null));
-            backgroundPanel.add(yutLabel);
-        }
-        // --------------------------------- //
+        createThrowButton();
 
         // Todo: [Custom choice] Button
         createPopupButton();
@@ -222,41 +172,7 @@ public class SwingUI {
         // Todo: [Restart] Button
 
         // ------ Quit 버튼 설정 ------ //
-        {
-            // 난 버튼을 생성할 것이다 <- 버튼 객체 생성 및 위치 설정
-            JButton quitButton = new JButton("Quit");
-            quitButton.setBounds(584, 644, 279 / 3, 108 / 3);
-
-            // 이미지 처리
-            ImageIcon quitIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/button/button_quit_up.png"
-            )));
-            Image scaled = quitIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
-            quitButton.setIcon(new ImageIcon(scaled));
-
-            // 버튼 표시 옵션
-            quitButton.setBorderPainted(false);
-            quitButton.setContentAreaFilled(false);
-            quitButton.setFocusPainted(false);
-            quitButton.setOpaque(false);
-            quitButton.setText("");
-
-            // Action 설정
-            quitButton.addActionListener(e -> {
-                System.exit(0);
-            });
-
-            // Hovering 처리
-            ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/button/button_quit_down.png"
-            )));
-            Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
-            quitButton.setRolloverIcon(new ImageIcon(hoverScaled));
-
-            // 패널에 버튼 추가
-            Objects.requireNonNull(backgroundPanel).add(quitButton);
-        }
-        // --------------------------- //
+        createQuitButton();
 
         // ------- 최종 설정 No Need Modification ------- //
         {
@@ -397,6 +313,92 @@ public class SwingUI {
         return new JLabel(new ImageIcon(scaledPiece));
     }
 
+    private void createThrowButton() {
+        // 버튼 객체 할당
+        throwButton = new JButton("Throw");
+
+        // 이미지 처리 및 보정
+        ImageIcon throwIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_throw_up.png"
+        )));
+        Image scaledThrowIcon = throwIcon.getImage().getScaledInstance(
+                throwIcon.getIconWidth() / 3,
+                throwIcon.getIconHeight() / 3,
+                Image.SCALE_SMOOTH);
+        throwButton.setIcon(new ImageIcon(scaledThrowIcon));
+
+        // 버튼 위치 할당
+        throwButton.setBounds(473,473, scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null));
+
+        // 버튼 옵션 설정
+        throwButton.setBorderPainted(false);
+        throwButton.setContentAreaFilled(false);
+        throwButton.setFocusPainted(false);
+        throwButton.setOpaque(false);
+        throwButton.setText("");
+
+        // Action 설정
+        throwButton.addActionListener(e -> {
+            controller.handleRandomThrow();
+            System.out.println("Throw Button Clicked");
+        });
+        // view:throwButton -> controller:handleRandomThrow -> View:showYutResult
+
+        // Hovering 처리
+        ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_throw_down.png"
+        )));
+        Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null), Image.SCALE_SMOOTH);
+        throwButton.setRolloverIcon(new ImageIcon(hoverScaled));
+
+        //패널에 버튼 추가
+        Objects.requireNonNull(backgroundPanel).add(throwButton);
+
+        // ------ 기본 윷 표시 ------ //
+        ImageIcon yutIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/yut/yut_5.png"
+        )));
+        Image scaledYutIcon = yutIcon.getImage().getScaledInstance(yutIcon.getIconWidth() / 3, yutIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
+        yutLabel = new JLabel(new ImageIcon(scaledYutIcon));
+        yutLabel.setBounds(20, 472, scaledYutIcon.getWidth(null), scaledYutIcon.getHeight(null));
+        backgroundPanel.add(yutLabel);
+    }
+
+    private void createQuitButton() {
+        // 난 버튼을 생성할 것이다 <- 버튼 객체 생성 및 위치 설정
+        JButton quitButton = new JButton("Quit");
+        quitButton.setBounds(584, 644, 279 / 3, 108 / 3);
+
+        // 이미지 처리
+        ImageIcon quitIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_quit_up.png"
+        )));
+        Image scaled = quitIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
+        quitButton.setIcon(new ImageIcon(scaled));
+
+        // 버튼 표시 옵션
+        quitButton.setBorderPainted(false);
+        quitButton.setContentAreaFilled(false);
+        quitButton.setFocusPainted(false);
+        quitButton.setOpaque(false);
+        quitButton.setText("");
+
+        // Action 설정
+        quitButton.addActionListener(e -> {
+            System.exit(0);
+        });
+
+        // Hovering 처리
+        ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/button/button_quit_down.png"
+        )));
+        Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
+        quitButton.setRolloverIcon(new ImageIcon(hoverScaled));
+
+        // 패널에 버튼 추가
+        Objects.requireNonNull(backgroundPanel).add(quitButton);
+    }
+
     private void createPopupButton() {
         // 팝업 버튼 생성
         JButton popupButton = new JButton("Popup");
@@ -430,6 +432,144 @@ public class SwingUI {
         popupButton.addActionListener(e -> {
             // 팝업 버튼 클릭 시 동작
             System.out.println("Popup Button Clicked");
+            // 팝업 창 생성
+            // JOptionPane.showMessageDialog(frame, "Custom choice button clicked!", "지정 윷 던지기", JOptionPane.INFORMATION_MESSAGE);
+            // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+            // 예: 게임 설정 변경, 사용자 입력 받기 등
+            int POPUP_WIDTH = 1881 / 3 + 10;
+            int POPUP_HEIGHT = 342 / 3 + 35;
+
+            // 팝업의 배경 이미지 설정
+            ImageIcon popupBgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                    "/data/ui/custom/custom_steady.png"
+            )));
+            // 이미지 처리
+            Image scaledPopupBg = popupBgIcon.getImage().getScaledInstance(
+                    popupBgIcon.getIconWidth() / 3,
+                    popupBgIcon.getIconHeight() / 3,
+                    Image.SCALE_SMOOTH);
+            JLabel popupBgLabel = new JLabel(new ImageIcon(scaledPopupBg));
+            popupBgLabel.setBounds(0, 0, scaledPopupBg.getWidth(null), scaledPopupBg.getHeight(null));
+            JDialog popupDialog = new JDialog(frame, "Custom Choice", true);
+            popupDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            popupDialog.setSize(POPUP_WIDTH, POPUP_HEIGHT);
+            popupDialog.setLocationRelativeTo(frame);
+            popupDialog.setLayout(null);
+            // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+
+            int BUTTON_WIDTH = POPUP_WIDTH / 6 - 5;
+            int BUTTON_Y_ERROR_SIZE = -20;
+
+            JButton popupButton1 = new JButton("Custom 1");
+            popupButton1.setBorderPainted(false);
+            popupButton1.setContentAreaFilled(false);
+            popupButton1.setFocusPainted(false);
+            popupButton1.setOpaque(false);
+            popupButton1.setText("");
+            popupButton1.setBounds(0, BUTTON_Y_ERROR_SIZE, POPUP_WIDTH/6, POPUP_HEIGHT);
+            popupButton1.addActionListener(e1 -> {
+                // 팝업 버튼 클릭 시 동작
+                System.out.println("Custom 1 Button Clicked");
+                // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+                // 예: 게임 설정 변경, 사용자 입력 받기 등
+                controller.handleManualThrow(1);
+                // 팝업 창 닫기
+                popupDialog.dispose();
+            });
+            popupBgLabel.add(popupButton1);
+
+            JButton popupButton2 = new JButton("Custom 2");
+            popupButton2.setBounds(BUTTON_WIDTH,BUTTON_Y_ERROR_SIZE, BUTTON_WIDTH, POPUP_HEIGHT);
+            popupButton2.setBorderPainted(false);
+            popupButton2.setContentAreaFilled(false);
+            popupButton2.setFocusPainted(false);
+            popupButton2.setOpaque(false);
+            popupButton2.setText("");
+            popupButton2.addActionListener(e1 -> {
+                // 팝업 버튼 클릭 시 동작
+                System.out.println("Custom 2 Button Clicked");
+                // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+                // 예: 게임 설정 변경, 사용자 입력 받기 등
+                controller.handleManualThrow(2);
+                // 팝업 창 닫기
+                popupDialog.dispose();
+            });
+            popupBgLabel.add(popupButton2);
+
+            JButton popupButton3 = new JButton("Custom 3");
+            popupButton3.setBounds(BUTTON_WIDTH*2,BUTTON_Y_ERROR_SIZE, BUTTON_WIDTH, POPUP_HEIGHT);
+            popupButton3.setBorderPainted(false);
+            popupButton3.setContentAreaFilled(false);
+            popupButton3.setFocusPainted(false);
+            popupButton3.setOpaque(false);
+            popupButton3.setText("");
+            popupButton3.addActionListener(e1 -> {
+                // 팝업 버튼 클릭 시 동작
+                System.out.println("Custom 3 Button Clicked");
+                // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+                // 예: 게임 설정 변경, 사용자 입력 받기 등
+                controller.handleManualThrow(3);
+                // 팝업 창 닫기
+                popupDialog.dispose();
+            });
+            popupBgLabel.add(popupButton3);
+
+            JButton popupButton4 = new JButton("Custom 4");
+            popupButton4.setBounds(BUTTON_WIDTH*3,BUTTON_Y_ERROR_SIZE, BUTTON_WIDTH, POPUP_HEIGHT);
+            popupButton4.setBorderPainted(false);
+            popupButton4.setContentAreaFilled(false);
+            popupButton4.setFocusPainted(false);
+            popupButton4.setOpaque(false);
+            popupButton4.setText("");
+            popupButton4.addActionListener(e1 -> {
+                // 팝업 버튼 클릭 시 동작
+                System.out.println("Custom 4 Button Clicked");
+                // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+                // 예: 게임 설정 변경, 사용자 입력 받기 등
+                controller.handleManualThrow(4);
+                // 팝업 창 닫기
+                popupDialog.dispose();
+            });
+            popupBgLabel.add(popupButton4);
+
+            JButton popupButton5 = new JButton("Custom 5");
+            popupButton5.setBounds(BUTTON_WIDTH*4,BUTTON_Y_ERROR_SIZE, BUTTON_WIDTH, POPUP_HEIGHT);
+            popupButton5.setBorderPainted(false);
+            popupButton5.setContentAreaFilled(false);
+            popupButton5.setFocusPainted(false);
+            popupButton5.setOpaque(false);
+            popupButton5.setText("");
+            popupButton5.addActionListener(e1 -> {
+                // 팝업 버튼 클릭 시 동작
+                System.out.println("Custom 5 Button Clicked");
+                // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+                // 예: 게임 설정 변경, 사용자 입력 받기 등
+                controller.handleManualThrow(5);
+                // 팝업 창 닫기
+                popupDialog.dispose();
+            });
+            popupBgLabel.add(popupButton5);
+
+            JButton popupButton6 = new JButton("Custom 6");
+            popupButton6.setBounds(BUTTON_WIDTH*5,BUTTON_Y_ERROR_SIZE, BUTTON_WIDTH, POPUP_HEIGHT);
+            popupButton6.setBorderPainted(false);
+            popupButton6.setContentAreaFilled(false);
+            popupButton6.setFocusPainted(false);
+            popupButton6.setOpaque(false);
+            popupButton6.setText("");
+            popupButton6.addActionListener(e1 -> {
+                // 팝업 버튼 클릭 시 동작
+                System.out.println("Custom 6 Button Clicked");
+                // 팝업 창에 대한 추가 동작을 여기에 추가할 수 있습니다.
+                // 예: 게임 설정 변경, 사용자 입력 받기 등
+                controller.handleManualThrow(-1);
+                // 팝업 창 닫기
+                popupDialog.dispose();
+            });
+            popupBgLabel.add(popupButton6);
+            popupDialog.add(popupBgLabel);
+            popupDialog.setVisible(true);
+            popupDialog.setResizable(false);
         });
 
         // Hovering 처리
