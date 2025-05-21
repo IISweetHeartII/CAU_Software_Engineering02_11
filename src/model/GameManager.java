@@ -191,7 +191,7 @@ public class GameManager {
         testMessage("GameManager: captureOrGrouping: startPosition -> " + startPosition + ", targetPosition -> " + targetPosition);
         Piece piece;
         if (startPosition.equals("START")) {
-            piece = new Piece(String.valueOf(currentPlayerIndex + 1), startPosition);
+            piece = new Piece(String.valueOf(currentPlayerIndex + 1), boardManager.beforeEND);
         } else {
             piece = positionPieceMap.get(startPosition);
         }
