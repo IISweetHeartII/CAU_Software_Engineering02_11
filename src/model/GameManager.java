@@ -98,7 +98,12 @@ public class GameManager {
     }
     
     public boolean isValidMove(String startPosition, String targetPosition) {
-        Piece DUMMY_PIECE = new Piece("DUMMY", startPosition);
+        Piece DUMMY_PIECE;
+        if (startPosition.equals("START"))
+            DUMMY_PIECE = new Piece("DUMMY", boardManager.beforeEND);
+        else
+            DUMMY_PIECE = new Piece("DUMMY", startPosition);
+
         for (int move : new int[]{-1, 1, 2, 3, 4, 5}) {
             Position newPosition = boardManager.setPreviousPosition(new Position(startPosition), move, DUMMY_PIECE);
             if (newPosition != null && newPosition.equals(targetPosition) && yutHistory.contains(move)) {
@@ -114,6 +119,7 @@ public class GameManager {
         Piece piece;
         if (startPosition.equals("START")) {
             piece = new Piece(String.valueOf(currentPlayerIndex + 1), boardManager.beforeEND);
+            // test
             positionPieceMap.put(startPosition, piece);
             countOfPieceAtStart[currentPlayerIndex]--;
         } else {
@@ -129,7 +135,7 @@ public class GameManager {
 
         int moveCount = getMoveCount(startPosition, targetPosition);
         if (moveCount == 0) {
-            System.out.println("game manager: moveCount가 0입니다.");
+            testMessage("GameManager: controlMovePiece: moveCount가 0입니다.");
             return;
         }
 
@@ -164,7 +170,11 @@ public class GameManager {
     }
 
     private int getMoveCount(String startPosition, String targetPosition) {
-        Piece DUMMY_PIECE = new Piece("DUMMY", startPosition);
+        Piece DUMMY_PIECE;
+        if (startPosition.equals("START"))
+            DUMMY_PIECE = new Piece("DUMMY", boardManager.beforeEND);
+        else
+            DUMMY_PIECE = new Piece("DUMMY", startPosition);
         for (int move : new int[]{-1, 1, 2, 3, 4, 5}) {
             Position newPosition = boardManager.setPreviousPosition(new Position(startPosition), move, DUMMY_PIECE);
             if (newPosition != null && newPosition.equals(targetPosition) && yutHistory.contains(move)) {
@@ -310,5 +320,13 @@ public class GameManager {
             System.err.println("piece 값이 올바르지 않습니다.");
         }
         return 5; // 기본값
+    }
+
+    // ------ print for test ------ //
+    boolean isTestMode = true;
+    public void testMessage(String message) {
+        if (isTestMode) {
+            System.out.println(message);
+        }
     }
 }
