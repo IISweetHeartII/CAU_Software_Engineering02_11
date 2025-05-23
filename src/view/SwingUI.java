@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class SwingUI {
+public class SwingUI implements GameView {
     GameController controller;
     GameManager model;
     private JFrame frame;
@@ -54,9 +54,30 @@ public class SwingUI {
 
 
         // ------- 배경 설정 ------- //
-        ImageIcon bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/board/board_four.png"
-        )));
+        ImageIcon bgIcon;
+        switch (model.getSize()) {
+            case 4:
+                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                        "/data/ui/board/board_four.png"
+                )));
+                break;
+            case 5:
+                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                        "/data/ui/board/board_five.png"
+                )));
+                break;
+            case 6:
+                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                        "/data/ui/board/board_six.png"
+                )));
+                break;
+            default:
+                System.out.println("Invalid board size");
+                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                        "/data/ui/board/board_four.png"
+                )));
+                break;
+        }
         Image bgImage = bgIcon.getImage();
         backgroundPanel = new BackgroundPanel(bgImage);
         backgroundPanel.setPreferredSize(new Dimension(700, 700));
@@ -80,7 +101,7 @@ public class SwingUI {
 
 
         // ------- Board 버튼 설정 -------- //
-
+        createBoardButtons(model.getSize());
         Map<String, NodeButton> boardButtons = createBoardButtons(boardButtonPositions);
         for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
             NodeButton btn = boardButtons.get(id);
@@ -163,18 +184,16 @@ public class SwingUI {
         });
 
         //------ Turn 설정 ------ //
-        {
-            // 이미지 처리 및 보정
-            ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/turn/turn_1.png"
-            )));
-            Image scaledTurnIcon = turnIcon.getImage().getScaledInstance(turnIcon.getIconWidth() / 3, turnIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
-            turnLabel = new JLabel(new ImageIcon(scaledTurnIcon));
-            turnLabel.setBounds(485, 392, scaledTurnIcon.getWidth(null), scaledTurnIcon.getHeight(null));
+        // 이미지 처리 및 보정
+        ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                "/data/ui/turn/turn_1.png"
+        )));
+        Image scaledTurnIcon = turnIcon.getImage().getScaledInstance(turnIcon.getIconWidth() / 3, turnIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
+        turnLabel = new JLabel(new ImageIcon(scaledTurnIcon));
+        turnLabel.setBounds(485, 392, scaledTurnIcon.getWidth(null), scaledTurnIcon.getHeight(null));
 
-            // 패널에 추가
-            backgroundPanel.add(turnLabel);
-        }
+        // 패널에 추가
+        backgroundPanel.add(turnLabel);
         // --------------------- //
 
         // ------ [Throw] Button 설정 ------ //
@@ -200,8 +219,24 @@ public class SwingUI {
 
     // ---------- Board Buttons ---------- //
     Map<String, Point> boardButtonPositions = new HashMap<>();
-    // 접어서 사용하세요. 다각형 보드를 제외하고는 더이상 참고할 필요 없습니다.
-    {
+    private void createBoardButtons(int size) {
+        switch (size) {
+            case 4:
+                createBoardButtons4();
+                break;
+            case 5:
+                createBoardButtons5();
+                break;
+            case 6:
+                createBoardButtons6();
+                break;
+            default:
+                System.out.println("Invalid board size");
+                createBoardButtons4();
+                break;
+        }
+    }
+    private void createBoardButtons4() {
         boardButtonPositions.put("P1", new Point(432-20, 353-20)); // 각 x, y의 20만큼 위치 보정
         boardButtonPositions.put("P2", new Point(432-20, 275-20));
         boardButtonPositions.put("P3", new Point(432-20, 197-20));
@@ -238,6 +273,106 @@ public class SwingUI {
         boardButtonPositions.put("E6", new Point(171-20, 171-20));
         boardButtonPositions.put("E7", new Point(303-20, 303-20));
         boardButtonPositions.put("E8", new Point(364-20, 364-20));
+    }
+
+    private void createBoardButtons5() {
+        boardButtonPositions.put("P1", new Point(372-20, 375-20)); // 각 x, y의 20만큼 위치 보정
+        boardButtonPositions.put("P2", new Point(388-20, 330-20));
+        boardButtonPositions.put("P3", new Point(402-20, 284-20));
+        boardButtonPositions.put("P4", new Point(417-20, 238-20));
+        boardButtonPositions.put("P5", new Point(432-20, 192-20));
+
+        boardButtonPositions.put("P6", new Point(393-20, 164-20));
+        boardButtonPositions.put("P7", new Point(354-20, 135-20));
+        boardButtonPositions.put("P8", new Point(315-20, 107-20));
+        boardButtonPositions.put("P9", new Point(276-20, 78-20));
+        boardButtonPositions.put("P10", new Point(236-20, 50-20));
+
+        boardButtonPositions.put("P11", new Point(197-20, 78-20));
+        boardButtonPositions.put("P12", new Point(158-20, 107-20));
+        boardButtonPositions.put("P13", new Point(119-20, 135-20));
+        boardButtonPositions.put("P14", new Point(80-20, 164-20));
+        boardButtonPositions.put("P15", new Point(41-20, 192-20));
+
+        boardButtonPositions.put("P16", new Point(56-20, 238-20));
+        boardButtonPositions.put("P17", new Point(71-20, 284-20));
+        boardButtonPositions.put("P18", new Point(87-20, 330-20));
+        boardButtonPositions.put("P19", new Point(101-20, 375-20));
+        boardButtonPositions.put("P20", new Point(115-20, 422-20));
+
+        boardButtonPositions.put("P21", new Point(164-20, 422-20));
+        boardButtonPositions.put("P22", new Point(212-20, 422-20));
+        boardButtonPositions.put("P23", new Point(261-20, 422-20));
+        boardButtonPositions.put("P24", new Point(309-20, 422-20));
+        boardButtonPositions.put("P25", new Point(358-20, 422-20));
+
+        boardButtonPositions.put("C", new Point(236-20, 255-20));
+
+        boardButtonPositions.put("E1", new Point(354-20, 217-20));
+        boardButtonPositions.put("E2", new Point(295-20, 236-20));
+        boardButtonPositions.put("E3", new Point(200-20, 305-20));
+        boardButtonPositions.put("E4", new Point(164-20, 355-20));
+        boardButtonPositions.put("E5", new Point(236-20, 132-20));
+        boardButtonPositions.put("E6", new Point(236-20, 195-20));
+        boardButtonPositions.put("E7", new Point(274-20, 305-20));
+        boardButtonPositions.put("E8", new Point(309-20, 355-20));
+        boardButtonPositions.put("E9", new Point(119-20, 217-20));
+        boardButtonPositions.put("E10", new Point(178-20, 236-20));
+    }
+
+    private void createBoardButtons6() {
+        boardButtonPositions.put("P1", new Point(354-20, 370-20)); // 각 x, y의 20만큼 위치 보정
+        boardButtonPositions.put("P2", new Point(373-20, 337-20));
+        boardButtonPositions.put("P3", new Point(393-20, 303-20));
+        boardButtonPositions.put("P4", new Point(409-20, 269-20));
+        boardButtonPositions.put("P5", new Point(431-20, 236-20));
+
+        boardButtonPositions.put("P6", new Point(409-20, 203-20));
+        boardButtonPositions.put("P7", new Point(393-20, 169-20));
+        boardButtonPositions.put("P8", new Point(373-20, 133-20));
+        boardButtonPositions.put("P9", new Point(354-20, 101-20));
+        boardButtonPositions.put("P10", new Point(335-20, 67-20));
+
+        boardButtonPositions.put("P11", new Point(295-20, 67-20));
+        boardButtonPositions.put("P12", new Point(256-20, 67-20));
+        boardButtonPositions.put("P13", new Point(217-20, 67-20));
+        boardButtonPositions.put("P14", new Point(178-20, 67-20));
+        boardButtonPositions.put("P15", new Point(139-20, 67-20));
+
+        boardButtonPositions.put("P16", new Point(118-20, 99-20));
+        boardButtonPositions.put("P17", new Point(98-20, 134-20));
+        boardButtonPositions.put("P18", new Point(80-20, 168-20));
+        boardButtonPositions.put("P19", new Point(60-20, 202-20));
+        boardButtonPositions.put("P20", new Point(41-20, 236-20));
+
+        boardButtonPositions.put("P21", new Point(60-20, 269-20));
+        boardButtonPositions.put("P22", new Point(80-20, 303-20));
+        boardButtonPositions.put("P23", new Point(98-20, 337-20));
+        boardButtonPositions.put("P24", new Point(118-20, 370-20));
+        boardButtonPositions.put("P25", new Point(139-20, 404-20));
+
+        boardButtonPositions.put("P26", new Point(178-20, 404-20));
+        boardButtonPositions.put("P27", new Point(217-20, 404-20));
+        boardButtonPositions.put("P28", new Point(256-20, 404-20));
+        boardButtonPositions.put("P29", new Point(295-20, 404-20));
+        boardButtonPositions.put("P30", new Point(335-20, 404-20));
+
+        boardButtonPositions.put("C", new Point(235-20, 236-20));
+
+        boardButtonPositions.put("E1", new Point(366-20, 236-20));
+        boardButtonPositions.put("E2", new Point(301-20, 236-20));
+        boardButtonPositions.put("E3", new Point(168-20, 236-20));
+        boardButtonPositions.put("E4", new Point(105-20, 236-20));
+
+        boardButtonPositions.put("E5", new Point(170-20, 123-20));
+        boardButtonPositions.put("E6", new Point(203-20, 180-20));
+        boardButtonPositions.put("E7", new Point(268-20, 292-20));
+        boardButtonPositions.put("E8", new Point(298-20, 348-20));
+
+        boardButtonPositions.put("E9", new Point(298-20, 123-20));
+        boardButtonPositions.put("E10", new Point(268-20, 180-20));
+        boardButtonPositions.put("E11", new Point(203-20, 292-20));
+        boardButtonPositions.put("E12", new Point(170-20, 348-20));
     }
 
     public static class NodeButton extends JButton {
