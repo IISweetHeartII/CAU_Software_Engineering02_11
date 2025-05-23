@@ -17,6 +17,8 @@ public class GameController {
     public boolean resetState = false;
     public boolean endState = false;
 
+    public boolean testMode = true; // 테스트용
+
     // --------- Constructor ---------
     public GameController(GameManager gameManager) {
         this.model = gameManager;
@@ -31,7 +33,7 @@ public class GameController {
         if (!yutState) return;
         YutResult yutResult = model.throwYutRandom();
         view.showYutResult(yutResult.getValue());
-        System.out.println("Controller: yutResult: " + yutResult.getValue());
+        testMessage("Controller: yutResult: " + yutResult.getValue());
 
         // update state
         yutState = yutResult.isExtraTurn();
@@ -56,14 +58,14 @@ public class GameController {
 
     public void handleBoardClick(String nodeId) {
         if (yutState) {
-            System.out.println("controller: 윷을 던지는 단계입니다.");
+            testMessage("controller: 윷을 던지는 단계입니다.");
             return;
         }
 
         if (selectPieceState) {
-            System.out.println("controller: 말 선택 단계입니다.");
+            testMessage("controller: 말 선택 단계입니다.");
             if (!model.isCurrentPlayersPiecePresent(nodeId)) {
-                System.out.println("controller: 현재 플레이어의 말이 아니거나 위치에 현재 플레이어의 말이 없습니다.");
+                testMessage("controller: 현재 플레이어의 말이 아니거나 위치에 현재 플레이어의 말이 없습니다.");
                 return;
             }
             selectedPiecePositionId = nodeId;
@@ -75,7 +77,7 @@ public class GameController {
         else if (selectPositionState) {
             // 움직인 말 선택을 바꾸고 싶은 경우
             if (selectedPiecePositionId.equals(nodeId)) {
-                System.out.println("controller: 선택한 말과 같은 위치입니다. 움직일 말을 다시 선택합니다.");
+                testMessage("controller: 선택한 말과 같은 위치입니다. 움직일 말을 다시 선택합니다.");
                 selectPieceState = true;
                 selectPositionState = false;
                 selectedPiecePositionId = "";
@@ -84,7 +86,7 @@ public class GameController {
             }
 
             if (!model.isValidMove(selectedPiecePositionId, nodeId)) {
-                System.out.println("controller: 이동할 수 없는 위치입니다.");
+                testMessage("controller: 이동할 수 없는 위치입니다.");
                 return;
             }
             selectedNodeId = nodeId;
@@ -97,12 +99,12 @@ public class GameController {
             selectPositionState = false;
             selectedPiecePositionId = "";
             selectedNodeId = "";
-            System.out.println("controller: 이동 완료");
+            testMessage("controller: 이동 완료");
 
             // 게임 종료 처리
             if (model.isGameEnd()) {
                 view.showWinner(model.getCurrentPlayer());
-                System.out.println("controller: 게임 종료");
+                testMessage("controller: 게임 종료");
                 yutState = false;
                 selectPieceState = false;
                 selectPositionState = false;
@@ -110,24 +112,24 @@ public class GameController {
 
             // Turn 처리
             if (model.isExtraTurn()) {
-                System.out.println("controller: 추가 윷을 던질 수 있습니다.");
+                testMessage("controller: 추가 윷을 던질 수 있습니다.");
                 yutState = true;
             } else if (model.isExtraMove()) {
-                System.out.println("controller: 추가 이동을 할 수 있습니다.");
+                testMessage("controller: 추가 이동을 할 수 있습니다.");
                 model.printYutHistory();
                 yutState = false;
                 selectPieceState = true;
                 selectPositionState = false;
             }
             else {
-                System.out.println("controller: 턴을 넘깁니다.");
+                testMessage("controller: 턴을 넘깁니다.");
                 model.nextTurn();
                 view.updateTurn();
                 yutState = true;
             }
         }
         else {
-            System.out.println("controller: state error");
+            testMessage("controller: state error");
             return;
         }
     }
@@ -144,7 +146,9 @@ public class GameController {
         return endState;
     }
 
-    // Todo: Turn 처리
-
-    // Todo: 점수 처리
+    // --------- 테스트 메시지 ---------
+    public void testMessage(String message) {
+        if (testMode)
+            System.out.println(message);
+    }
 }

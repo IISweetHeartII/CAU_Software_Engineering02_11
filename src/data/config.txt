@@ -1,3 +1,14 @@
+# board size [4-6] 4: rectangle, 5: pentagon, 6: hexagon
 board:4
+
+# number of players [2-4]
 player:4
+
+# number of pieces [1-5]
 piece:5
+
+# ui type [1-2] 1: swing, 2: javaFX
+ui:1
+
+# game mode [1-2] 1: normal, 2: test
+mode:2

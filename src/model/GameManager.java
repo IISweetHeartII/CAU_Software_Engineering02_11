@@ -88,7 +88,7 @@ public class GameManager {
         }
         // END일 경우 예외 처리
         if (positionId.equals("END")) {
-            System.out.println("END 위치는 선택할 수 없습니다.");
+            testMessage("GameManager: isCurrentPlayerPiecePresent: END 위치는 선택할 수 없습니다.");
             return false;
         }
         // 일반적인 경우
@@ -98,7 +98,12 @@ public class GameManager {
     }
     
     public boolean isValidMove(String startPosition, String targetPosition) {
-        Piece DUMMY_PIECE = new Piece("DUMMY", startPosition);
+        Piece DUMMY_PIECE;
+        if (startPosition.equals("START"))
+            DUMMY_PIECE = new Piece("DUMMY", boardManager.beforeEND);
+        else
+            DUMMY_PIECE = new Piece("DUMMY", startPosition);
+
         for (int move : new int[]{-1, 1, 2, 3, 4, 5}) {
             Position newPosition = boardManager.setPreviousPosition(new Position(startPosition), move, DUMMY_PIECE);
             if (newPosition != null && newPosition.equals(targetPosition) && yutHistory.contains(move)) {
@@ -114,6 +119,7 @@ public class GameManager {
         Piece piece;
         if (startPosition.equals("START")) {
             piece = new Piece(String.valueOf(currentPlayerIndex + 1), boardManager.beforeEND);
+            // test
             positionPieceMap.put(startPosition, piece);
             countOfPieceAtStart[currentPlayerIndex]--;
         } else {
@@ -129,7 +135,7 @@ public class GameManager {
 
         int moveCount = getMoveCount(startPosition, targetPosition);
         if (moveCount == 0) {
-            System.out.println("game manager: moveCount가 0입니다.");
+            testMessage("GameManager: controlMovePiece: moveCount가 0입니다.");
             return;
         }
 
@@ -156,7 +162,7 @@ public class GameManager {
                 break;
 
             default:
-                System.out.println("game manager: 잘못된 moveType입니다.");
+                testMessage("game manager: controlMovePiece: 잘못된 moveType입니다.");
         }
 
         // 이동 후 윷 이력에서 이동한 칸 수 제거
@@ -164,7 +170,11 @@ public class GameManager {
     }
 
     private int getMoveCount(String startPosition, String targetPosition) {
-        Piece DUMMY_PIECE = new Piece("DUMMY", startPosition);
+        Piece DUMMY_PIECE;
+        if (startPosition.equals("START"))
+            DUMMY_PIECE = new Piece("DUMMY", boardManager.beforeEND);
+        else
+            DUMMY_PIECE = new Piece("DUMMY", startPosition);
         for (int move : new int[]{-1, 1, 2, 3, 4, 5}) {
             Position newPosition = boardManager.setPreviousPosition(new Position(startPosition), move, DUMMY_PIECE);
             if (newPosition != null && newPosition.equals(targetPosition) && yutHistory.contains(move)) {
@@ -178,9 +188,10 @@ public class GameManager {
     private static final int CAPTURE = 1;
     private static final int GROUPING = 2;
     private int captureOrGrouping(String startPosition, String targetPosition) {
+        testMessage("GameManager: captureOrGrouping: startPosition -> " + startPosition + ", targetPosition -> " + targetPosition);
         Piece piece;
         if (startPosition.equals("START")) {
-            piece = new Piece(String.valueOf(currentPlayerIndex + 1), startPosition);
+            piece = new Piece(String.valueOf(currentPlayerIndex + 1), boardManager.beforeEND);
         } else {
             piece = positionPieceMap.get(startPosition);
         }
@@ -188,6 +199,7 @@ public class GameManager {
 
         // target 위치에 있는 말이 없을 경우
         if (targetPiece == null) {
+            testMessage("GameManager: captureOrGrouping: NONE");
             return NONE;
         }
         // target 위치에 있는 말이 현재 플레이어의 말일 경우
@@ -196,6 +208,7 @@ public class GameManager {
             piece.group(targetPiece);
             positionPieceMap.remove(startPosition);
             positionPieceMap.replace(targetPosition, piece);
+            testMessage("GameManager: captureOrGrouping: GROUPING");
             return GROUPING;
         }
         // target 위치에 있는 말이 상대 플레이어의 말일 경우
@@ -203,6 +216,7 @@ public class GameManager {
             // 상대 플레이어의 말 제거 처리 = targetPosition의 위치에 있는 말 제거
             positionPieceMap.remove(targetPosition);
             countOfPieceAtStart[Integer.parseInt(targetPiece.getPlayerId()) - 1] += targetPiece.getSize();
+            testMessage("GameManager: captureOrGrouping: CAPTURE");
             return CAPTURE;
         }
     }
@@ -261,15 +275,8 @@ public class GameManager {
 
 
     // ------ print for test ------ //
-    public void printPositionPieceMap() {
-        System.out.println("positionPieceMap:");
-        for (Map.Entry<String, Piece> entry : positionPieceMap.entrySet()) {
-            System.out.println("Position: " + entry.getKey() + ", Piece: " + entry.getValue().getId());
-        }
-    }
-
     public void printYutHistory() {
-        System.out.println("yutHistory: " + yutHistory);
+        testMessage("yutHistory: " + yutHistory);
     }
 
 
@@ -310,5 +317,13 @@ public class GameManager {
             System.err.println("piece 값이 올바르지 않습니다.");
         }
         return 5; // 기본값
+    }
+
+    // ------ print for test ------ //
+    boolean isTestMode = true;
+    public void testMessage(String message) {
+        if (isTestMode) {
+            System.out.println(message);
+        }
     }
 }
