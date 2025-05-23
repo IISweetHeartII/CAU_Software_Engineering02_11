@@ -3,11 +3,12 @@
 package controller;
 
 import model.*;
+import view.GameView;
 import view.SwingUI;
 
 public class GameController {
     public GameManager model;
-    public SwingUI view;
+    public GameView view;
 
     // state flag
     // sequence: yut -> selectPiece -> selectPosition
@@ -24,7 +25,7 @@ public class GameController {
         this.model = gameManager;
     }
 
-    public void setView(SwingUI view) {
+    public void setView(GameView view) {
         this.view = view;
     }
 
@@ -137,7 +138,7 @@ public class GameController {
     // --------- 게임 초기화 ---------
     public void resetGame() {
         model = new GameManager();
-        view = new SwingUI(this, model);
+        //view = new SwingUI(this, model);
     }
 
     // --------- 게임 종료 ---------

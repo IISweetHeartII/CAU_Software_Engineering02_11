@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+
 public class SwingUI implements GameView {
     GameController controller;
     GameManager model;
@@ -585,10 +586,11 @@ public class SwingUI implements GameView {
         restartButton.setIcon(new ImageIcon(scaledRestartIcon));
         // Action 설정
         restartButton.addActionListener(e -> {
-            // 게임 초기화
-            controller.resetGame();
-            // 현재 창 종료
-            frame.dispose();
+            // 새 SwingUI 생성
+            SwingUI newView = new SwingUI(controller, controller.model);
+            controller.setView(newView); // 새로운 View를 주입
+
+            frame.dispose(); // 이전 창 종료
             System.out.println("Restart Button Clicked");
         });
         // Hovering 처리
@@ -816,6 +818,7 @@ public class SwingUI implements GameView {
             playerScoreLabel[i + 1].setIcon(new ImageIcon(scaledPlayerScore));
         }
     }
+
 
     // ------ update turn ------ //
     public void updateTurn() {
