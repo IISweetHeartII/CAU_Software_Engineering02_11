@@ -12,6 +12,7 @@ public class GameManager {
     // ------ fields ------ //
     private int numberOfPlayers;
     private int numberOfPieces;
+    private int boardFigure = boardManager.getBoardFigure();
 
     private int[] countOfPieceAtStart;    // START 위치의 말 개수 저장
     private int[] countOfPieceAtEnd;    // END 위치의 말 개수 저장
@@ -61,7 +62,6 @@ public class GameManager {
         }
         return result;
     }
-
     private String getCurrentPosition(Piece piece) {
         // piece의 현재 위치를 찾기 위해 positionPieceMap을 순회
         for (Map.Entry<String, Piece> entry : positionPieceMap.entrySet()) {
@@ -70,6 +70,9 @@ public class GameManager {
             }
         }
         return null; // 위치를 찾지 못한 경우
+    }
+    public int getSize() {
+        return boardFigure;
     }
 
     // ------ is check ------ //
