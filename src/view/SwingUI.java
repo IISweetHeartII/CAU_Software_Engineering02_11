@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
 public class SwingUI implements GameView {
     GameController controller;
     GameManager model;
@@ -167,7 +166,6 @@ public class SwingUI implements GameView {
         backgroundPanel.add(STARTButton);
 
         // ------ END Button 설정 ------ //
-        // Todo:
         // 버튼 객체 할당
         ENDButton = new JButton("END");
         // 버튼 위치 할당
