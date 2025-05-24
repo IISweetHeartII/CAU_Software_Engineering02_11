@@ -166,7 +166,6 @@ public class SwingUI implements GameView {
         backgroundPanel.add(STARTButton);
 
         // ------ END Button 설정 ------ //
-        // Todo:
         // 버튼 객체 할당
         ENDButton = new JButton("END");
         // 버튼 위치 할당
@@ -585,10 +584,11 @@ public class SwingUI implements GameView {
         restartButton.setIcon(new ImageIcon(scaledRestartIcon));
         // Action 설정
         restartButton.addActionListener(e -> {
-            // 게임 초기화
-            controller.resetGame();
-            // 현재 창 종료
-            frame.dispose();
+            // 새 SwingUI 생성
+            SwingUI newView = new SwingUI(controller, controller.model);
+            controller.setView(newView); // 새로운 View를 주입
+
+            frame.dispose(); // 이전 창 종료
             System.out.println("Restart Button Clicked");
         });
         // Hovering 처리
@@ -816,6 +816,7 @@ public class SwingUI implements GameView {
             playerScoreLabel[i + 1].setIcon(new ImageIcon(scaledPlayerScore));
         }
     }
+
 
     // ------ update turn ------ //
     public void updateTurn() {
