@@ -104,9 +104,10 @@ public class GameManager {
         Piece DUMMY_PIECE;
         if (startPosition.equals("START"))
             DUMMY_PIECE = new Piece("DUMMY", boardManager.beforeEND);
-        else
-            DUMMY_PIECE = new Piece("DUMMY", startPosition);
-
+        else {
+            Piece temp = positionPieceMap.get(startPosition);
+            DUMMY_PIECE = new Piece("DUMMY", temp.getPreviousPosition().getId());
+        }
         for (int move : new int[]{-1, 1, 2, 3, 4, 5}) {
             Position newPosition = boardManager.setPreviousPosition(new Position(startPosition), move, DUMMY_PIECE);
             if (newPosition != null && newPosition.equals(targetPosition) && yutHistory.contains(move)) {
@@ -176,8 +177,10 @@ public class GameManager {
         Piece DUMMY_PIECE;
         if (startPosition.equals("START"))
             DUMMY_PIECE = new Piece("DUMMY", boardManager.beforeEND);
-        else
-            DUMMY_PIECE = new Piece("DUMMY", startPosition);
+        else {
+            Piece temp = positionPieceMap.get(startPosition);
+            DUMMY_PIECE = new Piece("DUMMY", temp.getPreviousPosition().getId());
+        }
         for (int move : new int[]{-1, 1, 2, 3, 4, 5}) {
             Position newPosition = boardManager.setPreviousPosition(new Position(startPosition), move, DUMMY_PIECE);
             if (newPosition != null && newPosition.equals(targetPosition) && yutHistory.contains(move)) {
