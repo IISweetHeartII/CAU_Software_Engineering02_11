@@ -2,18 +2,29 @@ package main;
 
 import controller.GameController;
 import model.GameManager;
+import view.JavaFXLauncher;
 import view.SwingUI;
+import javafx.application.Application;
+import view.JavaFXLauncher;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        int uiType = UITypefromConfig();
+
         // 게임 모델과 컨트롤러 초기화
         GameManager model = new GameManager();
         GameController controller = new GameController(model);
         // Todo: UI를 위한 Interface를 구현하여 SwingUI와 GameController를 연결합니다.
-        SwingUI view = new SwingUI(controller, model);
-        controller.setView(view);
+        if(uiType ==1 ) {
 
-        // 게임 시작
+            SwingUI view = new SwingUI(controller, model);
+            controller.setView(view);
+
+            // 게임 시작
         /*while (true) {
             if (controller.resetGame()) {
                 System.out.println("reset이 눌린거여");
@@ -24,5 +35,29 @@ public class Main {
                 break;
             }
         }*/
+        } else if (uiType == 2) {
+            Application.launch(JavaFXLauncher.class, args);
+        } else {
+            System.out.println("잘못된 UI 타입입니다.");
+        }
+    }
+
+    private static int UITypefromConfig() {
+        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("ui:")) {
+                    String[] parts = line.split(":");
+                    if (parts.length == 2) {
+                        return Integer.parseInt(parts[1].trim());
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("config.txt 파일을 찾을 수 없습니다.");
+        } catch (NumberFormatException e) {
+            System.err.println("ui 타입 설정이 잘못되었습니다.");
+        }
+        return 1; // 기본값: Swing
     }
 }

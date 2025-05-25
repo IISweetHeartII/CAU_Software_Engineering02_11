@@ -8,7 +8,7 @@ player:4
 piece:5
 
 # ui type [1-2] 1: swing, 2: javaFX
-ui:1
+ui:2
 
 # game mode [1-2] 1: normal, 2: test
 mode:2
