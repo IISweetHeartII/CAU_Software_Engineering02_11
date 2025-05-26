@@ -394,30 +394,34 @@ public class JavafxUI implements GameView {
     }
 
     // ------ Swing: CreateCustomPopupButton을 JavaFX로 변환 ------ //
-    // ------ Custom Popup Button 설정 ------ //
+    // ---------- 1. Custom 윷 버튼 생성 및 팝업 연결 ----------
     private void setupCustomPopupButton() {
+        // 버튼 이미지
         Image imgUp = new Image(getClass().getResourceAsStream("/data/ui/button/button_custom_up.png"));
         Image imgDown = new Image(getClass().getResourceAsStream("/data/ui/button/button_custom_down.png"));
 
-        ImageView imageView = new ImageView(imgUp);
-        imageView.setFitWidth(621 / 3.0);
-        imageView.setFitHeight(108 / 3.0);
+        ImageView buttonImageView = new ImageView(imgUp);
+        buttonImageView.setFitWidth(621 / 3.0);
+        buttonImageView.setFitHeight(108 / 3.0);
 
+        // 버튼 설정
         Button popupButton = new Button();
-        popupButton.setGraphic(imageView);
+        popupButton.setGraphic(buttonImageView);
         popupButton.setLayoutX(473);
         popupButton.setLayoutY(587);
         popupButton.setStyle("-fx-background-color: transparent;");
 
-        popupButton.setOnMouseEntered(e -> imageView.setImage(imgDown));
-        popupButton.setOnMouseExited(e -> imageView.setImage(imgUp));
+        // Hover 효과
+        popupButton.setOnMouseEntered(e -> buttonImageView.setImage(imgDown));
+        popupButton.setOnMouseExited(e -> buttonImageView.setImage(imgUp));
 
+        // 클릭 시 팝업 실행
         popupButton.setOnAction(e -> openYutPopup());
 
         root.getChildren().add(popupButton);
     }
 
-    // ------ Yut Popup 열기 ------ //
+    // ---------- 2. 팝업 창 열기 및 윷 던지기 선택 ----------
     private void openYutPopup() {
         int POPUP_WIDTH = 1881 / 3 + 10;
         int POPUP_HEIGHT = 342 / 3 + 35;
@@ -426,39 +430,62 @@ public class JavafxUI implements GameView {
         popupStage.initOwner(stage);
         popupStage.setTitle("지정 윷 던지기");
 
-        Pane popupRoot = new Pane();
+        // StackPane: 배경 + 버튼 덮기용
+        StackPane popupRoot = new StackPane();
         Scene scene = new Scene(popupRoot, POPUP_WIDTH, POPUP_HEIGHT);
 
-        // 배경 이미지
+        // 배경 이미지 뷰 (초기 steady)
         Image bgImage = new Image(getClass().getResourceAsStream("/data/ui/custom/custom_steady.png"));
-        BackgroundImage bg = new BackgroundImage(bgImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT, new BackgroundSize(POPUP_WIDTH, POPUP_HEIGHT, false, false, false, false));
-        popupRoot.setBackground(new Background(bg));
+        ImageView bgView = new ImageView(bgImage);
+        // 배경 이미지 크기 조정
+        bgView.setPreserveRatio(true);
+        bgView.setSmooth(true);
+        bgView.setFitWidth(POPUP_WIDTH);
+        bgView.setFitHeight(POPUP_HEIGHT);
 
-        // 버튼 생성
+        popupRoot.getChildren().add(bgView);
+
+        // 버튼 덮기용 Pane
+        Pane buttonLayer = new Pane();
         int BUTTON_WIDTH = POPUP_WIDTH / 6;
+        int BUTTON_HEIGHT = POPUP_HEIGHT;
+
         for (int i = 0; i < 6; i++) {
-            int throwValue = (i == 5) ? -1 : (i + 1);
+            final int throwValue = (i == 5) ? -1 : (i + 1);
+            final int index = i + 1; // hover 배경용
+
             Button yutButton = new Button();
             yutButton.setLayoutX(BUTTON_WIDTH * i);
-            yutButton.setLayoutY(-20); // 살짝 위로
-            yutButton.setPrefSize(BUTTON_WIDTH, POPUP_HEIGHT);
+            yutButton.setLayoutY(0);
+            yutButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
             yutButton.setStyle("-fx-background-color: transparent;");
 
-            int finalThrowValue = throwValue;
+
+            // Hover 시 배경 바꾸기
+            yutButton.setOnMouseEntered(e -> {
+                String hoverPath = "/data/ui/custom/custom_" + index + ".png";
+                bgView.setImage(new Image(getClass().getResourceAsStream(hoverPath)));
+            });
+            yutButton.setOnMouseExited(e -> {
+                bgView.setImage(new Image(getClass().getResourceAsStream("/data/ui/custom/custom_steady.png")));
+            });
+
+            // 클릭 시 윷 값 전달
             yutButton.setOnAction(e -> {
-                controller.handleManualThrow(finalThrowValue);
+                controller.handleManualThrow(throwValue);
                 popupStage.close();
             });
 
-            popupRoot.getChildren().add(yutButton);
+            buttonLayer.getChildren().add(yutButton);
         }
+
+        popupRoot.getChildren().add(buttonLayer);
+
 
         popupStage.setScene(scene);
         popupStage.setResizable(false);
         popupStage.show();
     }
-
 
     // ------ show yut result <---- controller ------ //
     public void showYutResult(Integer yutResult) {
@@ -533,8 +560,10 @@ public class JavafxUI implements GameView {
 
             // 5. 위치 조정 (중앙 정렬)
             Point2D pos = piecePositions.get(nodeId);
-            pieceView.setLayoutX(pos.getX() - 18); // 36/2
-            pieceView.setLayoutY(pos.getY() - 18);
+
+            // 위치 보정: 중앙 + 오프셋 조정
+            pieceView.setLayoutX(pos.getX() - (double) 36 / 2 + 21); // +4px 정도 오른쪽으로 이동
+            pieceView.setLayoutY(pos.getY() - (double) 36 / 2 + 22); // +2px 정도 아래로 이동
 
             // 6. 화면에 추가
             root.getChildren().add(pieceView);
