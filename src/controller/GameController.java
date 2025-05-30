@@ -135,18 +135,6 @@ public class GameController {
         }
     }
 
-    // --------- 게임 초기화 ---------
-    public void resetGame() {
-        model = new GameManager();
-        //view = new SwingUI(this, model);
-    }
-
-    // --------- 게임 종료 ---------
-    public boolean endGame() {
-        endState = true;
-        return endState;
-    }
-
     // --------- 테스트 메시지 ---------
     public void testMessage(String message) {
         if (testMode)
