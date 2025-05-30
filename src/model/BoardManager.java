@@ -12,6 +12,27 @@ public class BoardManager {
 
     // Constructor
     public BoardManager() {
+        this.boardFigure = loadBoardFigure();
+        switch (boardFigure) {
+            case 4:
+                init4Graph();
+                beforeEND = "P20";
+                break;
+            case 5:
+                init5Graph();
+                beforeEND = "P25";
+                break;
+            case 6:
+                init6Graph();
+                beforeEND = "P30";
+                break;
+            default:
+                init4Graph();
+                beforeEND = "P20";
+        }
+    }
+
+    public BoardManager(int boardFigure) {
         switch (boardFigure) {
             case 4:
                 init4Graph();
@@ -64,16 +85,16 @@ public class BoardManager {
         // Main Logic
         for (int i = 0; i < moveCount; i++) {
             // END에 도달하면 END를 반환
+            // System.out.println("Current Position: " + currentPosition.getId() + ", Move Count: " + moveCount + ", Start Sign: " + startSign);
             if (nextPositionList.isEmpty()) {
                 return new Position("END");
             }
 
             // NextPosition 계산
-            if (currentPosition.equals(center)) { // center:[E3, E7]
+            if (currentPosition.equals("C")) { // center:[E3, E7]
                 if (startSign) {
                     previousPosition = currentPosition;
                     currentPosition = nextPositionList.getLast();
-                    startSign = false;
                 } else if (previousPosition.equals("E2")) {
                     previousPosition = currentPosition;
                     currentPosition = nextPositionList.getFirst();
@@ -99,6 +120,8 @@ public class BoardManager {
             piece.setPreviousPosition(previousPosition.getId());
 
             nextPositionList = pathGraph.get(currentPosition);
+
+            startSign = false;
         }
 
         return currentPosition;

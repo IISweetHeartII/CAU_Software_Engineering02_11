@@ -15,16 +15,12 @@ public class GameController {
     public boolean yutState = true;
     public boolean selectPieceState = false;
     public boolean selectPositionState = false;
-    public boolean resetState = false;
-    public boolean endState = false;
-
-    public boolean testMode = true; // 테스트용
+    public boolean testMode = true; // 테스트용, 제출시 false로 설정
 
     // --------- Constructor ---------
     public GameController(GameManager gameManager) {
         this.model = gameManager;
     }
-
     public void setView(GameView view) {
         this.view = view;
     }
@@ -133,18 +129,6 @@ public class GameController {
             testMessage("controller: state error");
             return;
         }
-    }
-
-    // --------- 게임 초기화 ---------
-    public void resetGame() {
-        model = new GameManager();
-        //view = new SwingUI(this, model);
-    }
-
-    // --------- 게임 종료 ---------
-    public boolean endGame() {
-        endState = true;
-        return endState;
     }
 
     // --------- 테스트 메시지 ---------
