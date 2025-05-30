@@ -59,7 +59,7 @@ public class BoardManagerTest {
     @Test
     void getPositionByMoveCountWithSpecialPositionTest() {
         BoardManager boardManager = new BoardManager();
-        Piece DUMMY = new Piece("DUMMY", boardManager.getBeforeEND());
+        Piece DUMMY;
 
         // 특정 위치에서의 이동 횟수에 따른 위치 테스트 분기 : P5
         DUMMY = new Piece("DUMMY", "P3");
