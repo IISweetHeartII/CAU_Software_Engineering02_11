@@ -15,16 +15,12 @@ public class GameController {
     public boolean yutState = true;
     public boolean selectPieceState = false;
     public boolean selectPositionState = false;
-    public boolean resetState = false;
-    public boolean endState = false;
-
-    public boolean testMode = true; // 테스트용
+    public boolean testMode = true; // 테스트용, 제출시 false로 설정
 
     // --------- Constructor ---------
     public GameController(GameManager gameManager) {
         this.model = gameManager;
     }
-
     public void setView(GameView view) {
         this.view = view;
     }
