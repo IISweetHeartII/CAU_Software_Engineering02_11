@@ -368,10 +368,10 @@ public class SwingUI implements GameView {
         boardButtonPositions.put("E7", new Point(268-20, 292-20));
         boardButtonPositions.put("E8", new Point(298-20, 348-20));
 
-        boardButtonPositions.put("E9", new Point(298-20, 123-20));
-        boardButtonPositions.put("E10", new Point(268-20, 180-20));
-        boardButtonPositions.put("E11", new Point(203-20, 292-20));
-        boardButtonPositions.put("E12", new Point(170-20, 348-20));
+        boardButtonPositions.put("E11", new Point(298-20, 123-20));
+        boardButtonPositions.put("E12", new Point(268-20, 180-20));
+        boardButtonPositions.put("E9", new Point(203-20, 292-20));
+        boardButtonPositions.put("E10", new Point(170-20, 348-20));
     }
 
     public static class NodeButton extends JButton {
