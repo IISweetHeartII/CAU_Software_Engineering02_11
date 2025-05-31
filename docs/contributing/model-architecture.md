@@ -78,12 +78,12 @@
 
 ## YutManager, YutResult, YutResultType
 
-> 이 부분은 제가 Yut 클래스에서 YutManager 클래스로 이름만 바꿨지 처음과 동일합니다.
-> -> 이 부분은 현정님께 물어보세요 전 잘 모르겠어요 😊
+> `YutManager`는 윷 던지기와 관련된 로직을 관리하는 클래스입니다. 주로 윷의 결과를 계산하고 저장하는 역할을 합니다.
+>> `YutResult`는 윷의 결과를 저장하는 클래스이며, `YutResultType`은 윷의 결과 타입을 정의하는 열거형입니다.
 
 ## GameManager
 
-> `GameManager`는 **게임의 상태**를 관리하는 클래스입니다. 주로 게임판의 상태와 기타 로직을 담당합니다.
+> `GameManager`는 **게임의 상[JavafxUI.java](../../src/view/JavafxUI.java)태**를 관리하는 클래스입니다. 주로 게임판의 상태와 기타 로직을 담당합니다.
 > 
 > `GameController`는 더 거시적인 관점에서 **게임의 흐름**을 관리하는 클래스입니다. 게임이 어떤 단계(윷 던지기 단계, 말 이동 단계)인지 관리하고 GameManager를 통해 게임의 상태를 업데이트합니다.
 

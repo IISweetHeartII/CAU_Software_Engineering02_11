@@ -1,6 +1,7 @@
 package view;
 
 import controller.GameController;
+import javafx.scene.Cursor;
 import model.GameManager;
 
 import javafx.geometry.Point2D;
@@ -148,13 +149,14 @@ public class JavafxUI implements GameView {
             nodeButton.setOpacity(0); // 버튼 투명도 -> 0
 
             nodeButton.setId(id); // ✔ 버튼에 직접 ID를 부여
+            nodeButton.setCursor(Cursor.HAND);
 
             nodeButton.setOnAction(e -> {
                 String clickedId = ((Button) e.getSource()).getId(); // ✔ 이벤트에서 ID 직접 꺼냄
                 controller.handleBoardClick(clickedId);
             });
 
-            root.getChildren().add(nodeButton);
+            root.getChildren().add(0, nodeButton);
         }
     }
 
@@ -190,19 +192,21 @@ public class JavafxUI implements GameView {
 
     // ------ START Button 설정 ------ //
     private void setupStartButton() {
-        STARTButton = new Button();
-        STARTButton.setLayoutX(483); // 473 + 10 보정
-        STARTButton.setLayoutY(161);
-        STARTButton.setPrefSize(184, 202);
-        STARTButton.setStyle("-fx-background-color: transparent;");
+            STARTButton = new Button();
+            STARTButton.setLayoutX(483); // 473 + 10 보정
+            STARTButton.setLayoutY(161);
+            STARTButton.setPrefSize(184, 202);
+            STARTButton.setStyle("-fx-background-color: transparent;");
 
-        // START 위치 클릭 시 controller로 전달
-        STARTButton.setOnAction(e -> {
-            controller.handleBoardClick("START");
-            System.out.println("START Button Clicked");
-        });
+            STARTButton.setCursor(Cursor.HAND);
 
-        root.getChildren().add(STARTButton);
+            // START 위치 클릭 시 controller로 전달
+            STARTButton.setOnAction(e -> {
+                controller.handleBoardClick("START");
+                System.out.println("START Button Clicked");
+            });
+
+            root.getChildren().add(STARTButton);
     }
 
     // ------ END Button 설정 ------ //
@@ -212,6 +216,8 @@ public class JavafxUI implements GameView {
         ENDButton.setLayoutY(472);
         ENDButton.setPrefSize(433, 207);  // 1299/3, 621/3
         ENDButton.setStyle("-fx-background-color: transparent;");
+
+        ENDButton.setCursor(Cursor.HAND);
 
         ENDButton.setOnAction(e -> {
             controller.handleBoardClick("END");
@@ -233,8 +239,12 @@ public class JavafxUI implements GameView {
         turnImage.setFitWidth(scaledWidth);
         turnImage.setFitHeight(scaledHeight);
 
+
         turnImage.setLayoutX(485);
         turnImage.setLayoutY(392);
+
+        turnImage.setCursor(Cursor.HAND);
+
         root.getChildren().add(turnImage);
     }
 
@@ -532,11 +542,16 @@ public class JavafxUI implements GameView {
     // ------ update board ------ //
     public void updateBoard() {
         // 1. 기존 말 이미지 제거 (id가 "piece_"로 시작하는 ImageView만)
-        root.getChildren().removeIf(node ->
-                node instanceof ImageView &&
-                        node.getId() != null &&
-                        node.getId().startsWith("piece_")
-        );
+        root.getChildren().removeIf(node -> {
+            if (node instanceof ImageView && node.getId() != null) {
+                boolean isPiece = node.getId().startsWith("piece_");
+                if (isPiece) {
+                    System.out.println("Removing piece: " + node.getId());
+                }
+                return isPiece;
+            }
+            return false;
+        });
 
         // 2. 모델에서 말 위치 데이터 가져오기 (nodeId -> pieceId 형식)
         Map<String, String> positionPieceMap = model.getPositionPieceMap();
@@ -557,6 +572,8 @@ public class JavafxUI implements GameView {
             pieceView.setFitWidth(36);
             pieceView.setFitHeight(36);
             pieceView.setPreserveRatio(true); // 비율 유지
+            pieceView.setMouseTransparent(true); // 마우스 이벤트 무시
+            pieceView.setId("piece_" + pieceId); // ID 설정!!!! (말 이미지 복제 방지)
 
             // 5. 위치 조정 (중앙 정렬)
             Point2D pos = piecePositions.get(nodeId);
@@ -567,6 +584,7 @@ public class JavafxUI implements GameView {
 
             // 6. 화면에 추가
             root.getChildren().add(pieceView);
+
         }
 
     }
@@ -602,11 +620,11 @@ public class JavafxUI implements GameView {
     }
 
 
-// ------ updatePlayerScore() ------ //
-public void updatePlayerScore() {
-    int[] notStartedCounts = model.getCountOfPieceAtStart();
+    // ------ updatePlayerScore() ------ //
+    public void updatePlayerScore() {
+        int[] notStartedCounts = model.getCountOfPieceAtStart();
 
-    for (int i = 0; i < numberOfPlayers; i++) {
+        for (int i = 0; i < numberOfPlayers; i++) {
         int playerNum = i + 1;
         int notStarted = notStartedCounts[i];
 
@@ -614,8 +632,8 @@ public void updatePlayerScore() {
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
 
         playerScoreImages[i].setImage(img);
+        }
     }
-}
 
     private void createQuitButton() {
         // 1. 이미지 로드 및 크기 조정
