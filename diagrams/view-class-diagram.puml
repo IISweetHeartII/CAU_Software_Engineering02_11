@@ -1,0 +1,112 @@
+@startuml view-class-diagram.puml
+' View Layer
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #D0E6F5
+
+interface GameView {
+  + initUI(): void
+  + showYutResult(yutResult: Integer): void
+  + showWinner(winner: int): void
+  + updateBoard(): void
+  + updatePlayerScore(): void
+  + updateTurn(): void
+}
+
+class SwingUI {
+  - controller: GameController
+  - model: GameManager
+  - frame: JFrame
+  - backgroundPanel: BackgroundPanel
+  - titleLabel: JLabel
+  - playerScoreLabel: JLabel[]
+  - turnLabel: JLabel
+  - yutLabel: JLabel
+  - throwButton: JButton
+  - STARTButton: JButton
+  - ENDButton: JButton
+  - piecePositions: Map<String, JLabel>
+  - numberOfPlayers: int
+  - numberOfPieces: int
+  - boardButtonPositions: Map<String, Point>
+  --
+  + SwingUI(controller: GameController, model: GameManager)
+  + initUI(): void
+  + showYutResult(yutResult: Integer): void
+  + showWinner(winner: int): void
+  + updateBoard(): void
+  + updatePlayerScore(): void
+  + updateTurn(): void
+  - createBoardButtons(size: int): void
+  - createBoardButtons4(): void
+  - createBoardButtons5(): void
+  - createBoardButtons6(): void
+  + {static} createBoardButtons(positions: Map<String, Point>): Map<String, NodeButton>
+  - createScaledPieceLabel(pieceId: String): JLabel
+  - createThrowButton(): void
+  - createQuitButton(): void
+  - createRestartButton(): void
+  - createPopupButton(): void
+  - adjustPiecePosition(pieceLabel: JLabel, nodeId: String): void
+  - removePreviousPieces(): void
+}
+
+
+class JavafxUI {
+  - controller: GameController
+  - model: GameManager
+  - stage: Stage
+  - root: Pane
+  - titleImage: ImageView
+  - playerScoreImages: ImageView[]
+  - turnImage: ImageView
+  - yutImage: ImageView
+  - throwButton: Button
+  - STARTButton: Button
+  - ENDButton: Button
+  - piecePositions: Map<String, Point2D>
+  - numberOfPlayers: int
+  - numberOfPieces: int
+  --
+  + JavafxUI(controller: GameController, model: GameManager)
+  + initUI(): void
+  + start(stage: Stage): void
+  - setupBackground(): void
+  - setupTitleImage(): void
+  - setupBoardButtons(): void
+  - setupPlayerScoreImages(): void
+  - setupStartButton(): void
+  - setupEndButton(): void
+  - setupTurnImage(): void
+  - initBoardButtonPositions(): void
+  - initBoardButtons4(): void
+  - initBoardButtons5(): void
+  - initBoardButtons6(): void
+  - setupCustomPopupButton(): void
+  - openYutPopup(): void
+  + showYutResult(yutResult: Integer): void
+  - setupYutImage(): void
+  + showWinner(winner: int): void
+  + updateBoard(): void
+  - createThrowButton(): void
+  + updatePlayerScore(): void
+  - createQuitButton(): void
+  - createRestartButton(): void
+  + updateTurn(): void
+}
+
+class BackgroundPanel {
+  - backgroundImage: Image
+  --
+  + BackgroundPanel(image: Image)
+  + paintComponent(g: Graphics): void
+}
+
+' Relationships
+
+GameView <|.. SwingUI : implements
+GameView <|.. JavafxUI : implements
+
+SwingUI "1" --> "1" BackgroundPanel : uses
+
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml controller-class-diagram.puml
+' Controller Layer
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #D0E6F5
+
+
+class GameController {
+  + model: GameManager
+  + view: GameView
+  + yutState: boolean
+  + selectPieceState: boolean
+  + selectPositionState: boolean
+  + resetState: boolean
+  + endState: boolean
+  - selectedPiecePositionId: String
+  - selectedNodeId: String
+  --
+  + GameController(gameManager: GameManager)
+  + setView(view: GameView): void
+  + handleRandomThrow(): void
+  + handleManualThrow(value: int): void
+  + handleBoardClick(nodeId: String): void
+}
+
+' Relationships (to Model and View)
+
+GameController "1" -right-> "1" GameManager : uses
+GameController "1" -left-> "1" GameView : uses
+
+@enduml 
