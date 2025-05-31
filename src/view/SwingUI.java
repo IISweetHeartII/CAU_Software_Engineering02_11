@@ -29,6 +29,8 @@ public class SwingUI implements GameView {
     private int numberOfPlayers; // 플레이어 수
     private int numberOfPieces; // 플레이어당 말 수
 
+    private Map<String, NodeButton> boardButtons = new HashMap<>(); // 노드 버튼을 저장할 Map
+
     // ------ 생성자: Constructor ------- //
     public SwingUI(GameController controller, GameManager model) {
         // GUI 초기화 코드
@@ -101,7 +103,7 @@ public class SwingUI implements GameView {
 
         // ------- Board 버튼 설정 -------- //
         createBoardButtons(model.getSize());
-        Map<String, NodeButton> boardButtons = createBoardButtons(boardButtonPositions);
+        this.boardButtons = createBoardButtons(boardButtonPositions);
         for (String id : boardButtons.keySet()) { // -> 각 Node 버튼의 ActionListener 설정: 나중에 메서드 책임이 바뀔 수 있음
             NodeButton btn = boardButtons.get(id);
             btn.addActionListener(e -> {
@@ -180,6 +182,8 @@ public class SwingUI implements GameView {
             controller.handleBoardClick("END");
             System.out.println("END Button Clicked");
         });
+        // 패널에 버튼 추가
+        backgroundPanel.add(ENDButton);
 
         //------ Turn 설정 ------ //
         // 이미지 처리 및 보정
@@ -207,11 +211,9 @@ public class SwingUI implements GameView {
         createQuitButton();
 
         // ------- 최종 설정 No Need Modification ------- //
-        {
-            Objects.requireNonNull(frame).setContentPane(backgroundPanel);
-            frame.pack();
-            frame.setVisible(true);
-        }
+        Objects.requireNonNull(frame).setContentPane(backgroundPanel);
+        frame.pack();
+        frame.setVisible(true);
     }
 
 
@@ -234,143 +236,144 @@ public class SwingUI implements GameView {
                 break;
         }
     }
+    int BUTTON_ERROR_OFFSET = 27; // 버튼 위치 보정값
     private void createBoardButtons4() {
-        boardButtonPositions.put("P1", new Point(432-20, 353-20)); // 각 x, y의 20만큼 위치 보정
-        boardButtonPositions.put("P2", new Point(432-20, 275-20));
-        boardButtonPositions.put("P3", new Point(432-20, 197-20));
-        boardButtonPositions.put("P4", new Point(432-20, 119-20));
-        boardButtonPositions.put("P5", new Point(432-20, 42-20));
+        boardButtonPositions.put("P1", new Point(432-BUTTON_ERROR_OFFSET, 353-BUTTON_ERROR_OFFSET)); // 각 x, y의 20만큼 위치 보정
+        boardButtonPositions.put("P2", new Point(432-BUTTON_ERROR_OFFSET, 275-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P3", new Point(432-BUTTON_ERROR_OFFSET, 197-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P4", new Point(432-BUTTON_ERROR_OFFSET, 119-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P5", new Point(432-BUTTON_ERROR_OFFSET, 42-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P6", new Point(355-20, 42-20));
-        boardButtonPositions.put("P7", new Point(277-20, 42-20));
-        boardButtonPositions.put("P8", new Point(199-20, 42-20));
-        boardButtonPositions.put("P9", new Point(121-20, 42-20));
-        boardButtonPositions.put("P10", new Point(42-20, 42-20));
+        boardButtonPositions.put("P6", new Point(355-BUTTON_ERROR_OFFSET, 42-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P7", new Point(277-BUTTON_ERROR_OFFSET, 42-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P8", new Point(199-BUTTON_ERROR_OFFSET, 42-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P9", new Point(121-BUTTON_ERROR_OFFSET, 42-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P10", new Point(42-BUTTON_ERROR_OFFSET, 42-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P11", new Point(42-20, 119-20));
-        boardButtonPositions.put("P12", new Point(42-20, 197-20));
-        boardButtonPositions.put("P13", new Point(42-20, 275-20));
-        boardButtonPositions.put("P14", new Point(42-20, 353-20));
-        boardButtonPositions.put("P15", new Point(42-20, 432-20));
+        boardButtonPositions.put("P11", new Point(42-BUTTON_ERROR_OFFSET, 119-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P12", new Point(42-BUTTON_ERROR_OFFSET, 197-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P13", new Point(42-BUTTON_ERROR_OFFSET, 275-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P14", new Point(42-BUTTON_ERROR_OFFSET, 353-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P15", new Point(42-BUTTON_ERROR_OFFSET, 432-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P16", new Point(121-20, 432-20));
-        boardButtonPositions.put("P17", new Point(199-20, 432-20));
-        boardButtonPositions.put("P18", new Point(277-20, 432-20));
-        boardButtonPositions.put("P19", new Point(355-20, 432-20));
-        boardButtonPositions.put("P20", new Point(432-20, 432-20));
+        boardButtonPositions.put("P16", new Point(121-BUTTON_ERROR_OFFSET, 432-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P17", new Point(199-BUTTON_ERROR_OFFSET, 432-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P18", new Point(277-BUTTON_ERROR_OFFSET, 432-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P19", new Point(355-BUTTON_ERROR_OFFSET, 432-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P20", new Point(432-BUTTON_ERROR_OFFSET, 432-BUTTON_ERROR_OFFSET));
 
         // 내부 경로
-        boardButtonPositions.put("E1", new Point(364-20, 108-20));
-        boardButtonPositions.put("E2", new Point(303-20, 171-20));
-        boardButtonPositions.put("E3", new Point(171-20, 303-20));
-        boardButtonPositions.put("E4", new Point(108-20, 364-20));
+        boardButtonPositions.put("E1", new Point(364-BUTTON_ERROR_OFFSET, 108-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E2", new Point(303-BUTTON_ERROR_OFFSET, 171-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E3", new Point(171-BUTTON_ERROR_OFFSET, 303-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E4", new Point(108-BUTTON_ERROR_OFFSET, 364-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("C", new Point(237-20, 237-20));
+        boardButtonPositions.put("C", new Point(237-BUTTON_ERROR_OFFSET, 237-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("E5", new Point(108-20, 108-20));
-        boardButtonPositions.put("E6", new Point(171-20, 171-20));
-        boardButtonPositions.put("E7", new Point(303-20, 303-20));
-        boardButtonPositions.put("E8", new Point(364-20, 364-20));
+        boardButtonPositions.put("E5", new Point(108-BUTTON_ERROR_OFFSET, 108-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E6", new Point(171-BUTTON_ERROR_OFFSET, 171-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E7", new Point(303-BUTTON_ERROR_OFFSET, 303-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E8", new Point(364-BUTTON_ERROR_OFFSET, 364-BUTTON_ERROR_OFFSET));
     }
 
     private void createBoardButtons5() {
-        boardButtonPositions.put("P1", new Point(372-20, 375-20)); // 각 x, y의 20만큼 위치 보정
-        boardButtonPositions.put("P2", new Point(388-20, 330-20));
-        boardButtonPositions.put("P3", new Point(402-20, 284-20));
-        boardButtonPositions.put("P4", new Point(417-20, 238-20));
-        boardButtonPositions.put("P5", new Point(432-20, 192-20));
+        boardButtonPositions.put("P1", new Point(372-BUTTON_ERROR_OFFSET, 375-BUTTON_ERROR_OFFSET)); // 각 x, y의 20만큼 위치 보정
+        boardButtonPositions.put("P2", new Point(388-BUTTON_ERROR_OFFSET, 330-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P3", new Point(402-BUTTON_ERROR_OFFSET, 284-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P4", new Point(417-BUTTON_ERROR_OFFSET, 238-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P5", new Point(432-BUTTON_ERROR_OFFSET, 192-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P6", new Point(393-20, 164-20));
-        boardButtonPositions.put("P7", new Point(354-20, 135-20));
-        boardButtonPositions.put("P8", new Point(315-20, 107-20));
-        boardButtonPositions.put("P9", new Point(276-20, 78-20));
-        boardButtonPositions.put("P10", new Point(236-20, 50-20));
+        boardButtonPositions.put("P6", new Point(393-BUTTON_ERROR_OFFSET, 164-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P7", new Point(354-BUTTON_ERROR_OFFSET, 135-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P8", new Point(315-BUTTON_ERROR_OFFSET, 107-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P9", new Point(276-BUTTON_ERROR_OFFSET, 78-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P10", new Point(236-BUTTON_ERROR_OFFSET, 50-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P11", new Point(197-20, 78-20));
-        boardButtonPositions.put("P12", new Point(158-20, 107-20));
-        boardButtonPositions.put("P13", new Point(119-20, 135-20));
-        boardButtonPositions.put("P14", new Point(80-20, 164-20));
-        boardButtonPositions.put("P15", new Point(41-20, 192-20));
+        boardButtonPositions.put("P11", new Point(197-BUTTON_ERROR_OFFSET, 78-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P12", new Point(158-BUTTON_ERROR_OFFSET, 107-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P13", new Point(119-BUTTON_ERROR_OFFSET, 135-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P14", new Point(80-BUTTON_ERROR_OFFSET, 164-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P15", new Point(41-BUTTON_ERROR_OFFSET, 192-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P16", new Point(56-20, 238-20));
-        boardButtonPositions.put("P17", new Point(71-20, 284-20));
-        boardButtonPositions.put("P18", new Point(87-20, 330-20));
-        boardButtonPositions.put("P19", new Point(101-20, 375-20));
-        boardButtonPositions.put("P20", new Point(115-20, 422-20));
+        boardButtonPositions.put("P16", new Point(56-BUTTON_ERROR_OFFSET, 238-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P17", new Point(71-BUTTON_ERROR_OFFSET, 284-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P18", new Point(87-BUTTON_ERROR_OFFSET, 330-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P19", new Point(101-BUTTON_ERROR_OFFSET, 375-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P20", new Point(115-BUTTON_ERROR_OFFSET, 422-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P21", new Point(164-20, 422-20));
-        boardButtonPositions.put("P22", new Point(212-20, 422-20));
-        boardButtonPositions.put("P23", new Point(261-20, 422-20));
-        boardButtonPositions.put("P24", new Point(309-20, 422-20));
-        boardButtonPositions.put("P25", new Point(358-20, 422-20));
+        boardButtonPositions.put("P21", new Point(164-BUTTON_ERROR_OFFSET, 422-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P22", new Point(212-BUTTON_ERROR_OFFSET, 422-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P23", new Point(261-BUTTON_ERROR_OFFSET, 422-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P24", new Point(309-BUTTON_ERROR_OFFSET, 422-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P25", new Point(358-BUTTON_ERROR_OFFSET, 422-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("C", new Point(236-20, 255-20));
+        boardButtonPositions.put("C", new Point(236-BUTTON_ERROR_OFFSET, 255-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("E1", new Point(354-20, 217-20));
-        boardButtonPositions.put("E2", new Point(295-20, 236-20));
-        boardButtonPositions.put("E3", new Point(200-20, 305-20));
-        boardButtonPositions.put("E4", new Point(164-20, 355-20));
-        boardButtonPositions.put("E5", new Point(236-20, 132-20));
-        boardButtonPositions.put("E6", new Point(236-20, 195-20));
-        boardButtonPositions.put("E7", new Point(274-20, 305-20));
-        boardButtonPositions.put("E8", new Point(309-20, 355-20));
-        boardButtonPositions.put("E9", new Point(119-20, 217-20));
-        boardButtonPositions.put("E10", new Point(178-20, 236-20));
+        boardButtonPositions.put("E1", new Point(354-BUTTON_ERROR_OFFSET, 217-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E2", new Point(295-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E3", new Point(200-BUTTON_ERROR_OFFSET, 305-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E4", new Point(164-BUTTON_ERROR_OFFSET, 355-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E5", new Point(236-BUTTON_ERROR_OFFSET, 132-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E6", new Point(236-BUTTON_ERROR_OFFSET, 195-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E7", new Point(274-BUTTON_ERROR_OFFSET, 305-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E8", new Point(309-BUTTON_ERROR_OFFSET, 355-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E9", new Point(119-BUTTON_ERROR_OFFSET, 217-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E10", new Point(178-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
     }
 
     private void createBoardButtons6() {
-        boardButtonPositions.put("P1", new Point(354-20, 370-20)); // 각 x, y의 20만큼 위치 보정
-        boardButtonPositions.put("P2", new Point(373-20, 337-20));
-        boardButtonPositions.put("P3", new Point(393-20, 303-20));
-        boardButtonPositions.put("P4", new Point(409-20, 269-20));
-        boardButtonPositions.put("P5", new Point(431-20, 236-20));
+        boardButtonPositions.put("P1", new Point(354-BUTTON_ERROR_OFFSET, 370-BUTTON_ERROR_OFFSET)); // 각 x, y의 20만큼 위치 보정
+        boardButtonPositions.put("P2", new Point(373-BUTTON_ERROR_OFFSET, 337-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P3", new Point(393-BUTTON_ERROR_OFFSET, 303-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P4", new Point(409-BUTTON_ERROR_OFFSET, 269-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P5", new Point(431-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P6", new Point(409-20, 203-20));
-        boardButtonPositions.put("P7", new Point(393-20, 169-20));
-        boardButtonPositions.put("P8", new Point(373-20, 133-20));
-        boardButtonPositions.put("P9", new Point(354-20, 101-20));
-        boardButtonPositions.put("P10", new Point(335-20, 67-20));
+        boardButtonPositions.put("P6", new Point(409-BUTTON_ERROR_OFFSET, 203-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P7", new Point(393-BUTTON_ERROR_OFFSET, 169-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P8", new Point(373-BUTTON_ERROR_OFFSET, 133-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P9", new Point(354-BUTTON_ERROR_OFFSET, 101-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P10", new Point(335-BUTTON_ERROR_OFFSET, 67-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P11", new Point(295-20, 67-20));
-        boardButtonPositions.put("P12", new Point(256-20, 67-20));
-        boardButtonPositions.put("P13", new Point(217-20, 67-20));
-        boardButtonPositions.put("P14", new Point(178-20, 67-20));
-        boardButtonPositions.put("P15", new Point(139-20, 67-20));
+        boardButtonPositions.put("P11", new Point(295-BUTTON_ERROR_OFFSET, 67-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P12", new Point(256-BUTTON_ERROR_OFFSET, 67-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P13", new Point(217-BUTTON_ERROR_OFFSET, 67-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P14", new Point(178-BUTTON_ERROR_OFFSET, 67-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P15", new Point(139-BUTTON_ERROR_OFFSET, 67-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P16", new Point(118-20, 99-20));
-        boardButtonPositions.put("P17", new Point(98-20, 134-20));
-        boardButtonPositions.put("P18", new Point(80-20, 168-20));
-        boardButtonPositions.put("P19", new Point(60-20, 202-20));
-        boardButtonPositions.put("P20", new Point(41-20, 236-20));
+        boardButtonPositions.put("P16", new Point(118-BUTTON_ERROR_OFFSET, 99-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P17", new Point(98-BUTTON_ERROR_OFFSET, 134-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P18", new Point(80-BUTTON_ERROR_OFFSET, 168-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P19", new Point(60-BUTTON_ERROR_OFFSET, 202-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P20", new Point(41-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P21", new Point(60-20, 269-20));
-        boardButtonPositions.put("P22", new Point(80-20, 303-20));
-        boardButtonPositions.put("P23", new Point(98-20, 337-20));
-        boardButtonPositions.put("P24", new Point(118-20, 370-20));
-        boardButtonPositions.put("P25", new Point(139-20, 404-20));
+        boardButtonPositions.put("P21", new Point(60-BUTTON_ERROR_OFFSET, 269-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P22", new Point(80-BUTTON_ERROR_OFFSET, 303-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P23", new Point(98-BUTTON_ERROR_OFFSET, 337-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P24", new Point(118-BUTTON_ERROR_OFFSET, 370-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P25", new Point(139-BUTTON_ERROR_OFFSET, 404-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("P26", new Point(178-20, 404-20));
-        boardButtonPositions.put("P27", new Point(217-20, 404-20));
-        boardButtonPositions.put("P28", new Point(256-20, 404-20));
-        boardButtonPositions.put("P29", new Point(295-20, 404-20));
-        boardButtonPositions.put("P30", new Point(335-20, 404-20));
+        boardButtonPositions.put("P26", new Point(178-BUTTON_ERROR_OFFSET, 404-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P27", new Point(217-BUTTON_ERROR_OFFSET, 404-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P28", new Point(256-BUTTON_ERROR_OFFSET, 404-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P29", new Point(295-BUTTON_ERROR_OFFSET, 404-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("P30", new Point(335-BUTTON_ERROR_OFFSET, 404-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("C", new Point(235-20, 236-20));
+        boardButtonPositions.put("C", new Point(235-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("E1", new Point(366-20, 236-20));
-        boardButtonPositions.put("E2", new Point(301-20, 236-20));
-        boardButtonPositions.put("E3", new Point(168-20, 236-20));
-        boardButtonPositions.put("E4", new Point(105-20, 236-20));
+        boardButtonPositions.put("E1", new Point(366-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E2", new Point(301-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E3", new Point(168-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E4", new Point(105-BUTTON_ERROR_OFFSET, 236-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("E5", new Point(170-20, 123-20));
-        boardButtonPositions.put("E6", new Point(203-20, 180-20));
-        boardButtonPositions.put("E7", new Point(268-20, 292-20));
-        boardButtonPositions.put("E8", new Point(298-20, 348-20));
+        boardButtonPositions.put("E5", new Point(170-BUTTON_ERROR_OFFSET, 123-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E6", new Point(203-BUTTON_ERROR_OFFSET, 180-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E7", new Point(268-BUTTON_ERROR_OFFSET, 292-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E8", new Point(298-BUTTON_ERROR_OFFSET, 348-BUTTON_ERROR_OFFSET));
 
-        boardButtonPositions.put("E11", new Point(298-20, 123-20));
-        boardButtonPositions.put("E12", new Point(268-20, 180-20));
-        boardButtonPositions.put("E9", new Point(203-20, 292-20));
-        boardButtonPositions.put("E10", new Point(170-20, 348-20));
+        boardButtonPositions.put("E11", new Point(298-BUTTON_ERROR_OFFSET, 123-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E12", new Point(268-BUTTON_ERROR_OFFSET, 180-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E9", new Point(203-BUTTON_ERROR_OFFSET, 292-BUTTON_ERROR_OFFSET));
+        boardButtonPositions.put("E10", new Point(170-BUTTON_ERROR_OFFSET, 348-BUTTON_ERROR_OFFSET));
     }
 
     public static class NodeButton extends JButton {
@@ -378,7 +381,7 @@ public class SwingUI implements GameView {
 
         public NodeButton(String nodeId, int x, int y) {
             this.nodeId = nodeId;
-            setBounds(x, y, 40, 40);
+            setBounds(x, y, 55, 55);
             setOpaque(false);
             setContentAreaFilled(false);
             setBorderPainted(false);
@@ -437,24 +440,42 @@ public class SwingUI implements GameView {
     // ------ update board ------ //
     private static final int PIECE_SCALE_FACTOR = 2;
     private static final int POSITION_ADJUSTMENT_FACTOR = 6;
-    public void updateBoard() {
+    public void resetBoard() {
         // 기존에 표시된 모든 말 제거
-        removePreviousPieces();
+        for (JLabel jLabel : piecePositions.values()) {
+            backgroundPanel.remove(jLabel);
+        }
+        piecePositions.clear();
 
-        // 새로운 말 위치 정보 가져오기
+        backgroundPanel.revalidate();
+        backgroundPanel.repaint();
+    }
+    public void updateBoard() {
         Map<String, String> PositionPieceMap = model.getPositionPieceMap();
 
-        // 새로운 말들을 생성하고 표시
+        // Remove all existing pieces from buttons
+        for (NodeButton button : boardButtons.values()) {
+            button.setIcon(null);
+        }
+
+        // Add new pieces to buttons
         PositionPieceMap.forEach((nodeId, pieceId) -> {
-            if (!(nodeId.equals("START") || nodeId.equals("END"))) { // SART, END 제외
-                JLabel pieceLabel = createScaledPieceLabel(pieceId);
-                adjustPiecePosition(pieceLabel, nodeId);
-                piecePositions.put(pieceId, pieceLabel);  // Map에 저장
-                backgroundPanel.add(pieceLabel);
+            if (!(nodeId.equals("START") || nodeId.equals("END"))) {
+                NodeButton button = boardButtons.get(nodeId);
+                if (button != null) {
+                    ImageIcon pieceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
+                            "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
+                    )));
+                    Image scaledPiece = pieceIcon.getImage().getScaledInstance(
+                            pieceIcon.getIconWidth() / PIECE_SCALE_FACTOR,
+                            pieceIcon.getIconHeight() / PIECE_SCALE_FACTOR,
+                            Image.SCALE_SMOOTH);
+                    button.setIcon(new ImageIcon(scaledPiece));
+                }
             }
         });
 
-        // 화면 갱신
+        // Refresh display
         backgroundPanel.revalidate();
         backgroundPanel.repaint();
     }
@@ -793,8 +814,14 @@ public class SwingUI implements GameView {
 
     private void removePreviousPieces() { // -> updateBoard()
         // 기존 말들을 패널에서 제거
-        piecePositions.values().forEach(backgroundPanel::remove);
+        BackgroundPanel backgroundPanel1 = backgroundPanel;
+        for (JLabel jLabel : piecePositions.values()) {
+            backgroundPanel1.remove(jLabel);
+        }
         piecePositions.clear();
+
+        backgroundPanel.revalidate();
+        backgroundPanel.repaint();
     }
     // ------------------ //
 

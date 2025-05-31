@@ -160,8 +160,15 @@ public class GameManager {
                 testMessage("game manager: controlMovePiece: 잘못된 moveType입니다.");
         }
 
+        // print for test : previous position of piece
+        testMessage("GameManager: controlMovePiece: " + piece.getId() + " moved from " + startPosition + " to " + targetPosition +
+                " with moveCount: " + moveCount + ", previousPosition: " + piece.getPreviousPosition().getId());
+
         // 이동 후 윷 이력에서 이동한 칸 수 제거
         yutHistory.removeFirstOccurrence(moveCount);
+
+        // print for test : map
+        testMessage("GameManager: controlMovePiece: positionPieceMap -> " + getPositionPieceMap());
     }
 
     private int getMoveCount(String startPosition, String targetPosition) {

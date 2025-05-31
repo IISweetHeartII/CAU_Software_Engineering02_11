@@ -120,6 +120,10 @@ public class BoardManager {
             // Piece에 이전 위치를 저장
             piece.setPreviousPosition(previousPosition.getId());
 
+            if (piece.getPreviousPosition().equals("START")) {
+                piece.setPreviousPosition(beforeEND);
+            }
+
             nextPositionList = pathGraph.get(currentPosition);
 
             startSign = false;
