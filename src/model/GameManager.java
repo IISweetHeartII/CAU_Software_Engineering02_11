@@ -132,7 +132,7 @@ public class GameManager {
                     break;
                 }
             }
-            countOfPieceAtEnd[currentPlayerIndex]++;
+            countOfPieceAtEnd[currentPlayerIndex] += piece.getSize();
             positionPieceMap.remove(startPosition);
             return;
         }
