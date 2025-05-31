@@ -167,7 +167,17 @@ public class GameManager {
                 " with moveCount: " + moveCount + ", previousPosition: " + piece.getPreviousPosition().getId());
 
         // 이동 후 윷 이력에서 이동한 칸 수 제거
-        yutHistory.removeFirstOccurrence(moveCount);
+        if (targetPosition.equals("END")) {
+            for (int value : yutHistory) {
+                if (value >= moveCount) {
+                    yutHistory.removeFirstOccurrence(value);
+                    break;
+                }
+            }
+        } else {
+            yutHistory.removeFirstOccurrence(moveCount);
+
+        }
 
         // print for test : map
         testMessage("GameManager: controlMovePiece: positionPieceMap -> " + getPositionPieceMap());
