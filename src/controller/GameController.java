@@ -4,7 +4,6 @@ package controller;
 
 import model.*;
 import view.GameView;
-import view.SwingUI;
 
 public class GameController {
     public GameManager model;
@@ -108,7 +107,7 @@ public class GameController {
             }
 
             // Turn 처리
-            if (model.isExtraTurn()) {
+            else if (model.isExtraTurn()) {
                 testMessage("controller: 추가 윷을 던질 수 있습니다.");
                 yutState = true;
             } else if (model.isExtraMove()) {
