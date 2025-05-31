@@ -1,0 +1,153 @@
+@startuml model-class-diagram.puml
+
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #D0E6F5
+
+' 1열
+class Position
+class BoardManager
+class Piece
+
+' 2열
+class GameManager
+
+' 3열
+class YutManager
+class YutResult
+enum YutResultType
+
+' --- 숨겨진 정렬 고정 ---
+Position -[hidden]-> BoardManager
+BoardManager -up-> Position : uses
+BoardManager -[hidden]-> GameManager
+
+Position -[hidden]-> YutManager
+YutManager -[hidden]-> YutResult
+YutResult -[hidden]-> YutResultType
+
+' --- 관계선 ---
+GameManager -left-> BoardManager : uses
+GameManager -left-> Position : uses
+GameManager -right-> YutManager : uses
+GameManager -right-> YutResult : creates
+
+
+BoardManager -down-> Piece : uses
+YutManager -down-> YutResult : creates
+YutResult -down-> YutResultType : has a
+
+class GameManager {
+  - boardManager: BoardManager
+  - yutManager: YutManager
+  - numberOfPlayers: int
+  - numberOfPieces: int
+  - boardFigure: int
+  - countOfPieceAtStart: int[]
+  - countOfPieceAtEnd: int[]
+  - currentPlayerIndex: int
+  - extraTurnCount: int
+  - yutHistory: ArrayDeque<Integer>
+  - positionPieceMap: Map<String, Piece>
+  --
+  + GameManager()
+  + initializeGame(): Map<String, String>
+  + getNumberOfPlayers(): int
+  + getNumberOfPieces(): int
+  + getCurrentPlayer(): int
+  + getCountOfPieceAtStart(): int[]
+  + getCountOfPieceAtEnd(): int[]
+  + getPositionPieceMap(): Map<String, String>
+  + getSize(): int
+  + isExtraMove(): boolean
+  + isExtraTurn(): boolean
+  + isCurrentPlayersPiecePresent(positionId: String): boolean
+  + isValidMove(startPosition: String, targetPosition: String): boolean
+  + movePiece(piecePositionId: String, destinationPositionId: String): Map<String, String>
+  + processYutResult(yutResult: YutResult): Map<String, Object>
+  + getCurrentPlayerNumber(): int
+  + nextTurn(): int
+  + checkGameEnd(): boolean
+  + getWinningPlayerId(): int
+  + getMoveCount(startPosition: String, targetPosition: String): int
+  - loadPlayerCount(): int
+  - loadPieceCount(): int
+}
+
+class BoardManager {
+  # pathGraph: Map<Position, List<Position>>
+  # center: Position
+  # boardFigure: int
+  # beforeEND: String
+  --
+  + BoardManager()
+  + getBoardFigure(): int
+  + getBeforeEND(): String
+  + setPreviousPosition(currentPosition: Position, moveCount: int, piece: Piece): Position
+  - init4Graph(): void
+  - init5Graph(): void
+  - init6Graph(): void
+  - loadBoardFigure(): int
+}
+
+class Piece {
+  - id: String
+  - size: int
+  - previousPosition: Position
+  --
+  + Piece(id: String, previousPosition: String)
+  + getId(): String
+  + getSize(): int
+  + getPlayerId(): String
+  + getPreviousPosition(): Position
+  + hashCode(): int
+  + setPreviousPosition(previousPosition: String): void
+  + equals(obj: Object): boolean
+  + group(other: Piece): void
+  + isSamePlayers(other: Piece): boolean
+}
+
+class Position {
+  - id: String
+  --
+  + Position(id: String)
+  + getId(): String
+  + equals(obj: Object): boolean
+  + equals(id: String): boolean
+  + hashCode(): int
+  + toString(): String
+}
+
+class YutManager {
+  - random: Random
+  --
+  + throwYutRandom(): YutResult
+  + throwYutCustom(n: int): YutResult
+}
+
+class YutResult {
+  - resultType: YutResultType
+  --
+  + YutResult(resultType: YutResultType)
+  + getYutResultType(): YutResultType
+  + getValue(): int
+  + isExtraTurn(): boolean
+  + equals(obj: Object): boolean
+  + toString(): String
+}
+
+enum YutResultType {
+  BACK_DO(-1, false)
+  DO(1, false)
+  GAE(2, false)
+  GEOL(3, false)
+  YUT(4, true)
+  MO(5, true)
+  --
+  - steps: int
+  - extraTurn: boolean
+  --
+  + getSteps(): int
+  + hasExtraTurn(): boolean
+}
+
+@enduml 

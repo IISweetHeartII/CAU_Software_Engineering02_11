@@ -1,0 +1,75 @@
+@startuml main-class-diagram.puml
+
+skinparam classAttributeIconSize 0
+skinparam classBackgroundColor #D0E6F5
+
+package Model {
+  class GameManager {
+    - boardManager: BoardManager
+    - yutManager: YutManager
+    - currentPlayerIndex: int
+    - positionPieceMap: Map<String, Piece>
+    --
+    + initializeGame()
+    + movePiece(piecePositionId: String, destinationPositionId: String)
+    + processYutResult(yutResult: YutResult)
+    + nextTurn()
+    + checkGameEnd(): boolean
+  }
+  class BoardManager
+  class Piece
+  class Position
+  class YutManager
+  class YutResult
+  enum YutResultType
+
+  GameManager --> BoardManager : uses
+  GameManager --> YutManager : uses
+  GameManager --> Piece : manages
+  GameManager --> Position : manages
+  YutManager --> YutResult : creates
+  YutResult --> YutResultType : has a
+  BoardManager --> Position : uses
+  BoardManager --> Piece : uses
+}
+
+package View {
+  interface GameView {
+    + initUI(): void
+    + showYutResult(yutResult: Integer): void
+    + showWinner(winner: int): void
+    + updateBoard(): void
+    + updatePlayerScore(): void
+    + updateTurn(): void
+  }
+  class SwingUI
+  class JavafxUI
+
+  GameView <|.. SwingUI : implements
+  GameView <|.. JavafxUI : implements
+}
+
+package Controller {
+  class GameController {
+    + model: GameManager
+    + view: GameView
+    --
+    + GameController(gameManager: GameManager)
+    + setView(view: GameView): void
+    + handleRandomThrow(): void
+    + handleManualThrow(value: int): void
+    + handleBoardClick(nodeId: String): void
+  }
+}
+
+' MVC Relationships
+GameController --> Model.GameManager : uses
+GameController --> View.GameView : uses
+
+' View interacts with Model via Controller (conceptual)
+' This line represents the View needing data from the Model,
+' typically facilitated by the Controller or by View observing Model.
+' Since direct observation isn't shown, we imply interaction via Controller.
+View.GameView .> Model.GameManager : interacts with\n(via Controller)
+
+@enduml
