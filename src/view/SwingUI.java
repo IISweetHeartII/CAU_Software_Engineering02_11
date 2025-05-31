@@ -588,6 +588,8 @@ public class SwingUI implements GameView {
             SwingUI newView = new SwingUI(controller, controller.model);
             controller.setView(newView); // 새로운 View를 주입
 
+            controller.handleGameReset(); // 게임 상태 초기화
+
             frame.dispose(); // 이전 창 종료
             System.out.println("Restart Button Clicked");
         });

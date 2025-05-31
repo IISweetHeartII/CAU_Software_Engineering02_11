@@ -316,6 +316,20 @@ public class GameManager {
         return 5; // 기본값
     }
 
+    // ------ reset game ------ //
+    public void resetGame() {
+        positionPieceMap.clear();
+        yutHistory.clear();
+        extraTurnCount = 0;
+        currentPlayerIndex = 0;
+
+        // START 위치의 말 개수 초기화
+        for (int i = 0; i < numberOfPlayers; i++) {
+            countOfPieceAtStart[i] = numberOfPieces;
+            countOfPieceAtEnd[i] = 0;
+        }
+    }
+
     // ------ print for test ------ //
     boolean isTestMode = true;
     public void testMessage(String message) {

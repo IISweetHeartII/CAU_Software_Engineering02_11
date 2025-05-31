@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        int uiType = UITypefromConfig();
+        int uiType = getUITypeFromConfig();
         
         // 게임 모델과 컨트롤러 초기화
         GameManager model = new GameManager();
@@ -34,7 +34,7 @@ public class Main {
         }
     }
 
-    private static int UITypefromConfig() {
+    private static int getUITypeFromConfig() {
         try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();

@@ -131,6 +131,18 @@ public class GameController {
         }
     }
 
+    // --------- 게임 초기화 ---------
+    public void handleGameReset() {
+        model.resetGame();
+        view.initUI();
+        yutState = true;
+        selectPieceState = false;
+        selectPositionState = false;
+        selectedPiecePositionId = "";
+        selectedNodeId = "";
+        testMessage("controller: 게임 초기화 완료");
+    }
+
     // --------- 테스트 메시지 ---------
     public void testMessage(String message) {
         if (testMode)
