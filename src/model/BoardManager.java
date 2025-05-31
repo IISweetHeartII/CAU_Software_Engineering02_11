@@ -1,5 +1,7 @@
 package model;
 
+import main.Config;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -7,12 +9,12 @@ import java.util.*;
 public class BoardManager {
     protected final Map<Position, List<Position>> pathGraph = new HashMap<>();
     protected final Position center = new Position("C");
-    protected int boardFigure = loadBoardFigure();
+    protected int boardFigure = Config.getBoardSize();
     protected String beforeEND;
 
     // Constructor
     public BoardManager() {
-        this.boardFigure = loadBoardFigure();
+        this.boardFigure = Config.getBoardSize();
         switch (boardFigure) {
             case 4:
                 init4Graph();
@@ -51,10 +53,6 @@ public class BoardManager {
                 init4Graph();
                 beforeEND = "P20";
         }
-    }
-
-    public int getBoardFigure() {
-        return boardFigure;
     }
 
     public String getBeforeEND() {
@@ -350,24 +348,4 @@ public class BoardManager {
 
     Position E11 = new Position("E11");
     Position E12 = new Position("E12");
-
-    // --------- file load --------- //
-    private int loadBoardFigure() {
-        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.startsWith("board:")) {
-                    String[] parts = line.split(":");
-                    if (parts.length == 2) {
-                        return Integer.parseInt(parts[1].trim());
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.err.println("piece 값이 올바르지 않습니다.");
-        }
-        return 4; // 기본값
-    }
 }

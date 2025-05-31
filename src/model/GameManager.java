@@ -1,5 +1,7 @@
 package model;
 
+import main.Config;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -12,7 +14,7 @@ public class GameManager {
     // ------ fields ------ //
     private int numberOfPlayers;
     private int numberOfPieces;
-    private int boardFigure = boardManager.getBoardFigure();
+    private int boardFigure = Config.getBoardSize();
 
     private int[] countOfPieceAtStart;    // START 위치의 말 개수 저장
     private int[] countOfPieceAtEnd;    // END 위치의 말 개수 저장
@@ -25,8 +27,8 @@ public class GameManager {
 
     // ------ constructor ------ //
     public GameManager() {
-        this.numberOfPlayers = loadPlayerCount();
-        this.numberOfPieces = loadPieceCount();
+        this.numberOfPlayers = Config.getPlayerCount();
+        this.numberOfPieces = Config.getPieceCount();
 
         countOfPieceAtStart = new int[numberOfPlayers];
         countOfPieceAtEnd = new int[numberOfPlayers];
@@ -283,45 +285,6 @@ public class GameManager {
         testMessage("yutHistory: " + yutHistory);
     }
 
-
-    // ------ file load ------ //
-    private int loadPlayerCount() {
-        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.startsWith("player:")) {
-                    String[] parts = line.split(":");
-                    if (parts.length == 2) {
-                        return Integer.parseInt(parts[1].trim());
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.err.println("piece 값이 올바르지 않습니다.");
-        }
-        return 4; // 기본값
-    }
-
-    private int loadPieceCount() {
-        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.startsWith("piece:")) {
-                    String[] parts = line.split(":");
-                    if (parts.length == 2) {
-                        return Integer.parseInt(parts[1].trim());
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.err.println("piece 값이 올바르지 않습니다.");
-        }
-        return 5; // 기본값
-    }
 
     // ------ reset game ------ //
     public void resetGame() {
