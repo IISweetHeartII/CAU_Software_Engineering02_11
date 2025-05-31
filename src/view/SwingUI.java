@@ -52,7 +52,6 @@ public class SwingUI implements GameView {
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
 
-
         // ------- 배경 설정 ------- //
         ImageIcon bgIcon;
         switch (model.getSize()) {
@@ -586,11 +585,11 @@ public class SwingUI implements GameView {
         restartButton.addActionListener(e -> {
             // 새 SwingUI 생성
             SwingUI newView = new SwingUI(controller, controller.model);
+            controller.handleGameReset(); // 게임 상태 초기화
             controller.setView(newView); // 새로운 View를 주입
 
-            controller.handleGameReset(); // 게임 상태 초기화
-
             frame.dispose(); // 이전 창 종료
+
             System.out.println("Restart Button Clicked");
         });
         // Hovering 처리

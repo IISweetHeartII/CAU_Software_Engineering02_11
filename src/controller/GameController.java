@@ -62,7 +62,7 @@ public class GameController {
         if (selectPieceState) {
             testMessage("controller: 말 선택 단계입니다.");
             if (!model.isCurrentPlayersPiecePresent(nodeId)) {
-                testMessage("controller: 현재 플레이어의 말이 아니거나 위치에 현재 플레이어의 말이 없습니다.");
+                testMessage("controller: 현재 플레이어의 말이 아니거나 위치에 현재 플레이어의 말이 없습니다. 움직일 말을 다시 선택하세요.");
                 return;
             }
             selectedPiecePositionId = nodeId;
@@ -74,7 +74,7 @@ public class GameController {
         else if (selectPositionState) {
             // 움직인 말 선택을 바꾸고 싶은 경우
             if (selectedPiecePositionId.equals(nodeId)) {
-                testMessage("controller: 선택한 말과 같은 위치입니다. 움직일 말을 다시 선택합니다.");
+                testMessage("controller: 선택한 말과 같은 위치입니다. 움직일 말을 다시 선택하세요.");
                 selectPieceState = true;
                 selectPositionState = false;
                 selectedPiecePositionId = "";
@@ -83,7 +83,7 @@ public class GameController {
             }
 
             if (!model.isValidMove(selectedPiecePositionId, nodeId)) {
-                testMessage("controller: 이동할 수 없는 위치입니다.");
+                testMessage("controller: 이동할 수 없는 위치입니다. 이동할 위치를 다시 선택하세요.");
                 return;
             }
             selectedNodeId = nodeId;
@@ -134,7 +134,6 @@ public class GameController {
     // --------- 게임 초기화 ---------
     public void handleGameReset() {
         model.resetGame();
-        view.initUI();
         yutState = true;
         selectPieceState = false;
         selectPositionState = false;
