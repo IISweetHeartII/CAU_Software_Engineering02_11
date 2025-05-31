@@ -32,6 +32,7 @@ public class BoardManager {
         }
     }
 
+    // for test
     public BoardManager(int boardFigure) {
         switch (boardFigure) {
             case 4:
