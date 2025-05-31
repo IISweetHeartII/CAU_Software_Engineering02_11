@@ -125,6 +125,13 @@ public class GameManager {
 
         // 이동할 위치가 END인 경우 예외 처리
         if (targetPosition.equals("END")) {
+            int moveCount = getMoveCount(startPosition, targetPosition);
+            for (int value : yutHistory) {
+                if (value >= moveCount) {
+                    yutHistory.removeFirstOccurrence(value);
+                    break;
+                }
+            }
             countOfPieceAtEnd[currentPlayerIndex]++;
             positionPieceMap.remove(startPosition);
             return;
