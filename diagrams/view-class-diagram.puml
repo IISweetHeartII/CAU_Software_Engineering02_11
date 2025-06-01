@@ -106,7 +106,6 @@ class BackgroundPanel {
 GameView <|.. SwingUI : implements
 GameView <|.. JavafxUI : implements
 
-SwingUI "1" --> "1" BackgroundPanel : uses
-
+SwingUI "1" -- "1" BackgroundPanel : uses
 
 @enduml

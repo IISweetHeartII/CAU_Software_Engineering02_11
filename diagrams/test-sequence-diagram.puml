@@ -1,0 +1,72 @@
+@startuml main-sequence.puml
+title 〈윷놀이〉 메인 시퀀스 다이어그램
+
+actor Player
+boundary "GameView" as view
+control GameController as ctl
+entity GameManager as gm
+entity YutManager as yMgr
+entity BoardManager as board
+
+== 게임 초기화 ==
+Player -> view : onClickStartButton()
+view -> ctl : initUI()
+ctl -> gm : initializeGame()
+ctl -> view : updateBoard()\nupdatePlayerScore()\nupdateTurn()
+
+' ---------------- GAME LOOP ----------------
+loop until gm.isGameEnd() == true
+
+    ' ------------- PLAYER TURN (추가 턴 포함) -------------
+    loop until ctl.isTurnEnded() == true
+
+        group Throw Yut
+            alt Player chooses random
+                Player -> view : onClickRandomThrowButton()
+                view -> ctl : handleRandomThrow()
+                ctl -> yMgr : throwYutRandom()
+            else Player chooses manual(n)
+                Player -> view : onClickManualThrowButton(n)
+                view -> ctl : handleManualThrow(n)
+                ctl -> yMgr : throwYutManual(n)
+            end
+            yMgr --> ctl : yutResult
+            ctl -> view : showYutResult(yutResult)
+        end
+
+        ctl -> gm : processYutResult(yutResult)
+        note right: gm updates state (moves left, extra turn)\nctl also updates own state.
+
+        ' ----- Piece-Selection & Movement -----
+        Player -> view : onClickPieceAndTarget()
+        view -> ctl : handleBoardClick(positionId)
+        note right: ctl handles piece selection & movement:\n- Validates move (isValidMove)\n- If valid, calls gm.controlMovePiece()\n- Updates ctl state (moves left, detectedCapture)
+
+        ctl -> gm : isValidMove(startPosition, targetPosition)
+        alt valid move
+            ctl -> gm : controlMovePiece(startPosition, targetPosition)
+            gm --> ctl : updatedPositionPieceMap
+            ctl -> view : updateBoard()\nupdatePlayerScore()
+            opt ctl.detectedCapture == true
+                note over ctl, gm: 상대 말 잡기 발생 (추가 턴 등 상태 갱신)
+            end
+        else invalid move
+            ctl -> view : showPopup("잘못된 선택 또는 이동")
+        end
+    end
+
+    ' ----- 턴 종료 및 다음 플레이어로 -----
+    opt gm.isGameEnd() == false
+        ctl -> gm : nextTurn()
+        ctl -> view : updateTurn()
+        note right: gm updates current player\nctl resets own state for next turn
+    end
+
+    ' ----- 게임 종료 체크 -----
+    opt gm.isGameEnd() == true
+        ctl -> view : showWinner(gm.getWinningPlayerNumber())
+        break GameFinished
+    end
+end
+end
+@enduml
