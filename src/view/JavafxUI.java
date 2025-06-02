@@ -91,16 +91,16 @@ public class JavafxUI implements GameView {
         String imagePath;
 
         switch (boardSize) {
-            case 4 -> imagePath = "/data/ui/board/board_four.png";
-            case 5 -> imagePath = "/data/ui/board/board_five.png";
-            case 6 -> imagePath = "/data/ui/board/board_six.png";
+            case 4 -> imagePath = "data/ui/board/board_four.png";
+            case 5 -> imagePath = "data/ui/board/board_five.png";
+            case 6 -> imagePath = "data/ui/board/board_six.png";
             default -> {
                 System.out.println("Invalid board size");
-                imagePath = "/data/ui/board/board_four.png";
+                imagePath = "data/ui/board/board_four.png";
             }
         }
 
-        Image bgImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        Image bgImage = new Image(imagePath);
         BackgroundImage background = new BackgroundImage(
                 bgImage,
                 BackgroundRepeat.NO_REPEAT,
@@ -114,7 +114,7 @@ public class JavafxUI implements GameView {
 
     // ------ title 설정 ------ //
     private void setupTitleImage() {
-        Image titleImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/data/ui/title.PNG")));
+        Image titleImg = new Image("data/ui/title.PNG");
 
         titleImage = new ImageView(titleImg);
 
@@ -166,10 +166,10 @@ public class JavafxUI implements GameView {
         playerScoreImages = new ImageView[numberOfPlayers];
         for (int i = 0; i < numberOfPlayers; i++) {
             int playerNum = i + 1;
-            String imagePath = "/data/ui/score/player" + playerNum +
+            String imagePath = "data/ui/score/player" + playerNum +
                     "/player" + playerNum + "_" + numberOfPieces + ".png";
 
-            Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+            Image img = new Image(imagePath);
 
             ImageView scoreView = new ImageView(img);
 
@@ -230,8 +230,8 @@ public class JavafxUI implements GameView {
     // ------ Turn Image 설정 ------ //
     private void setupTurnImage() {
         int currentPlayer = model.getCurrentPlayerNumber(); // 보통 1부터 시작
-        String imagePath = "/data/ui/turn/turn_" + currentPlayer + ".png";
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        String imagePath = "data/ui/turn/turn_" + currentPlayer + ".png";
+        Image img = new Image(imagePath);
         double scaledWidth = img.getWidth() / 3;
         double scaledHeight = img.getHeight() / 3;
 
@@ -407,8 +407,8 @@ public class JavafxUI implements GameView {
     // ---------- 1. Custom 윷 버튼 생성 및 팝업 연결 ----------
     private void setupCustomPopupButton() {
         // 버튼 이미지
-        Image imgUp = new Image(getClass().getResourceAsStream("/data/ui/button/button_custom_up.png"));
-        Image imgDown = new Image(getClass().getResourceAsStream("/data/ui/button/button_custom_down.png"));
+        Image imgUp = new Image("data/ui/button/button_custom_up.png");
+        Image imgDown = new Image("data/ui/button/button_custom_down.png");
 
         ImageView buttonImageView = new ImageView(imgUp);
         buttonImageView.setFitWidth(621 / 3.0);
@@ -445,7 +445,7 @@ public class JavafxUI implements GameView {
         Scene scene = new Scene(popupRoot, POPUP_WIDTH, POPUP_HEIGHT);
 
         // 배경 이미지 뷰 (초기 steady)
-        Image bgImage = new Image(getClass().getResourceAsStream("/data/ui/custom/custom_steady.png"));
+        Image bgImage = new Image("data/ui/custom/custom_steady.png");
         ImageView bgView = new ImageView(bgImage);
         // 배경 이미지 크기 조정
         bgView.setPreserveRatio(true);
@@ -473,11 +473,11 @@ public class JavafxUI implements GameView {
 
             // Hover 시 배경 바꾸기
             yutButton.setOnMouseEntered(e -> {
-                String hoverPath = "/data/ui/custom/custom_" + index + ".png";
-                bgView.setImage(new Image(getClass().getResourceAsStream(hoverPath)));
+                String hoverPath = "data/ui/custom/custom_" + index + ".png";
+                bgView.setImage(new Image(hoverPath));
             });
             yutButton.setOnMouseExited(e -> {
-                bgView.setImage(new Image(getClass().getResourceAsStream("/data/ui/custom/custom_steady.png")));
+                bgView.setImage(new Image("data/ui/custom/custom_steady.png"));
             });
 
             // 클릭 시 윷 값 전달
@@ -499,8 +499,8 @@ public class JavafxUI implements GameView {
 
     // ------ show yut result <---- controller ------ //
     public void showYutResult(Integer yutResult) {
-        String imagePath = "/data/ui/yut/yut_" + yutResult + ".png";
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        String imagePath = "data/ui/yut/yut_" + yutResult + ".png";
+        Image image = new Image(imagePath);
 
         double scaledWidth = image.getWidth() / 3;
         double scaledHeight = image.getHeight() / 3;
@@ -519,7 +519,7 @@ public class JavafxUI implements GameView {
     }
 
     private void setupYutImage() {
-        Image initialImage = new Image(getClass().getResourceAsStream("/data/ui/yut/yut_5.png"));
+        Image initialImage = new Image("data/ui/yut/yut_5.png");
         double scaledWidth = initialImage.getWidth() / 3;
         double scaledHeight = initialImage.getHeight() / 3;
 
@@ -533,8 +533,8 @@ public class JavafxUI implements GameView {
 
     // ------ showWinner() <---- controller ------ //
     public void showWinner(int winner) {
-        String imagePath = "/data/ui/turn/winner_" + winner + ".png";
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        String imagePath = "data/ui/turn/winner_" + winner + ".png";
+        Image img = new Image(imagePath);
 
         turnImage.setImage(img);  // 같은 뷰에 승리자 이미지 덮어쓰기
     }
@@ -564,8 +564,8 @@ public class JavafxUI implements GameView {
             if (nodeId.equals("START") || nodeId.equals("END")) continue;
 
             // 3. 말 이미지 로드
-            String imagePath = "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png";
-            Image pieceImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+            String imagePath = "data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png";
+            Image pieceImage = new Image(imagePath);
 
             // 4. 말 이미지 뷰 구성
             ImageView pieceView = new ImageView(pieceImage);
@@ -591,8 +591,8 @@ public class JavafxUI implements GameView {
 
     private void createThrowButton() {
         // 1. 이미지 로드
-        Image imgUp = new Image(getClass().getResourceAsStream("/data/ui/button/button_throw_up.png"));
-        Image imgDown = new Image(getClass().getResourceAsStream("/data/ui/button/button_throw_down.png"));
+        Image imgUp = new Image("data/ui/button/button_throw_up.png");
+        Image imgDown = new Image("data/ui/button/button_throw_down.png");
 
         // 2. 버튼 생성 및 배치
         throwButton = new Button();
@@ -628,8 +628,8 @@ public class JavafxUI implements GameView {
         int playerNum = i + 1;
         int notStarted = notStartedCounts[i];
 
-        String imagePath = "/data/ui/score/player" + playerNum + "/player" + playerNum + "_" + notStarted + ".png";
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        String imagePath = "data/ui/score/player" + playerNum + "/player" + playerNum + "_" + notStarted + ".png";
+        Image img = new Image(imagePath);
 
         playerScoreImages[i].setImage(img);
         }
@@ -637,8 +637,8 @@ public class JavafxUI implements GameView {
 
     private void createQuitButton() {
         // 1. 이미지 로드 및 크기 조정
-        Image imgUp = new Image(getClass().getResourceAsStream("/data/ui/button/button_quit_up.png"));
-        Image imgDown = new Image(getClass().getResourceAsStream("/data/ui/button/button_quit_down.png"));
+        Image imgUp = new Image("data/ui/button/button_quit_up.png");
+        Image imgDown = new Image("data/ui/button/button_quit_down.png");
         // 2. 이미지 뷰 생성
         ImageView imageView = new ImageView(imgUp);
         imageView.setFitWidth(279 / 3.0);
@@ -665,8 +665,8 @@ public class JavafxUI implements GameView {
 
     private void createRestartButton() {
         // 1. 이미지 로드 및 크기 조정
-        Image imgUp = new Image(getClass().getResourceAsStream("/data/ui/button/button_restart_up.png"));
-        Image imgDown = new Image(getClass().getResourceAsStream("/data/ui/button/button_restart_down.png"));
+        Image imgUp = new Image("data/ui/button/button_restart_up.png");
+        Image imgDown = new Image("data/ui/button/button_restart_down.png");
         // 2. 이미지 뷰 생성
         ImageView imageView = new ImageView(imgUp);
         imageView.setFitWidth(imgUp.getWidth() / 3);
@@ -702,8 +702,8 @@ public class JavafxUI implements GameView {
     // ------ updateTurn() ------ //
     public void updateTurn() {
         int currentPlayer = model.getCurrentPlayerNumber();
-        String imagePath = "/data/ui/turn/turn_" + currentPlayer + ".png";
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        String imagePath = "data/ui/turn/turn_" + currentPlayer + ".png";
+        Image img = new Image(imagePath);
 
         turnImage.setImage(img);
     }

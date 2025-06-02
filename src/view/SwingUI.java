@@ -58,25 +58,25 @@ public class SwingUI implements GameView {
         ImageIcon bgIcon;
         switch (model.getSize()) {
             case 4:
-                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                        "/data/ui/board/board_four.png"
-                )));
+                bgIcon = new ImageIcon(
+                        "data/ui/board/board_four.png"
+                );
                 break;
             case 5:
-                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                        "/data/ui/board/board_five.png"
-                )));
+                bgIcon = new ImageIcon(
+                        "data/ui/board/board_five.png"
+                );
                 break;
             case 6:
-                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                        "/data/ui/board/board_six.png"
-                )));
+                bgIcon = new ImageIcon(
+                        "data/ui/board/board_six.png"
+                );
                 break;
             default:
                 System.out.println("Invalid board size");
-                bgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                        "/data/ui/board/board_four.png"
-                )));
+                bgIcon = new ImageIcon(
+                        "data/ui/board/board_four.png"
+                );
                 break;
         }
         Image bgImage = bgIcon.getImage();
@@ -88,9 +88,9 @@ public class SwingUI implements GameView {
         // ------ title 설정 ------ //
 
         // 이미지 처리
-        ImageIcon titleIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/title.PNG"
-        )));
+        ImageIcon titleIcon = new ImageIcon(
+                "data/ui/title.PNG"
+        );
         Image scaledTitle = titleIcon.getImage().getScaledInstance(1242 / 6, 558 / 6, Image.SCALE_SMOOTH);
         titleLabel = new JLabel(new ImageIcon(scaledTitle));
 
@@ -124,9 +124,9 @@ public class SwingUI implements GameView {
 
         for (int i = 1; i < numberOfPlayers + 1; i++) {
             // 이미지 처리
-            ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/score/player" + i + "/player" + i + "_" + numberOfPieces + ".png"
-            )));
+            ImageIcon playerScoreIcon = new ImageIcon(
+                    "data/ui/score/player" + i + "/player" + i + "_" + numberOfPieces + ".png"
+            );
             Image scaledPlayerScore = playerScoreIcon.getImage().getScaledInstance(
                     playerScoreIcon.getIconWidth() / 3,
                     playerScoreIcon.getIconHeight() / 3,
@@ -187,9 +187,9 @@ public class SwingUI implements GameView {
 
         //------ Turn 설정 ------ //
         // 이미지 처리 및 보정
-        ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/turn/turn_1.png"
-        )));
+        ImageIcon turnIcon = new ImageIcon(
+                "data/ui/turn/turn_1.png"
+        );
         Image scaledTurnIcon = turnIcon.getImage().getScaledInstance(turnIcon.getIconWidth() / 3, turnIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
         turnLabel = new JLabel(new ImageIcon(scaledTurnIcon));
         turnLabel.setBounds(485, 392, scaledTurnIcon.getWidth(null), scaledTurnIcon.getHeight(null));
@@ -410,9 +410,9 @@ public class SwingUI implements GameView {
     // ------ show yut result <---- controller ------ //
     public void showYutResult(Integer yutResult) {
         // 이미지 처리
-        ImageIcon yutResultIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/yut/yut_" + yutResult + ".png"
-        )));
+        ImageIcon yutResultIcon = new ImageIcon(
+                "data/ui/yut/yut_" + yutResult + ".png"
+        );
         Image scaledYutResult = yutResultIcon.getImage().getScaledInstance(
                 yutResultIcon.getIconWidth() / 3,
                 yutResultIcon.getIconHeight() / 3,
@@ -426,9 +426,9 @@ public class SwingUI implements GameView {
     // ------ show winner <---- controller ------ //
     public void showWinner(int winner) {
         // 이미지 처리
-        ImageIcon winnerIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/turn/winner_" + winner + ".png"
-        )));
+        ImageIcon winnerIcon = new ImageIcon(
+                "data/ui/turn/winner_" + winner + ".png"
+        );
         Image scaledWinnerIcon = winnerIcon.getImage().getScaledInstance(
                 winnerIcon.getIconWidth() / 3,
                 winnerIcon.getIconHeight() / 3,
@@ -463,9 +463,9 @@ public class SwingUI implements GameView {
             if (!(nodeId.equals("START") || nodeId.equals("END"))) {
                 NodeButton button = boardButtons.get(nodeId);
                 if (button != null) {
-                    ImageIcon pieceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                            "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
-                    )));
+                    ImageIcon pieceIcon = new ImageIcon(
+                            "data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
+                    );
                     Image scaledPiece = pieceIcon.getImage().getScaledInstance(
                             pieceIcon.getIconWidth() / PIECE_SCALE_FACTOR,
                             pieceIcon.getIconHeight() / PIECE_SCALE_FACTOR,
@@ -481,9 +481,9 @@ public class SwingUI implements GameView {
     }
 
     private JLabel createScaledPieceLabel(String pieceId) { // -> updateBoard()
-        ImageIcon pieceIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
-        )));
+        ImageIcon pieceIcon = new ImageIcon(
+                "data/ui/player/p" + pieceId.charAt(0) + "_" + pieceId.length() + ".png"
+        );
 
         // test
         System.out.println("pieceId: " + pieceId);
@@ -501,9 +501,9 @@ public class SwingUI implements GameView {
         throwButton = new JButton("Throw");
 
         // 이미지 처리 및 보정
-        ImageIcon throwIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_throw_up.png"
-        )));
+        ImageIcon throwIcon = new ImageIcon(
+                "data/ui/button/button_throw_up.png"
+        );
         Image scaledThrowIcon = throwIcon.getImage().getScaledInstance(
                 throwIcon.getIconWidth() / 3,
                 throwIcon.getIconHeight() / 3,
@@ -528,9 +528,9 @@ public class SwingUI implements GameView {
         // view:throwButton -> controller:handleRandomThrow -> View:showYutResult
 
         // Hovering 처리
-        ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_throw_down.png"
-        )));
+        ImageIcon quitHoverIcon = new ImageIcon(
+                "data/ui/button/button_throw_down.png"
+        );
         Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(scaledThrowIcon.getWidth(null), scaledThrowIcon.getHeight(null), Image.SCALE_SMOOTH);
         throwButton.setRolloverIcon(new ImageIcon(hoverScaled));
 
@@ -538,9 +538,9 @@ public class SwingUI implements GameView {
         Objects.requireNonNull(backgroundPanel).add(throwButton);
 
         // ------ 기본 윷 표시 ------ //
-        ImageIcon yutIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/yut/yut_5.png"
-        )));
+        ImageIcon yutIcon = new ImageIcon(
+                "data/ui/yut/yut_5.png"
+        );
         Image scaledYutIcon = yutIcon.getImage().getScaledInstance(yutIcon.getIconWidth() / 3, yutIcon.getIconHeight() / 3, Image.SCALE_SMOOTH);
         yutLabel = new JLabel(new ImageIcon(scaledYutIcon));
         yutLabel.setBounds(20, 472, scaledYutIcon.getWidth(null), scaledYutIcon.getHeight(null));
@@ -553,9 +553,9 @@ public class SwingUI implements GameView {
         quitButton.setBounds(584, 644, 279 / 3, 108 / 3);
 
         // 이미지 처리
-        ImageIcon quitIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_quit_up.png"
-        )));
+        ImageIcon quitIcon = new ImageIcon(
+                "data/ui/button/button_quit_up.png"
+        );
         Image scaled = quitIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
         quitButton.setIcon(new ImageIcon(scaled));
 
@@ -572,9 +572,9 @@ public class SwingUI implements GameView {
         });
 
         // Hovering 처리
-        ImageIcon quitHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_quit_down.png"
-        )));
+        ImageIcon quitHoverIcon = new ImageIcon(
+                "data/ui/button/button_quit_down.png"
+        );
         Image hoverScaled = quitHoverIcon.getImage().getScaledInstance(279 / 3, 108 / 3, Image.SCALE_SMOOTH);
         quitButton.setRolloverIcon(new ImageIcon(hoverScaled));
 
@@ -592,9 +592,9 @@ public class SwingUI implements GameView {
         restartButton.setOpaque(false);
         restartButton.setText("");
         // 이미지 처리
-        ImageIcon restartIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_restart_up.png"
-        )));
+        ImageIcon restartIcon = new ImageIcon(
+                "data/ui/button/button_restart_up.png"
+        );
         Image scaledRestartIcon = restartIcon.getImage().getScaledInstance(
                 restartIcon.getIconWidth() / 3,
                 restartIcon.getIconHeight() / 3,
@@ -614,9 +614,9 @@ public class SwingUI implements GameView {
             System.out.println("Restart Button Clicked");
         });
         // Hovering 처리
-        ImageIcon restartHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_restart_down.png"
-        )));
+        ImageIcon restartHoverIcon = new ImageIcon(
+                "data/ui/button/button_restart_down.png"
+        );
         Image hoverScaled = restartHoverIcon.getImage().getScaledInstance(scaledRestartIcon.getWidth(null), scaledRestartIcon.getHeight(null), Image.SCALE_SMOOTH);
         restartButton.setRolloverIcon(new ImageIcon(hoverScaled));
         // 패널에 버튼 추가
@@ -629,9 +629,9 @@ public class SwingUI implements GameView {
         popupButton.setBounds(473, 587, 621 / 3, 108 / 3);
 
         // 이미지 처리
-        ImageIcon popupIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_custom_up.png"
-        )));
+        ImageIcon popupIcon = new ImageIcon(
+                "data/ui/button/button_custom_up.png"
+        );
         Image scaledPopupIcon = popupIcon.getImage().getScaledInstance(
                 621 / 3,
                 108 / 3,
@@ -639,9 +639,9 @@ public class SwingUI implements GameView {
         popupButton.setIcon(new ImageIcon(scaledPopupIcon));
 
         // Hovering 처리
-        ImageIcon popupHoverIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/button/button_custom_down.png"
-        )));
+        ImageIcon popupHoverIcon = new ImageIcon(
+                "data/ui/button/button_custom_down.png"
+        );
         Image hoverScaled = popupHoverIcon.getImage().getScaledInstance(621 / 3, 108 / 3, Image.SCALE_SMOOTH);
         popupButton.setRolloverIcon(new ImageIcon(hoverScaled));
 
@@ -664,9 +664,9 @@ public class SwingUI implements GameView {
             int POPUP_HEIGHT = 342 / 3 + 35;
 
             // 팝업의 배경 이미지 설정
-            ImageIcon popupBgIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/custom/custom_steady.png"
-            )));
+            ImageIcon popupBgIcon = new ImageIcon(
+                    "data/ui/custom/custom_steady.png"
+            );
             // 이미지 처리
             Image scaledPopupBg = popupBgIcon.getImage().getScaledInstance(
                     popupBgIcon.getIconWidth() / 3,
@@ -832,9 +832,9 @@ public class SwingUI implements GameView {
             int notStartedCount = notStartedCount1[i];
 
             // 이미지 처리
-            ImageIcon playerScoreIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                    "/data/ui/score/player" + (i + 1) + "/player" + (i + 1) + "_" + notStartedCount + ".png"
-            )));
+            ImageIcon playerScoreIcon = new ImageIcon(
+                    "data/ui/score/player" + (i + 1) + "/player" + (i + 1) + "_" + notStartedCount + ".png"
+            );
             Image scaledPlayerScore = playerScoreIcon.getImage().getScaledInstance(
                     playerScoreIcon.getIconWidth() / 3,
                     playerScoreIcon.getIconHeight() / 3,
@@ -850,9 +850,9 @@ public class SwingUI implements GameView {
     public void updateTurn() {
         // 이미지 처리 및 보정
         int playerID = model.getCurrentPlayerNumber();
-        ImageIcon turnIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(
-                "/data/ui/turn/turn_" + playerID + ".png"
-        )));
+        ImageIcon turnIcon = new ImageIcon(
+                "data/ui/turn/turn_" + playerID + ".png"
+        );
         Image scaledTurnIcon = turnIcon.getImage().getScaledInstance(
                 turnIcon.getIconWidth() / 3,
                 turnIcon.getIconHeight() / 3,

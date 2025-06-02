@@ -16,7 +16,7 @@ public class Config {
     }
 
     private static void loadConfig() {
-        try (Scanner scanner = new Scanner(new File("src/data/config.txt"))) {
+        try (Scanner scanner = new Scanner(new File("data/config.txt"))) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
 

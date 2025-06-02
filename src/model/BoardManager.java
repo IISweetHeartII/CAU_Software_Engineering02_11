@@ -2,8 +2,6 @@ package model;
 
 import main.Config;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class BoardManager {
