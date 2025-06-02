@@ -10,11 +10,13 @@ package Model {
     - currentPlayerIndex: int
     - positionPieceMap: Map<String, Piece>
     --
-    + initializeGame()
     + movePiece(piecePositionId: String, destinationPositionId: String)
     + processYutResult(yutResult: YutResult)
     + nextTurn()
     + checkGameEnd(): boolean
+    + getWinningPlayerId(): int
+    + getMoveCount(startPosition: String, targetPosition: String): int
+    + resetGame(): void
   }
   class BoardManager
   class Piece
@@ -49,6 +51,16 @@ package View {
   GameView <|.. JavafxUI : implements
 }
 
+package Main {
+  class Config
+  class Main {
+    - config: Config
+    --
+    + main(args: String[]): void
+  }
+  Main "1" --> "1" Config : uses  
+}
+
 package Controller {
   class GameController {
     + model: GameManager
@@ -59,6 +71,7 @@ package Controller {
     + handleRandomThrow(): void
     + handleManualThrow(value: int): void
     + handleBoardClick(nodeId: String): void
+    + handleGameReset(): void
   }
 }
 

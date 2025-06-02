@@ -10,6 +10,7 @@ class Piece
 
 ' 2열
 class GameManager
+class Config
 
 ' 3열
 class YutManager
@@ -17,24 +18,23 @@ class YutResult
 enum YutResultType
 
 ' --- 숨겨진 정렬 고정 ---
-Position -[hidden]-> BoardManager
-BoardManager -up-> Position : uses
-BoardManager -[hidden]-> GameManager
-
-Position -[hidden]-> YutManager
-YutManager -[hidden]-> YutResult
-YutResult -[hidden]-> YutResultType
+Position -[hidden]- BoardManager
+BoardManager -[hidden]- Piece
 
 ' --- 관계선 ---
-GameManager -left-> BoardManager : uses
-GameManager -left-> Position : uses
-GameManager -right-> YutManager : uses
-GameManager -right-> YutResult : creates
+GameManager "1" -left- "1" BoardManager : uses
+GameManager "1" -left- "*" Position : uses
+GameManager "1" -right- "1" YutManager : uses
 
+GameManager "1" --> "*" Piece : manages
 
-BoardManager -down-> Piece : uses
-YutManager -down-> YutResult : creates
-YutResult -down-> YutResultType : has a
+BoardManager "1" o-- "*" Position : aggregates
+
+BoardManager "1" -down- "*" Piece : uses
+YutManager "1" -down- "1" YutResult : creates
+YutResult "1" -down- "1" YutResultType : has a
+
+GameManager -down- Config
 
 class GameManager {
   - boardManager: BoardManager
@@ -50,7 +50,6 @@ class GameManager {
   - positionPieceMap: Map<String, Piece>
   --
   + GameManager()
-  + initializeGame(): Map<String, String>
   + getNumberOfPlayers(): int
   + getNumberOfPieces(): int
   + getCurrentPlayer(): int
@@ -69,8 +68,7 @@ class GameManager {
   + checkGameEnd(): boolean
   + getWinningPlayerId(): int
   + getMoveCount(startPosition: String, targetPosition: String): int
-  - loadPlayerCount(): int
-  - loadPieceCount(): int
+  + resetGame(): void
 }
 
 class BoardManager {
@@ -86,7 +84,6 @@ class BoardManager {
   - init4Graph(): void
   - init5Graph(): void
   - init6Graph(): void
-  - loadBoardFigure(): int
 }
 
 class Piece {
@@ -148,6 +145,20 @@ enum YutResultType {
   --
   + getSteps(): int
   + hasExtraTurn(): boolean
+}
+
+class Config {
+  - boardSize: int
+  - playerCount: int
+  - pieceCount: int
+  - uiType: int
+  --
+  - loadConfig(): void
+  - setDefaultValues(): void
+  + {static} getBoardSize(): int
+  + {static} getPlayerCount(): int
+  + {static} getPieceCount(): int
+  + {static} getUiType(): int
 }
 
 @enduml 

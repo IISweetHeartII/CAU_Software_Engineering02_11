@@ -2,7 +2,7 @@
 title 〈윷놀이〉 메인 시퀀스 다이어그램
 
 actor Player
-boundary "GameView" as view
+boundary "view" as view
 control  GameController  as GameController
 entity   GameManager     as GameManager
 entity   YutManager      as YutManager
@@ -12,61 +12,143 @@ entity   BoardManager    as BoardManager
 Player -> view : clickStart()
 view -> GameController     : initUI()
 GameController  -> GameManager      : initializeGame()
+activate GameManager
+deactivate GameManager
 GameController  -> view    : updateBoard()\nupdatePlayerScore()\nupdateTurn()
 
 ' ---------------- GAME LOOP ----------------
 loop until GameManager.checkGameEnd() == true
 
     ' ---------------- PLAYER TURN LOOP ----------------
-    loop until GameController.nextTurn() == 1 ' 현재 플레이어의 턴이 끝날 때까지 반복 (추가 턴 포함)
+    ' GameController.yutState 플래그로 제어됨 (윷 던질 차례 또는 말이동/추가턴 처리)
+    ' GameController.selectPieceState, GameController.selectPositionState 플래그로 말이동 선택 단계 제어됨
+    loop until GameController.yutState == true and GameController.selectPieceState == false and GameController.selectPositionState == false and !GameManager.isExtraTurn() and !GameManager.isExtraMove()
+        ' Note: Simplified loop condition for diagram clarity.
+        ' The actual loop breaks when the turn fully ends (no extra throws or moves) and transitions back to yutState = true.
 
-        group Throw Yut (선택)
-            alt Player chooses **Random**
-                Player -> view : clickRandomThrow()
-                view -> GameController : handleRandomThrow()
-                GameController  -> YutManager : throwYutRandom()
-            else Player chooses **Custom(n)**
-                Player -> view : clickManualThrow()
-                view -> GameController : handleManualThrow(n)
-                GameController  -> YutManager : throwYutCustom(n)
+
+        alt GameController.yutState == true ' 윷 던지기 단계
+            group Throw Yut (선택)
+                alt Player chooses **Random**
+                    Player -> view : clickRandomThrow()
+                    view -> GameController : handleRandomThrow()
+                    GameController -> GameManager : throwYutRandom()
+                    activate GameManager
+                    ' GameManager delegates actual throw to YutManager
+                    GameManager -> YutManager : throwRandom()
+                    activate YutManager
+                    YutManager --> GameManager : YutResult
+                    deactivate YutManager
+                    deactivate GameManager
+                    GameManager --> GameController : ProcessedYutResult ' Return processed result/info
+
+                else Player chooses **Custom(n)**
+                    Player -> view : clickManualThrow()
+                    view -> GameController : handleManualThrow(n)
+                    GameController -> GameManager : throwYutManual(n) ' Corrected method name based on code
+                    activate GameManager
+                     ' GameManager delegates actual throw to YutManager
+                    GameManager -> YutManager : throwManual(n)
+                    activate YutManager
+                    YutManager --> GameManager : YutResult
+                    deactivate YutManager
+                    deactivate GameManager
+                    GameManager --> GameController : ProcessedYutResult ' Return processed result/info
+                end
+
+                ' Controller receives the processed result and updates view/state
+                GameController -> view : showYutResult(ProcessedYutResult.value)
             end
-            YutManager --> GameController : yut
-            GameController  -> view : showYutResult(yut.value)
-        end
 
-        GameController  -> GameManager : processYutResult(yut) ' 윷 결과 처리 (말 이동 횟수, 추가 턴 여부 등 게임 상태 업데이트)
-        note right : GameManager updates state based on yut result.\nGameController state (e.g. moves left, extra turn) is also updated.
+        else ' 말이동 선택/처리 단계 (selectPieceState 또는 selectPositionState)
 
-        ' ----- Piece-Selection & Movement -----
-        Player -> view : clickPieceAndTarget()
-        view   -> GameController  : handleBoardClick(nodeId)
-        note right : GameController processes move:\n- Select piece/target.\n- Check if valid move possible with available moves.\n- If valid, call gm.movePiece.\n- Update GameController state (moves left, detectedCapture).
+            ' ----- Piece-Selection & Movement -----
+            Player -> view : clickPieceAndTarget()
+            view   -> GameController  : handleBoardClick(nodeId)
 
-        GameController -> GameManager : movePiece(piecePositionId, destinationPositionId)
-        GameManager -> GameController : return positionPieceMap
-        GameController -> view : updateBoard()\nupdateScore()
+            alt GameController.selectPieceState == true ' 말 선택 단계
+                GameController -> GameManager : isCurrentPlayersPiecePresent(nodeId)
+                activate GameManager
+                GameManager --> GameController : boolean isPresent
+                deactivate GameManager
 
-        opt GameController.isValidMoveHandled() == true ' 유효한 말이동이 처리되었다면
-            ref over GameController, GameManager, BoardManager : «MovePiece» ' gm.movePiece 호출 포함
-            GameController -> view : updateBoard()\nupdateScore()
+                alt isPresent is true ' 현재 플레이어의 말이라면
+                    ' GameController state updates: selectedPiecePositionId = nodeId, selectPieceState = false, selectPositionState = true
+                else isPresent is false ' 현재 플레이어의 말이 아니면
+                    GameController -> view : showPopup("현재 플레이어의 말이 아니거나\n위치에 현재 플레이어의 말이 없습니다.\n움직일 말을 다시 선택하세요.")
+                end
+            else GameController.selectPositionState == true ' 이동할 위치 선택 단계
 
-            opt GameController.detectedCapture == true
-                note over GameController, GameManager: 상대 말 잡음 → GameController.isTurnEnded() 상태 업데이트\n(턴 계속)
+                alt clicked same position as selected piece ' 선택한 말 위치 다시 클릭
+                     ' GameController state updates: selectPieceState = true, selectPositionState = false, selectedPiecePositionId = "", selectedNodeId = ""
+                else clicked a different position ' 다른 위치 클릭
+                    GameController -> GameManager : isValidMove(selectedPiecePositionId, nodeId)
+                    activate GameManager
+                    GameManager --> GameController : boolean isValid
+                    deactivate GameManager
+
+                    alt isValid is true ' 유효한 말이동
+                        ' Controller requests GameManager to perform the move
+                        GameController -> GameManager : controlMovePiece(selectedPiecePositionId, nodeId)
+                        activate GameManager
+
+                        ' >> Start of content included from ref-movepiece-sequence-diagram.puml >>
+                        ' Note: The original ref diagram starts with ctl -> gm : movePiece(id, dest),
+                        ' which represents the initiation of the move process within GameManager.
+                        ' For consistency, we use the full names (GameController, GameManager, BoardManager) here.
+
+                        == 스텝 반복 ==
+                        loop step = 1 .. yut.getSteps() ' Assuming yut.getSteps() is available/passed to GM/movePiece
+                            GameManager -> BoardManager : setPreviousPosition(...)
+                            activate BoardManager
+                            BoardManager --> GameManager : newPos
+                            deactivate BoardManager
+                            ' Original ref had gm --> ctl : updatedMap here, which seems logically incorrect inside the step loop. Removed.
+                        end
+
+                        == 캡처 여부 확인 ==
+                        ' Original ref had ctl -> gm : isCurrentPlayersPiecePresent(dest)? and then capture logic.
+                        ' Assuming capture check is part of GameManager's move process after steps.
+                        alt destination position has opponent's piece ' 상대 말 잡음
+                            GameManager -> GameManager : group(piece, captured) ' Internal logic within GameManager
+                            ' Original ref had gm -> ctl : capturedInfo and ctl -> gm : setExtraTurn(true),
+                            ' which implies GM returns info and Ctl sets state.
+                            ' Let's assume GameManager sets its own flags and returns state info.
+                        else noCapture ' 상대 말 잡지 않음
+                        end
+                        ' << End of content included from ref-movepiece-sequence-diagram.puml <<
+
+                        ' Return from GameManager to Controller after the move process completes
+                        GameManager --> GameController : updatedStateInfo (includes capture, extra turn/move flags, new board state/positionPieceMap)
+                        deactivate GameManager
+
+                        GameController -> view : updateBoard()
+                        GameController -> view : updatePlayerScore()
+
+                        ' GameController state updates: selectPieceState = false, selectPositionState = false, selectedPiecePositionId = "", selectedNodeId = ""
+
+                        ' 턴/게임 종료 처리 (updatedStateInfo 및 GameManager 상태 기반)
+                        opt GameManager.isGameEnd() == true
+                            GameController -> view : showWinner(GameManager.getWinningPlayerId())
+                            ' break GameFinished is handled by the outer game loop condition
+                        else GameManager.isExtraTurn() == true ' 윷 결과나 캡처로 인한 추가 턴
+                        else GameManager.isExtraMove() == true ' 캡처로 인한 추가 이동
+                        else ' 턴 종료 (추가 턴/이동 없음)
+                            GameController -> GameManager : nextTurn()
+                            activate GameManager
+                            deactivate GameManager
+                            GameController -> view : updateTurn()
+                        end
+
+                    else isValid is false ' 유효하지 않은 말이동
+                        GameController -> view : showPopup("이동할 수 없는 위치입니다.\n이동할 위치를 다시 선택하세요.")
+                        ' Code doesn't reset state here, stays in selectPositionState, allowing re-selection of target
+                    end
+                end
             end
-        else invalidMove ' 말이동 선택/처리가 유효하지 않았다면
-            GameController -> view : showPopup("잘못된 선택 또는 이동")
-                ' 잘못된 선택/이동 시 어떻게 처리할지 추가 로직 필요 (예: 다시 선택 기회 또는 턴 종료)
+            ' ---------------- END Piece-Selection & Movement ----------------
         end
-        
-        ' ---------------- END PLAYER TURN LOOP ----------------
-
-        ' ----- 다음 턴으로 (현재 플레이어 턴이 끝났을 경우) -----
-        opt GameManager.checkGameEnd() == false ' 턴이 끝났고 게임이 아직 끝나지 않았다면 다음 플레이어로
-            GameController -> GameManager : nextTurn()
-            GameController -> view : updateTurn()
-            note right : GameManager updates current player.\nGameController state is reset for next turn.
-        end
-    end
+    end ' End of Player Turn Loop
 
 
     ' ----- 게임 종료 체크 -----
@@ -74,7 +156,9 @@ loop until GameManager.checkGameEnd() == true
         GameController -> view : showWinner(GameManager.getWinningPlayerId())
         break GameFinished ' 게임 종료 시 메인 루프 탈출
     end
+end ' End of Game Loop
 end
+
 ' ---------------- END GAME LOOP ----------------
-end
+
 @enduml

@@ -20,11 +20,12 @@ class GameController {
   + handleRandomThrow(): void
   + handleManualThrow(value: int): void
   + handleBoardClick(nodeId: String): void
+  + handleGameReset(): void
 }
 
 ' Relationships (to Model and View)
 
-GameController "1" -right-> "1" GameManager : uses
-GameController "1" -left-> "1" GameView : uses
+GameController "1" -right- "1" GameManager : uses
+GameController "1" -left- "1" GameView : uses
 
 @enduml 
