@@ -32,4 +32,6 @@ public interface GameView {
      * 현재 차례를 업데이트합니다.
      */
     void updateTurn();
+
+    void start(Object stage); // JavaFX에서 Stage를 시작하는 메서드
 }

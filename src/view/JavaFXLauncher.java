@@ -11,7 +11,7 @@ public class JavaFXLauncher extends Application {
     public void start(Stage stage) {
         GameManager model = new GameManager();
         GameController controller = new GameController(model);
-        JavafxUI view = new JavafxUI(controller, model);
+        GameView view = new JavafxUI(controller, model);
         controller.setView(view);
 
         view.start(stage); // JavaFXUI에서 Stage 시작

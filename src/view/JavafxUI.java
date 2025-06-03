@@ -57,6 +57,14 @@ public class JavafxUI implements GameView {
     }
 
     // ------ UI 초기화: initUI() -> start() ------- //
+    @Override
+    public void start(Object stage) {
+        if (stage instanceof Stage) {
+            start((Stage) stage);
+        } else {
+            System.out.println("Invalid stage type. Expected javafx.stage.Stage.");
+        }
+    }
     public void start(Stage stage) {
         this.stage = stage;
         root = new Pane();

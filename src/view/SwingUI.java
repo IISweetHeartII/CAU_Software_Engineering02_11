@@ -860,4 +860,10 @@ public class SwingUI implements GameView {
         // 사진 교체
         turnLabel.setIcon(new ImageIcon(scaledTurnIcon));
     }
+
+    @Override
+    public void start(Object stage) {
+        System.out.println("Exception: Swing에서 start() 호출됨");
+        return; // SwingUI는 JavaFX의 start() 메서드를 사용하지 않음
+    }
 }
