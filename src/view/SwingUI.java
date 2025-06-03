@@ -860,4 +860,10 @@ public class SwingUI implements GameView {
         // 사진 교체
         turnLabel.setIcon(new ImageIcon(scaledTurnIcon));
     }
+
+    @Override
+    public void start(Object stage) {
+        // Swing은 JavaFX와 다르게 stage 개념이 없으므로, 여기서는 frame을 사용합니다.
+        return;
+    }
 }

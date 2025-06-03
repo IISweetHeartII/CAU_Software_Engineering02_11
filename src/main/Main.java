@@ -2,6 +2,7 @@ package main;
 
 import controller.GameController;
 import model.GameManager;
+import view.GameView;
 import view.JavaFXLauncher;
 import view.SwingUI;
 import javafx.application.Application;
@@ -16,7 +17,7 @@ public class Main {
          // UI 타입: 1 - Swing, 2 - JavaFX
         switch (Config.getUiType()) {
             case 1:
-                SwingUI view = new SwingUI(controller, model);
+                GameView view = new SwingUI(controller, model);
                 controller.setView(view);
                 break;
             case 2:
