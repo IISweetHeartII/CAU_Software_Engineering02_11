@@ -1,5 +1,7 @@
 # 윷놀이 게임 프로젝트
 
+Dev/kdh 김덕환의 놀이터
+
 이 프로젝트는 중앙대학교 소프트웨어공학 02분반 11팀의 윷놀이 게임을 구현한 것입니다.
 
 이 프로젝트는 윷놀이의 규칙을 따르며, 사용자 인터페이스를 통해 게임을 즐길 수 있도록 설계되었습니다.
@@ -9,6 +11,7 @@
 ## ⚠️ (필독) 브랜치 관리
 
 이 프로젝트는 다음과 같은 브랜치 관리 방식을 따릅니다:
+
 - `main` 브랜치: 현재 프로젝트의 diagram과 같은 코드 이외의 파일이 포함되어 있습니다.
 - `release` 브랜치: .jar 파일로 배포하기 위한 브랜치입니다. _**이 브랜치는 diagram과 같은 코드 이외의 파일이 포함되어 있지 않습니다. 평가시에 main브랜치인지 확인해주세요.**_
 
@@ -42,6 +45,7 @@ IDE와 .jar 파일로 실행하는 방법이 다릅니다.
 
 1. 만약 .jar 파일을 직접 얻고자 한다면, `release` 브랜치의 프로젝트를 ItelliJ IDEA에서 빌드하여 .jar 파일을 생성합니다.
 2. 생성된 .jar 파일을 `data` 폴더와 동일한 위치에 두고, 명령 프롬프트 또는 터미널에서 다음 명령어를 실행합니다. `your-java-fx/lib`는 JavaFX 라이브러리가 위치한 경로로 변경해야 합니다.
+
 ```bash
 java --module-path "your-java-fx/lib" --add-modules javafx.controls,javafx.fxml -jar SE_Project_02_11.jar
 ```
@@ -57,9 +61,9 @@ java --module-path "your-java-fx/lib" --add-modules javafx.controls,javafx.fxml 
 윷놀이 게임에서 말의 이동할 때의 사용자 입력은 다음과 같습니다.
 
 - START 위치와 END 위치는 별도로 관리됩니다:
+
   - START 위치는 Score 부분의 UI를 클릭하여 선택합니다.
   - END 위치는 윷 결과 UI를 클릭하여 선택합니다.
-
 
 - 사용자가 말을 이동하는 방법은 다음과 같습니다:
 
